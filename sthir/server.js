@@ -3,6 +3,7 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
+const requireAdmin = require('./admin-protect');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +12,20 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('.'));
+
+// Simple session middleware for admin authentication
+app.use((req, res, next) => {
+    // Check for admin token in Authorization header
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        // Simple token validation - in production, use proper JWT validation
+        if (token === process.env.ADMIN_TOKEN || token === 'admin-secret-token') {
+            req.user = { isAdmin: true };
+        }
+    }
+    next();
+});
 
 // Initialize SQLite database
 const db = new sqlite3.Database('health_assessment.db', (err) => {
@@ -113,7 +128,7 @@ app.post('/api/save-assessment', (req, res) => {
 });
 
 // API endpoint to get all emails (admin use)
-app.get('/api/emails', (req, res) => {
+app.get('/api/emails', requireAdmin, (req, res) => {
     const query = 'SELECT email, created_at FROM emails ORDER BY created_at DESC';
     db.all(query, [], (err, rows) => {
         if (err) {
@@ -126,7 +141,7 @@ app.get('/api/emails', (req, res) => {
 });
 
 // API endpoint to get assessment statistics
-app.get('/api/stats', (req, res) => {
+app.get('/api/stats', requireAdmin, (req, res) => {
     const queries = {
         totalEmails: 'SELECT COUNT(*) as count FROM emails',
         totalAssessments: 'SELECT COUNT(*) as count FROM assessments',
@@ -164,13 +179,29 @@ app.get('/api/stats', (req, res) => {
     });
 });
 
+// Simple admin login endpoint
+app.post('/api/admin/login', (req, res) => {
+    const { username, password } = req.body;
+    
+    // Simple hardcoded credentials - in production, use proper authentication
+    if (username === 'admin' && password === process.env.ADMIN_PASSWORD || password === 'admin123') {
+        res.json({ 
+            success: true, 
+            token: process.env.ADMIN_TOKEN || 'admin-secret-token',
+            message: 'Login successful'
+        });
+    } else {
+        res.status(401).json({ error: 'Invalid credentials' });
+    }
+});
+
 // Serve the main page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Serve admin dashboard
-app.get('/admin', (req, res) => {
+app.get('/admin', requireAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
