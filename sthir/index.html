@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Men's Health Assessment - Build Your Confidence</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Men's Reproductive Health Assessment</h1>
+            <p>Take control of your health and build confidence through knowledge</p>
+        </header>
+
+        <!-- Email Collection Section -->
+        <section id="email-section" class="section active">
+            <h2>Get Started</h2>
+            <p>Enter your email to receive your personalized health assessment results</p>
+            <form id="email-form">
+                <input type="email" id="email" placeholder="Enter your email address" required>
+                <button type="submit">Start Assessment</button>
+            </form>
+        </section>
+
+        <!-- Question Section -->
+        <section id="question-section" class="section">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+                <span class="progress-text" id="progress-text">Question 1 of 10</span>
+            </div>
+            
+            <div class="question-container">
+                <h3 id="question-text"></h3>
+                <div class="options" id="options-container"></div>
+                <button id="next-btn" class="next-button" disabled>Next</button>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-section" class="section">
+            <h2>Your Health Assessment Results</h2>
+            <div id="score-display">
+                <div class="score-circle">
+                    <span id="score-number">0</span>
+                    <span>/100</span>
+                </div>
+            </div>
+            <div id="results-content">
+                <h3 id="score-category"></h3>
+                <p id="score-description"></p>
+                <div id="recommendations">
+                    <h4>Personalized Recommendations</h4>
+                    <ul id="recommendation-list"></ul>
+                </div>
+                <div class="confidence-message">
+                    <h4>Building Your Confidence</h4>
+                    <p>Knowledge is power. By taking this assessment, you've already taken the first step toward better health. Remember, small consistent changes lead to significant improvements over time.</p>
+                </div>
+                <button id="restart-btn">Take Assessment Again</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
