@@ -56,6 +56,8 @@ function initializeDatabase() {
             phone TEXT,
             health_concerns TEXT,
             service_preferences TEXT,
+            is_waitlist BOOLEAN DEFAULT FALSE,
+            waitlist_position INTEGER,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `;
@@ -78,6 +80,17 @@ function initializeDatabase() {
             console.error('Error creating users table:', err.message);
         } else {
             console.log('Users table ready');
+            // Add waitlist columns to existing users table if they don't exist
+            db.run('ALTER TABLE users ADD COLUMN is_waitlist BOOLEAN DEFAULT FALSE', (err) => {
+                if (err && !err.message.includes('duplicate column name')) {
+                    console.error('Error adding is_waitlist column:', err.message);
+                }
+            });
+            db.run('ALTER TABLE users ADD COLUMN waitlist_position INTEGER', (err) => {
+                if (err && !err.message.includes('duplicate column name')) {
+                    console.error('Error adding waitlist_position column:', err.message);
+                }
+            });
         }
     });
 
@@ -308,6 +321,98 @@ app.get('/api/stats', requireAdmin, (req, res) => {
     }).catch(err => {
         console.error('Error fetching stats:', err.message);
         res.status(500).json({ error: 'Failed to fetch statistics' });
+    });
+});
+
+// API endpoint to join Menvy waitlist
+app.post('/api/join-waitlist', (req, res) => {
+    const { email } = req.body;
+    
+    if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Check if user is already on waitlist
+    const checkQuery = 'SELECT user_id, is_waitlist, waitlist_position FROM users WHERE email = ?';
+    db.get(checkQuery, [email], (err, row) => {
+        if (err) {
+            console.error('Error checking waitlist status:', err.message);
+            return res.status(500).json({ error: 'Failed to check waitlist status' });
+        }
+
+        if (row && row.is_waitlist) {
+            return res.json({
+                success: true,
+                message: 'Already on waitlist',
+                position: row.waitlist_position,
+                alreadyJoined: true
+            });
+        }
+
+        // Get current waitlist count to determine next position
+        const countQuery = 'SELECT COUNT(*) as count FROM users WHERE is_waitlist = TRUE';
+        db.get(countQuery, [], (err, countRow) => {
+            if (err) {
+                console.error('Error counting waitlist:', err.message);
+                return res.status(500).json({ error: 'Failed to get waitlist count' });
+            }
+
+            const nextPosition = 1007 + countRow.count;
+
+            if (row) {
+                // Update existing user
+                const updateQuery = 'UPDATE users SET is_waitlist = TRUE, waitlist_position = ? WHERE email = ?';
+                db.run(updateQuery, [nextPosition, email], function(err) {
+                    if (err) {
+                        console.error('Error updating user waitlist status:', err.message);
+                        return res.status(500).json({ error: 'Failed to join waitlist' });
+                    }
+
+                    res.json({
+                        success: true,
+                        message: 'Successfully joined Menvy waitlist!',
+                        position: nextPosition
+                    });
+                });
+            } else {
+                // Create new user on waitlist
+                const insertQuery = 'INSERT INTO users (email, is_waitlist, waitlist_position) VALUES (?, TRUE, ?)';
+                db.run(insertQuery, [email, nextPosition], function(err) {
+                    if (err) {
+                        console.error('Error adding user to waitlist:', err.message);
+                        return res.status(500).json({ error: 'Failed to join waitlist' });
+                    }
+
+                    res.json({
+                        success: true,
+                        message: 'Successfully joined Menvy waitlist!',
+                        position: nextPosition
+                    });
+                });
+            }
+        });
+    });
+});
+
+// API endpoint to get waitlist stats
+app.get('/api/waitlist-stats', (req, res) => {
+    const query = 'SELECT COUNT(*) as count FROM users WHERE is_waitlist = TRUE';
+    db.get(query, [], (err, row) => {
+        if (err) {
+            console.error('Error getting waitlist stats:', err.message);
+            return res.status(500).json({ error: 'Failed to get waitlist stats' });
+        }
+
+        res.json({
+            totalWaitlist: row.count,
+            nextPosition: 1007 + row.count
+        });
     });
 });
 

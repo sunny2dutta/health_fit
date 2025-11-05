@@ -124,6 +124,9 @@ const nextBtn = document.getElementById('next-btn');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
 const restartBtn = document.getElementById('restart-btn');
+const joinWaitlistBtn = document.getElementById('join-waitlist-btn-top');
+const waitlistForm = document.getElementById('waitlist-form-top');
+const waitlistSuccess = document.getElementById('waitlist-success-top');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
@@ -133,11 +136,19 @@ document.addEventListener('DOMContentLoaded', function() {
     servicePreferencesForm.addEventListener('submit', handleServicePreferencesSubmit);
     nextBtn.addEventListener('click', handleNextQuestion);
     restartBtn.addEventListener('click', restartAssessment);
+    joinWaitlistBtn.addEventListener('click', handleJoinWaitlist);
 });
 
 async function handleEmailSubmit(e) {
     e.preventDefault();
     userEmail = document.getElementById('email').value;
+    
+    // Validate email format
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(userEmail)) {
+        alert('Please enter a valid email address in the format: name@domain.com');
+        return;
+    }
     
     // Save email to database
     try {
@@ -375,6 +386,68 @@ async function showResults() {
         li.textContent = rec;
         recommendationList.appendChild(li);
     });
+}
+
+async function handleJoinWaitlist() {
+    // If no email is collected yet, prompt for it
+    if (!userEmail) {
+        const email = prompt('Please enter your email address to join the waitlist:');
+        if (!email) return;
+        
+        // Validate email format
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address in the format: name@domain.com');
+            return;
+        }
+        userEmail = email;
+    }
+
+    try {
+        joinWaitlistBtn.disabled = true;
+        joinWaitlistBtn.textContent = 'Joining...';
+
+        const response = await fetch('/api/join-waitlist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: userEmail })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to join waitlist');
+        }
+
+        // Show success message
+        waitlistForm.style.display = 'none';
+        waitlistSuccess.style.display = 'block';
+        
+        const positionText = document.getElementById('waitlist-position-text-top');
+        if (result.alreadyJoined) {
+            positionText.textContent = `You're already on the waitlist at position #${result.position}`;
+        } else {
+            positionText.textContent = `You're #${result.position} on the waitlist!`;
+        }
+
+        // Get and display waitlist stats
+        const statsResponse = await fetch('/api/waitlist-stats');
+        const statsResult = await statsResponse.json();
+        
+        const waitlistStats = document.getElementById('waitlist-stats-top');
+        waitlistStats.innerHTML = `
+            <p><strong>${statsResult.totalWaitlist}</strong> people have joined the Menvy waitlist</p>
+            <p>We'll notify you when Menvy launches!</p>
+        `;
+
+    } catch (error) {
+        console.error('Error joining waitlist:', error);
+        alert('There was an issue joining the waitlist. Please try again.');
+        joinWaitlistBtn.disabled = false;
+        joinWaitlistBtn.textContent = 'Join Menvy Waitlist';
+    }
 }
 
 function restartAssessment() {
