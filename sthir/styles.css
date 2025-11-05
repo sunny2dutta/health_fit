@@ -321,6 +321,122 @@ h3 {
     transform: translateY(-2px);
 }
 
+/* Personal Info, Health Concerns, and Service Preferences Forms */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    padding: 15px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.checkbox-item:hover {
+    border-color: #667eea;
+    background: #f8f9ff;
+}
+
+.checkbox-item input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e1e5e9;
+    border-radius: 4px;
+    margin-right: 15px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.checkbox-item input[type="checkbox"]:checked + .checkmark {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+}
+
+.checkbox-item input[type="checkbox"]:checked + .checkmark::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+#personal-info-form button,
+#health-concerns-form button,
+#service-preferences-form button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 20px auto 0;
+}
+
+#personal-info-form button:hover,
+#health-concerns-form button:hover,
+#service-preferences-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.details-message {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.details-message h2 {
+    color: #667eea;
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {

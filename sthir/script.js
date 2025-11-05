@@ -105,12 +105,19 @@ const questions = [
 let currentQuestion = 0;
 let totalScore = 0;
 let userEmail = '';
+let userData = {};
 
 // DOM elements
 const emailSection = document.getElementById('email-section');
+const personalInfoSection = document.getElementById('personal-info-section');
+const healthConcernsSection = document.getElementById('health-concerns-section');
+const servicePreferencesSection = document.getElementById('service-preferences-section');
 const questionSection = document.getElementById('question-section');
 const resultsSection = document.getElementById('results-section');
 const emailForm = document.getElementById('email-form');
+const personalInfoForm = document.getElementById('personal-info-form');
+const healthConcernsForm = document.getElementById('health-concerns-form');
+const servicePreferencesForm = document.getElementById('service-preferences-form');
 const questionText = document.getElementById('question-text');
 const optionsContainer = document.getElementById('options-container');
 const nextBtn = document.getElementById('next-btn');
@@ -121,6 +128,9 @@ const restartBtn = document.getElementById('restart-btn');
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     emailForm.addEventListener('submit', handleEmailSubmit);
+    personalInfoForm.addEventListener('submit', handlePersonalInfoSubmit);
+    healthConcernsForm.addEventListener('submit', handleHealthConcernsSubmit);
+    servicePreferencesForm.addEventListener('submit', handleServicePreferencesSubmit);
     nextBtn.addEventListener('click', handleNextQuestion);
     restartBtn.addEventListener('click', restartAssessment);
 });
@@ -158,6 +168,52 @@ async function handleEmailSubmit(e) {
         console.error('Error saving email:', error);
         alert('There was an issue saving your email. Please try again.');
     }
+}
+
+function handlePersonalInfoSubmit(e) {
+    e.preventDefault();
+    
+    // Collect personal information
+    userData.name = document.getElementById('full-name').value;
+    userData.dateOfBirth = document.getElementById('dob').value;
+    userData.phone = document.getElementById('phone').value;
+    userData.email = userEmail;
+    
+    // Hide personal info section and show health concerns section
+    personalInfoSection.classList.remove('active');
+    healthConcernsSection.classList.add('active');
+}
+
+function handleHealthConcernsSubmit(e) {
+    e.preventDefault();
+    
+    // Collect health concerns
+    const selectedConcerns = [];
+    const checkboxes = document.querySelectorAll('input[name="health-concerns"]:checked');
+    checkboxes.forEach(checkbox => {
+        selectedConcerns.push(checkbox.value);
+    });
+    userData.healthConcerns = selectedConcerns;
+    
+    // Hide health concerns section and show service preferences section
+    healthConcernsSection.classList.remove('active');
+    servicePreferencesSection.classList.add('active');
+}
+
+function handleServicePreferencesSubmit(e) {
+    e.preventDefault();
+    
+    // Collect service preferences
+    const selectedPreferences = [];
+    const checkboxes = document.querySelectorAll('input[name="service-preferences"]:checked');
+    checkboxes.forEach(checkbox => {
+        selectedPreferences.push(checkbox.value);
+    });
+    userData.servicePreferences = selectedPreferences;
+    
+    // Hide service preferences section and show results
+    servicePreferencesSection.classList.remove('active');
+    showResults();
 }
 
 function loadQuestion() {
@@ -211,14 +267,14 @@ function handleNextQuestion() {
         // Load next question
         loadQuestion();
     } else {
-        // Show results
-        showResults();
+        // Show personal info section after questions are done
+        questionSection.classList.remove('active');
+        personalInfoSection.classList.add('active');
     }
 }
 
 async function showResults() {
-    // Hide question section and show results
-    questionSection.classList.remove('active');
+    // Show results section
     resultsSection.classList.add('active');
     
     // Calculate final score (out of 100)
@@ -231,7 +287,7 @@ async function showResults() {
         score: q.selectedScore
     }));
     
-    // Save assessment to database
+    // Save complete assessment data to database
     try {
         await fetch('/api/save-assessment', {
             method: 'POST',
@@ -240,6 +296,7 @@ async function showResults() {
             },
             body: JSON.stringify({
                 email: userEmail,
+                personalInfo: userData,
                 score: finalScore,
                 answers: answers
             })
@@ -315,13 +372,28 @@ function restartAssessment() {
     currentQuestion = 0;
     totalScore = 0;
     userEmail = '';
+    userData = {};
     
-    // Reset form
+    // Reset all forms
     document.getElementById('email').value = '';
+    document.getElementById('full-name').value = '';
+    document.getElementById('dob').value = '';
+    document.getElementById('phone').value = '';
     
-    // Show email section, hide others
+    // Clear checkboxes
+    document.querySelectorAll('input[name="health-concerns"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    document.querySelectorAll('input[name="service-preferences"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    
+    // Show email section, hide all others
     resultsSection.classList.remove('active');
     questionSection.classList.remove('active');
+    personalInfoSection.classList.remove('active');
+    healthConcernsSection.classList.remove('active');
+    servicePreferencesSection.classList.remove('active');
     emailSection.classList.add('active');
     
     // Clear selected scores
