@@ -174,9 +174,19 @@ function handlePersonalInfoSubmit(e) {
     e.preventDefault();
     
     // Collect personal information
-    userData.name = document.getElementById('full-name').value;
-    userData.dateOfBirth = document.getElementById('dob').value;
-    userData.phone = document.getElementById('phone').value;
+    const name = document.getElementById('full-name').value.trim();
+    const dateOfBirth = document.getElementById('dob').value;
+    const phone = document.getElementById('phone').value.trim();
+    
+    // Validate required fields
+    if (!name || !dateOfBirth || !phone) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    userData.name = name;
+    userData.dateOfBirth = dateOfBirth;
+    userData.phone = phone;
     userData.email = userEmail;
     
     // Hide personal info section and show health concerns section
