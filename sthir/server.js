@@ -33,6 +33,14 @@ const db = new sqlite3.Database('health_assessment.db', (err) => {
         console.error('Error opening database:', err.message);
     } else {
         console.log('Connected to SQLite database');
+        // Enable foreign key constraints
+        db.run('PRAGMA foreign_keys = ON', (err) => {
+            if (err) {
+                console.error('Error enabling foreign keys:', err.message);
+            } else {
+                console.log('Foreign key constraints enabled');
+            }
+        });
         initializeDatabase();
     }
 });
@@ -56,6 +64,8 @@ function initializeDatabase() {
         CREATE TABLE IF NOT EXISTS assessments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
+            email TEXT NOT NULL,
+            assessment_questions TEXT NOT NULL,
             score INTEGER NOT NULL,
             answers TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -181,8 +191,8 @@ app.post('/api/save-assessment', (req, res) => {
         }
         
         function saveAssessment(userId) {
-            const assessmentQuery = 'INSERT INTO assessments (user_id, score, answers) VALUES (?, ?, ?)';
-            const assessmentParams = [userId, score, JSON.stringify(answers)];
+            const assessmentQuery = 'INSERT INTO assessments (user_id, email, assessment_questions, score, answers) VALUES (?, ?, ?, ?, ?)';
+            const assessmentParams = [userId, email, JSON.stringify(req.body.assessmentQuestions || []), score, JSON.stringify(answers)];
             
             db.run(assessmentQuery, assessmentParams, function(err) {
                 if (err) {
