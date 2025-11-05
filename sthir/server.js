@@ -39,10 +39,15 @@ const db = new sqlite3.Database('health_assessment.db', (err) => {
 
 // Create tables if they don't exist
 function initializeDatabase() {
-    const createEmailsTable = `
-        CREATE TABLE IF NOT EXISTS emails (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+    const createUsersTable = `
+        CREATE TABLE IF NOT EXISTS users (
+            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT UNIQUE NOT NULL,
+            full_name TEXT,
+            date_of_birth TEXT,
+            phone TEXT,
+            health_concerns TEXT,
+            service_preferences TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `;
@@ -50,24 +55,19 @@ function initializeDatabase() {
     const createAssessmentsTable = `
         CREATE TABLE IF NOT EXISTS assessments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL,
-            full_name TEXT,
-            date_of_birth TEXT,
-            phone TEXT,
-            health_concerns TEXT,
-            service_preferences TEXT,
+            user_id INTEGER NOT NULL,
             score INTEGER NOT NULL,
             answers TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (email) REFERENCES emails (email)
+            FOREIGN KEY (user_id) REFERENCES users (user_id)
         )
     `;
 
-    db.run(createEmailsTable, (err) => {
+    db.run(createUsersTable, (err) => {
         if (err) {
-            console.error('Error creating emails table:', err.message);
+            console.error('Error creating users table:', err.message);
         } else {
-            console.log('Emails table ready');
+            console.log('Users table ready');
         }
     });
 
@@ -80,7 +80,7 @@ function initializeDatabase() {
     });
 }
 
-// API endpoint to save email
+// API endpoint to save email (now saves to users table)
 app.post('/api/save-email', (req, res) => {
     const { email } = req.body;
     
@@ -94,7 +94,7 @@ app.post('/api/save-email', (req, res) => {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    const query = 'INSERT OR IGNORE INTO emails (email) VALUES (?)';
+    const query = 'INSERT OR IGNORE INTO users (email) VALUES (?)';
     db.run(query, [email], function(err) {
         if (err) {
             console.error('Error saving email:', err.message);
@@ -104,7 +104,8 @@ app.post('/api/save-email', (req, res) => {
         res.json({ 
             success: true, 
             message: 'Email saved successfully',
-            isNew: this.changes > 0
+            isNew: this.changes > 0,
+            user_id: this.lastID || null
         });
     });
 });
@@ -117,38 +118,112 @@ app.post('/api/save-assessment', (req, res) => {
         return res.status(400).json({ error: 'Email, score, and answers are required' });
     }
 
-    const query = `INSERT INTO assessments 
-        (email, full_name, date_of_birth, phone, health_concerns, service_preferences, score, answers) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    
-    const params = [
-        email,
-        personalInfo?.name || null,
-        personalInfo?.dateOfBirth || null,
-        personalInfo?.phone || null,
-        personalInfo?.healthConcerns ? JSON.stringify(personalInfo.healthConcerns) : null,
-        personalInfo?.servicePreferences ? JSON.stringify(personalInfo.servicePreferences) : null,
-        score,
-        JSON.stringify(answers)
-    ];
-    
-    db.run(query, params, function(err) {
+    // First, find or create user
+    const findUserQuery = 'SELECT user_id FROM users WHERE email = ?';
+    db.get(findUserQuery, [email], (err, row) => {
         if (err) {
-            console.error('Error saving assessment:', err.message);
-            return res.status(500).json({ error: 'Failed to save assessment' });
+            console.error('Error finding user:', err.message);
+            return res.status(500).json({ error: 'Failed to find user' });
         }
         
-        res.json({ 
-            success: true, 
-            message: 'Assessment saved successfully',
-            id: this.lastID
-        });
+        let user_id = row?.user_id;
+        
+        if (!user_id) {
+            // User doesn't exist, create new user
+            const createUserQuery = `INSERT INTO users 
+                (email, full_name, date_of_birth, phone, health_concerns, service_preferences) 
+                VALUES (?, ?, ?, ?, ?, ?)`;
+            
+            const userParams = [
+                email,
+                personalInfo?.name || null,
+                personalInfo?.dateOfBirth || null,
+                personalInfo?.phone || null,
+                personalInfo?.healthConcerns ? JSON.stringify(personalInfo.healthConcerns) : null,
+                personalInfo?.servicePreferences ? JSON.stringify(personalInfo.servicePreferences) : null
+            ];
+            
+            db.run(createUserQuery, userParams, function(err) {
+                if (err) {
+                    console.error('Error creating user:', err.message);
+                    return res.status(500).json({ error: 'Failed to create user' });
+                }
+                
+                saveAssessment(this.lastID);
+            });
+        } else {
+            // Update existing user with personal info
+            const updateUserQuery = `UPDATE users SET 
+                full_name = COALESCE(?, full_name),
+                date_of_birth = COALESCE(?, date_of_birth),
+                phone = COALESCE(?, phone),
+                health_concerns = COALESCE(?, health_concerns),
+                service_preferences = COALESCE(?, service_preferences)
+                WHERE user_id = ?`;
+            
+            const updateParams = [
+                personalInfo?.name || null,
+                personalInfo?.dateOfBirth || null,
+                personalInfo?.phone || null,
+                personalInfo?.healthConcerns ? JSON.stringify(personalInfo.healthConcerns) : null,
+                personalInfo?.servicePreferences ? JSON.stringify(personalInfo.servicePreferences) : null,
+                user_id
+            ];
+            
+            db.run(updateUserQuery, updateParams, (err) => {
+                if (err) {
+                    console.error('Error updating user:', err.message);
+                    return res.status(500).json({ error: 'Failed to update user' });
+                }
+                
+                saveAssessment(user_id);
+            });
+        }
+        
+        function saveAssessment(userId) {
+            const assessmentQuery = 'INSERT INTO assessments (user_id, score, answers) VALUES (?, ?, ?)';
+            const assessmentParams = [userId, score, JSON.stringify(answers)];
+            
+            db.run(assessmentQuery, assessmentParams, function(err) {
+                if (err) {
+                    console.error('Error saving assessment:', err.message);
+                    return res.status(500).json({ error: 'Failed to save assessment' });
+                }
+                
+                res.json({ 
+                    success: true, 
+                    message: 'Assessment saved successfully',
+                    assessment_id: this.lastID,
+                    user_id: userId
+                });
+            });
+        }
     });
 });
 
-// API endpoint to get all emails (admin use)
+// API endpoint to get all users (admin use)
+app.get('/api/users', requireAdmin, (req, res) => {
+    const query = 'SELECT user_id, email, full_name, date_of_birth, phone, health_concerns, service_preferences, created_at FROM users ORDER BY created_at DESC';
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            console.error('Error fetching users:', err.message);
+            return res.status(500).json({ error: 'Failed to fetch users' });
+        }
+        
+        // Parse JSON fields
+        const users = rows.map(row => ({
+            ...row,
+            health_concerns: row.health_concerns ? JSON.parse(row.health_concerns) : [],
+            service_preferences: row.service_preferences ? JSON.parse(row.service_preferences) : []
+        }));
+        
+        res.json({ users });
+    });
+});
+
+// Keep backward compatibility for emails endpoint
 app.get('/api/emails', requireAdmin, (req, res) => {
-    const query = 'SELECT email, created_at FROM emails ORDER BY created_at DESC';
+    const query = 'SELECT user_id, email, created_at FROM users ORDER BY created_at DESC';
     db.all(query, [], (err, rows) => {
         if (err) {
             console.error('Error fetching emails:', err.message);
@@ -162,11 +237,12 @@ app.get('/api/emails', requireAdmin, (req, res) => {
 // API endpoint to get all assessment data (admin use)
 app.get('/api/assessments', requireAdmin, (req, res) => {
     const query = `SELECT 
-        id, email, full_name, date_of_birth, phone, 
-        health_concerns, service_preferences, score, 
-        answers, created_at 
-        FROM assessments 
-        ORDER BY created_at DESC`;
+        a.id, a.user_id, a.score, a.answers, a.created_at,
+        u.email, u.full_name, u.date_of_birth, u.phone, 
+        u.health_concerns, u.service_preferences
+        FROM assessments a
+        JOIN users u ON a.user_id = u.user_id
+        ORDER BY a.created_at DESC`;
     
     db.all(query, [], (err, rows) => {
         if (err) {
@@ -189,14 +265,14 @@ app.get('/api/assessments', requireAdmin, (req, res) => {
 // API endpoint to get assessment statistics
 app.get('/api/stats', requireAdmin, (req, res) => {
     const queries = {
-        totalEmails: 'SELECT COUNT(*) as count FROM emails',
+        totalUsers: 'SELECT COUNT(*) as count FROM users',
         totalAssessments: 'SELECT COUNT(*) as count FROM assessments',
         averageScore: 'SELECT AVG(score) as average FROM assessments'
     };
     
     Promise.all([
         new Promise((resolve, reject) => {
-            db.get(queries.totalEmails, [], (err, row) => {
+            db.get(queries.totalUsers, [], (err, row) => {
                 if (err) reject(err);
                 else resolve(row.count);
             });
@@ -213,9 +289,9 @@ app.get('/api/stats', requireAdmin, (req, res) => {
                 else resolve(Math.round(row.average || 0));
             });
         })
-    ]).then(([totalEmails, totalAssessments, averageScore]) => {
+    ]).then(([totalUsers, totalAssessments, averageScore]) => {
         res.json({
-            totalEmails,
+            totalUsers,
             totalAssessments,
             averageScore
         });
