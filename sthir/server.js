@@ -51,6 +51,11 @@ function initializeDatabase() {
         CREATE TABLE IF NOT EXISTS assessments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT NOT NULL,
+            full_name TEXT,
+            date_of_birth TEXT,
+            phone TEXT,
+            health_concerns TEXT,
+            service_preferences TEXT,
             score INTEGER NOT NULL,
             answers TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -106,14 +111,28 @@ app.post('/api/save-email', (req, res) => {
 
 // API endpoint to save assessment results
 app.post('/api/save-assessment', (req, res) => {
-    const { email, score, answers } = req.body;
+    const { email, personalInfo, score, answers } = req.body;
     
     if (!email || score === undefined || !answers) {
         return res.status(400).json({ error: 'Email, score, and answers are required' });
     }
 
-    const query = 'INSERT INTO assessments (email, score, answers) VALUES (?, ?, ?)';
-    db.run(query, [email, score, JSON.stringify(answers)], function(err) {
+    const query = `INSERT INTO assessments 
+        (email, full_name, date_of_birth, phone, health_concerns, service_preferences, score, answers) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    
+    const params = [
+        email,
+        personalInfo?.name || null,
+        personalInfo?.dateOfBirth || null,
+        personalInfo?.phone || null,
+        personalInfo?.healthConcerns ? JSON.stringify(personalInfo.healthConcerns) : null,
+        personalInfo?.servicePreferences ? JSON.stringify(personalInfo.servicePreferences) : null,
+        score,
+        JSON.stringify(answers)
+    ];
+    
+    db.run(query, params, function(err) {
         if (err) {
             console.error('Error saving assessment:', err.message);
             return res.status(500).json({ error: 'Failed to save assessment' });
@@ -137,6 +156,33 @@ app.get('/api/emails', requireAdmin, (req, res) => {
         }
         
         res.json({ emails: rows });
+    });
+});
+
+// API endpoint to get all assessment data (admin use)
+app.get('/api/assessments', requireAdmin, (req, res) => {
+    const query = `SELECT 
+        id, email, full_name, date_of_birth, phone, 
+        health_concerns, service_preferences, score, 
+        answers, created_at 
+        FROM assessments 
+        ORDER BY created_at DESC`;
+    
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            console.error('Error fetching assessments:', err.message);
+            return res.status(500).json({ error: 'Failed to fetch assessments' });
+        }
+        
+        // Parse JSON fields
+        const assessments = rows.map(row => ({
+            ...row,
+            health_concerns: row.health_concerns ? JSON.parse(row.health_concerns) : [],
+            service_preferences: row.service_preferences ? JSON.parse(row.service_preferences) : [],
+            answers: JSON.parse(row.answers)
+        }));
+        
+        res.json({ assessments });
     });
 });
 
