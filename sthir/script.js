@@ -124,9 +124,9 @@ const nextBtn = document.getElementById('next-btn');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
 const restartBtn = document.getElementById('restart-btn');
-const joinWaitlistBtn = document.getElementById('join-waitlist-btn-top');
-const waitlistForm = document.getElementById('waitlist-form-top');
-const waitlistSuccess = document.getElementById('waitlist-success-top');
+const joinWaitlistBtnResults = document.getElementById('join-waitlist-btn-results');
+const waitlistFormResults = document.getElementById('waitlist-form-results');
+const waitlistSuccessResults = document.getElementById('waitlist-success-results');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
     servicePreferencesForm.addEventListener('submit', handleServicePreferencesSubmit);
     nextBtn.addEventListener('click', handleNextQuestion);
     restartBtn.addEventListener('click', restartAssessment);
-    joinWaitlistBtn.addEventListener('click', handleJoinWaitlist);
+    joinWaitlistBtnResults.addEventListener('click', handleJoinWaitlistResults);
 });
 
 async function handleEmailSubmit(e) {
@@ -298,6 +298,9 @@ async function showResults() {
     // Show results section
     resultsSection.classList.add('active');
     
+    // Update waitlist counter display
+    updateWaitlistCounterDisplay();
+    
     // Calculate final score (out of 100)
     const finalScore = totalScore;
     
@@ -448,6 +451,35 @@ async function handleJoinWaitlist() {
         joinWaitlistBtn.disabled = false;
         joinWaitlistBtn.textContent = 'Join Menvy Waitlist';
     }
+}
+
+function updateWaitlistCounterDisplay() {
+    // Get current counter from localStorage or start at 1000
+    const waitlistCount = parseInt(localStorage.getItem('waitlistCount') || '1000');
+    const counterElement = document.getElementById('current-waitlist-count-results');
+    if (counterElement) {
+        counterElement.textContent = waitlistCount;
+    }
+}
+
+function handleJoinWaitlistResults() {
+    // Get current counter from localStorage or start at 1000
+    let waitlistCount = parseInt(localStorage.getItem('waitlistCount') || '1000');
+    waitlistCount++;
+    localStorage.setItem('waitlistCount', waitlistCount.toString());
+    
+    // Show success message immediately
+    waitlistFormResults.style.display = 'none';
+    waitlistSuccessResults.style.display = 'block';
+    
+    const positionText = document.getElementById('waitlist-position-text-results');
+    positionText.textContent = `You're #${waitlistCount} on the waitlist!`;
+    
+    const waitlistStats = document.getElementById('waitlist-stats-results');
+    waitlistStats.innerHTML = `
+        <p><strong>${waitlistCount}</strong> people have joined the Menvy waitlist</p>
+        <p>We'll notify you when Menvy launches!</p>
+    `;
 }
 
 function restartAssessment() {
