@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
     servicePreferencesForm.addEventListener('submit', handleServicePreferencesSubmit);
     nextBtn.addEventListener('click', handleNextQuestion);
     restartBtn.addEventListener('click', restartAssessment);
-    joinWaitlistBtnResults.addEventListener('click', handleJoinWaitlistResults);
+    joinWaitlistBtnResults.addEventListener('click', handleJoinWaitlist);
 });
 
 async function handleEmailSubmit(e) {
@@ -391,30 +391,26 @@ async function showResults() {
     });
 }
 
-async function handleJoinWaitlist() {
-    // If no email is collected yet, prompt for it
-    if (!userEmail) {
-        const email = prompt('Please enter your email address to join the waitlist:');
-        if (!email) return;
-        
-        // Validate email format
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!emailRegex.test(email)) {
-            alert('Please enter a valid email address in the format: name@domain.com');
-            return;
-        }
-        userEmail = email;
-    }
 
+async function updateWaitlistCounterDisplay() {
     try {
-        joinWaitlistBtn.disabled = true;
-        joinWaitlistBtn.textContent = 'Joining...';
+        const res = await fetch('/api/waitlist-stats');
+        const data = await res.json();
 
+        const counterElement = document.getElementById('current-waitlist-count-results');
+        if (counterElement) {
+            counterElement.textContent = data.totalWaitlist;
+        }
+    } catch (err) {
+        console.error('Failed to load waitlist stats:', err);
+    }
+}
+
+async function handleJoinWaitlist() {
+    try {
         const response = await fetch('/api/join-waitlist', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: userEmail })
         });
 
@@ -424,63 +420,39 @@ async function handleJoinWaitlist() {
             throw new Error(result.error || 'Failed to join waitlist');
         }
 
-        // Show success message
-        waitlistForm.style.display = 'none';
-        waitlistSuccess.style.display = 'block';
-        
-        const positionText = document.getElementById('waitlist-position-text-top');
+        // Hide the form
+        waitlistFormResults.style.display = 'none';
+
+        // Show success section
+        waitlistSuccessResults.style.display = 'block';
+
+        // Update message
+        const positionText = document.getElementById('waitlist-position-text-results');
+
         if (result.alreadyJoined) {
-            positionText.textContent = `You're already on the waitlist at position #${result.position}`;
+            positionText.textContent =
+                `✅ You are already on the waitlist at position #${result.position}! 😊`;
         } else {
-            positionText.textContent = `You're #${result.position} on the waitlist!`;
+            positionText.textContent =
+                `🎉 Congratulations! You are now on a journey of confidence at position #${result.position}! 😄`;
         }
 
-        // Get and display waitlist stats
+        // Update waitlist stats
         const statsResponse = await fetch('/api/waitlist-stats');
-        const statsResult = await statsResponse.json();
-        
-        const waitlistStats = document.getElementById('waitlist-stats-top');
+        const stats = await statsResponse.json();
+
+        const waitlistStats = document.getElementById('waitlist-stats-results');
         waitlistStats.innerHTML = `
-            <p><strong>${statsResult.totalWaitlist}</strong> people have joined the Menvy waitlist</p>
-            <p>We'll notify you when Menvy launches!</p>
+            <p><strong>${stats.totalWaitlist}</strong> people have joined the Menvy waitlist</p>
+            <p>We’ll notify you when Menvy launches!</p>
         `;
 
     } catch (error) {
         console.error('Error joining waitlist:', error);
         alert('There was an issue joining the waitlist. Please try again.');
-        joinWaitlistBtn.disabled = false;
-        joinWaitlistBtn.textContent = 'Join Menvy Waitlist';
     }
 }
 
-function updateWaitlistCounterDisplay() {
-    // Get current counter from localStorage or start at 1000
-    const waitlistCount = parseInt(localStorage.getItem('waitlistCount') || '1000');
-    const counterElement = document.getElementById('current-waitlist-count-results');
-    if (counterElement) {
-        counterElement.textContent = waitlistCount;
-    }
-}
-
-function handleJoinWaitlistResults() {
-    // Get current counter from localStorage or start at 1000
-    let waitlistCount = parseInt(localStorage.getItem('waitlistCount') || '1000');
-    waitlistCount++;
-    localStorage.setItem('waitlistCount', waitlistCount.toString());
-    
-    // Show success message immediately
-    waitlistFormResults.style.display = 'none';
-    waitlistSuccessResults.style.display = 'block';
-    
-    const positionText = document.getElementById('waitlist-position-text-results');
-    positionText.textContent = `You're #${waitlistCount} on the waitlist!`;
-    
-    const waitlistStats = document.getElementById('waitlist-stats-results');
-    waitlistStats.innerHTML = `
-        <p><strong>${waitlistCount}</strong> people have joined the Menvy waitlist</p>
-        <p>We'll notify you when Menvy launches!</p>
-    `;
-}
 
 function restartAssessment() {
     // Reset variables

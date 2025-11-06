@@ -1,4 +1,4 @@
-dummy_start = 1007
+const DUMMY_START = 1007;
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
@@ -404,15 +404,18 @@ app.post('/api/join-waitlist', (req, res) => {
 // API endpoint to get waitlist stats
 app.get('/api/waitlist-stats', (req, res) => {
     const query = 'SELECT COUNT(*) as count FROM users WHERE is_waitlist = TRUE';
+    
     db.get(query, [], (err, row) => {
         if (err) {
             console.error('Error getting waitlist stats:', err.message);
             return res.status(500).json({ error: 'Failed to get waitlist stats' });
         }
 
+        const actualCount = row?.count ?? 0;
+
         res.json({
-            totalWaitlist: row.count,
-            nextPosition: dummy_start + row.count
+            totalWaitlist: DUMMY_START + actualCount,
+            nextPosition: DUMMY_START + actualCount   // next user will get this position
         });
     });
 });
