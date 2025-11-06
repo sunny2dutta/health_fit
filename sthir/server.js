@@ -1,3 +1,4 @@
+dummy_start = 1007
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
@@ -411,7 +412,7 @@ app.get('/api/waitlist-stats', (req, res) => {
 
         res.json({
             totalWaitlist: row.count,
-            nextPosition: 1007 + row.count
+            nextPosition: dummy_start + row.count
         });
     });
 });
