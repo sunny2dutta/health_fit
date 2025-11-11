@@ -1,6 +1,6 @@
 const DUMMY_START = 1007;
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const { Pool } = require('pg');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -28,84 +28,66 @@ app.use((req, res, next) => {
     next();
 });
 
-// Initialize SQLite database
-const db = new sqlite3.Database('health_assessment.db', (err) => {
+// Initialize PostgreSQL database
+const db = new Pool({
+    connectionString: process.env.DATABASE_URL || 'postgresql://patient_contact_user:tKii6Pxue9uEzaNa9OuvK1mmJngugfGT@dpg-d443semuk2gs739mdhh0-a.oregon-postgres.render.com/patient_contact',
+    ssl: { rejectUnauthorized: false },
+});
+
+// Test the connection
+db.connect((err, client, release) => {
     if (err) {
-        console.error('Error opening database:', err.message);
+        console.error('Error connecting to PostgreSQL database:', err.message);
     } else {
-        console.log('Connected to SQLite database');
-        // Enable foreign key constraints
-        db.run('PRAGMA foreign_keys = ON', (err) => {
-            if (err) {
-                console.error('Error enabling foreign keys:', err.message);
-            } else {
-                console.log('Foreign key constraints enabled');
-            }
-        });
+        console.log('Connected to PostgreSQL database');
+        release();
         initializeDatabase();
     }
 });
 
 // Create tables if they don't exist
-function initializeDatabase() {
+async function initializeDatabase() {
     const createUsersTable = `
         CREATE TABLE IF NOT EXISTS users (
-            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT UNIQUE NOT NULL,
-            full_name TEXT,
-            date_of_birth TEXT,
-            phone TEXT,
+            user_id SERIAL PRIMARY KEY,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            full_name VARCHAR(255),
+            date_of_birth DATE,
+            phone VARCHAR(20),
             health_concerns TEXT,
             service_preferences TEXT,
             is_waitlist BOOLEAN DEFAULT FALSE,
             waitlist_position INTEGER,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     `;
     
     const createAssessmentsTable = `
         CREATE TABLE IF NOT EXISTS assessments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL,
-            email TEXT NOT NULL,
+            email VARCHAR(255) NOT NULL,
             assessment_questions TEXT NOT NULL,
             score INTEGER NOT NULL,
             answers TEXT NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users (user_id)
         )
     `;
 
-    db.run(createUsersTable, (err) => {
-        if (err) {
-            console.error('Error creating users table:', err.message);
-        } else {
-            console.log('Users table ready');
-            // Add waitlist columns to existing users table if they don't exist
-            db.run('ALTER TABLE users ADD COLUMN is_waitlist BOOLEAN DEFAULT FALSE', (err) => {
-                if (err && !err.message.includes('duplicate column name')) {
-                    console.error('Error adding is_waitlist column:', err.message);
-                }
-            });
-            db.run('ALTER TABLE users ADD COLUMN waitlist_position INTEGER', (err) => {
-                if (err && !err.message.includes('duplicate column name')) {
-                    console.error('Error adding waitlist_position column:', err.message);
-                }
-            });
-        }
-    });
-
-    db.run(createAssessmentsTable, (err) => {
-        if (err) {
-            console.error('Error creating assessments table:', err.message);
-        } else {
-            console.log('Assessments table ready');
-        }
-    });
+    try {
+        await db.query(createUsersTable);
+        console.log('Users table ready');
+        
+        await db.query(createAssessmentsTable);
+        console.log('Assessments table ready');
+    } catch (err) {
+        console.error('Error creating tables:', err.message);
+    }
 }
 
 // API endpoint to save email (now saves to users table)
-app.post('/api/save-email', (req, res) => {
+app.post('/api/save-email', async (req, res) => {
     const { email } = req.body;
     
     if (!email) {
@@ -118,45 +100,42 @@ app.post('/api/save-email', (req, res) => {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    const query = 'INSERT OR IGNORE INTO users (email) VALUES (?)';
-    db.run(query, [email], function(err) {
-        if (err) {
-            console.error('Error saving email:', err.message);
-            return res.status(500).json({ error: 'Failed to save email' });
-        }
+    const query = 'INSERT INTO users (email) VALUES ($1) ON CONFLICT (email) DO NOTHING RETURNING user_id';
+    try {
+        const result = await db.query(query, [email]);
         
         res.json({ 
             success: true, 
             message: 'Email saved successfully',
-            isNew: this.changes > 0,
-            user_id: this.lastID || null
+            isNew: result.rows.length > 0,
+            user_id: result.rows[0]?.user_id || null
         });
-    });
+    } catch (err) {
+        console.error('Error saving email:', err.message);
+        return res.status(500).json({ error: 'Failed to save email' });
+    }
 });
 
 // API endpoint to save assessment results
-app.post('/api/save-assessment', (req, res) => {
+app.post('/api/save-assessment', async (req, res) => {
     const { email, personalInfo, score, answers } = req.body;
     
     if (!email || score === undefined || !answers) {
         return res.status(400).json({ error: 'Email, score, and answers are required' });
     }
 
-    // First, find or create user
-    const findUserQuery = 'SELECT user_id FROM users WHERE email = ?';
-    db.get(findUserQuery, [email], (err, row) => {
-        if (err) {
-            console.error('Error finding user:', err.message);
-            return res.status(500).json({ error: 'Failed to find user' });
-        }
+    try {
+        // First, find or create user
+        const findUserQuery = 'SELECT user_id FROM users WHERE email = $1';
+        const userResult = await db.query(findUserQuery, [email]);
         
-        let user_id = row?.user_id;
+        let user_id = userResult.rows[0]?.user_id;
         
         if (!user_id) {
             // User doesn't exist, create new user
             const createUserQuery = `INSERT INTO users 
                 (email, full_name, date_of_birth, phone, health_concerns, service_preferences) 
-                VALUES (?, ?, ?, ?, ?, ?)`;
+                VALUES ($1, $2, $3, $4, $5, $6) RETURNING user_id`;
             
             const userParams = [
                 email,
@@ -167,23 +146,17 @@ app.post('/api/save-assessment', (req, res) => {
                 personalInfo?.servicePreferences ? JSON.stringify(personalInfo.servicePreferences) : null
             ];
             
-            db.run(createUserQuery, userParams, function(err) {
-                if (err) {
-                    console.error('Error creating user:', err.message);
-                    return res.status(500).json({ error: 'Failed to create user' });
-                }
-                
-                saveAssessment(this.lastID);
-            });
+            const createResult = await db.query(createUserQuery, userParams);
+            user_id = createResult.rows[0].user_id;
         } else {
             // Update existing user with personal info
             const updateUserQuery = `UPDATE users SET 
-                full_name = COALESCE(?, full_name),
-                date_of_birth = COALESCE(?, date_of_birth),
-                phone = COALESCE(?, phone),
-                health_concerns = COALESCE(?, health_concerns),
-                service_preferences = COALESCE(?, service_preferences)
-                WHERE user_id = ?`;
+                full_name = COALESCE($1, full_name),
+                date_of_birth = COALESCE($2, date_of_birth),
+                phone = COALESCE($3, phone),
+                health_concerns = COALESCE($4, health_concerns),
+                service_preferences = COALESCE($5, service_preferences)
+                WHERE user_id = $6`;
             
             const updateParams = [
                 personalInfo?.name || null,
@@ -194,72 +167,61 @@ app.post('/api/save-assessment', (req, res) => {
                 user_id
             ];
             
-            db.run(updateUserQuery, updateParams, (err) => {
-                if (err) {
-                    console.error('Error updating user:', err.message);
-                    return res.status(500).json({ error: 'Failed to update user' });
-                }
-                
-                saveAssessment(user_id);
-            });
+            await db.query(updateUserQuery, updateParams);
         }
         
-        function saveAssessment(userId) {
-            const assessmentQuery = 'INSERT INTO assessments (user_id, email, assessment_questions, score, answers) VALUES (?, ?, ?, ?, ?)';
-            const assessmentParams = [userId, email, JSON.stringify(req.body.assessmentQuestions || []), score, JSON.stringify(answers)];
-            
-            db.run(assessmentQuery, assessmentParams, function(err) {
-                if (err) {
-                    console.error('Error saving assessment:', err.message);
-                    return res.status(500).json({ error: 'Failed to save assessment' });
-                }
-                
-                res.json({ 
-                    success: true, 
-                    message: 'Assessment saved successfully',
-                    assessment_id: this.lastID,
-                    user_id: userId
-                });
-            });
-        }
-    });
+        // Save assessment
+        const assessmentQuery = 'INSERT INTO assessments (user_id, email, assessment_questions, score, answers) VALUES ($1, $2, $3, $4, $5) RETURNING id';
+        const assessmentParams = [user_id, email, JSON.stringify(req.body.assessmentQuestions || []), score, JSON.stringify(answers)];
+        
+        const assessmentResult = await db.query(assessmentQuery, assessmentParams);
+        
+        res.json({ 
+            success: true, 
+            message: 'Assessment saved successfully',
+            assessment_id: assessmentResult.rows[0].id,
+            user_id: user_id
+        });
+    } catch (err) {
+        console.error('Error saving assessment:', err.message);
+        return res.status(500).json({ error: 'Failed to save assessment' });
+    }
 });
 
 // API endpoint to get all users (admin use)
-app.get('/api/users', requireAdmin, (req, res) => {
+app.get('/api/users', requireAdmin, async (req, res) => {
     const query = 'SELECT user_id, email, full_name, date_of_birth, phone, health_concerns, service_preferences, created_at FROM users ORDER BY created_at DESC';
-    db.all(query, [], (err, rows) => {
-        if (err) {
-            console.error('Error fetching users:', err.message);
-            return res.status(500).json({ error: 'Failed to fetch users' });
-        }
+    try {
+        const result = await db.query(query);
         
         // Parse JSON fields
-        const users = rows.map(row => ({
+        const users = result.rows.map(row => ({
             ...row,
             health_concerns: row.health_concerns ? JSON.parse(row.health_concerns) : [],
             service_preferences: row.service_preferences ? JSON.parse(row.service_preferences) : []
         }));
         
         res.json({ users });
-    });
+    } catch (err) {
+        console.error('Error fetching users:', err.message);
+        return res.status(500).json({ error: 'Failed to fetch users' });
+    }
 });
 
 // Keep backward compatibility for emails endpoint
-app.get('/api/emails', requireAdmin, (req, res) => {
+app.get('/api/emails', requireAdmin, async (req, res) => {
     const query = 'SELECT user_id, email, created_at FROM users ORDER BY created_at DESC';
-    db.all(query, [], (err, rows) => {
-        if (err) {
-            console.error('Error fetching emails:', err.message);
-            return res.status(500).json({ error: 'Failed to fetch emails' });
-        }
-        
-        res.json({ emails: rows });
-    });
+    try {
+        const result = await db.query(query);
+        res.json({ emails: result.rows });
+    } catch (err) {
+        console.error('Error fetching emails:', err.message);
+        return res.status(500).json({ error: 'Failed to fetch emails' });
+    }
 });
 
 // API endpoint to get all assessment data (admin use)
-app.get('/api/assessments', requireAdmin, (req, res) => {
+app.get('/api/assessments', requireAdmin, async (req, res) => {
     const query = `SELECT 
         a.id, a.user_id, a.score, a.answers, a.created_at,
         u.email, u.full_name, u.date_of_birth, u.phone, 
@@ -268,14 +230,11 @@ app.get('/api/assessments', requireAdmin, (req, res) => {
         JOIN users u ON a.user_id = u.user_id
         ORDER BY a.created_at DESC`;
     
-    db.all(query, [], (err, rows) => {
-        if (err) {
-            console.error('Error fetching assessments:', err.message);
-            return res.status(500).json({ error: 'Failed to fetch assessments' });
-        }
+    try {
+        const result = await db.query(query);
         
         // Parse JSON fields
-        const assessments = rows.map(row => ({
+        const assessments = result.rows.map(row => ({
             ...row,
             health_concerns: row.health_concerns ? JSON.parse(row.health_concerns) : [],
             service_preferences: row.service_preferences ? JSON.parse(row.service_preferences) : [],
@@ -283,50 +242,40 @@ app.get('/api/assessments', requireAdmin, (req, res) => {
         }));
         
         res.json({ assessments });
-    });
+    } catch (err) {
+        console.error('Error fetching assessments:', err.message);
+        return res.status(500).json({ error: 'Failed to fetch assessments' });
+    }
 });
 
 // API endpoint to get assessment statistics
-app.get('/api/stats', requireAdmin, (req, res) => {
+app.get('/api/stats', requireAdmin, async (req, res) => {
     const queries = {
         totalUsers: 'SELECT COUNT(*) as count FROM users',
         totalAssessments: 'SELECT COUNT(*) as count FROM assessments',
         averageScore: 'SELECT AVG(score) as average FROM assessments'
     };
     
-    Promise.all([
-        new Promise((resolve, reject) => {
-            db.get(queries.totalUsers, [], (err, row) => {
-                if (err) reject(err);
-                else resolve(row.count);
-            });
-        }),
-        new Promise((resolve, reject) => {
-            db.get(queries.totalAssessments, [], (err, row) => {
-                if (err) reject(err);
-                else resolve(row.count);
-            });
-        }),
-        new Promise((resolve, reject) => {
-            db.get(queries.averageScore, [], (err, row) => {
-                if (err) reject(err);
-                else resolve(Math.round(row.average || 0));
-            });
-        })
-    ]).then(([totalUsers, totalAssessments, averageScore]) => {
+    try {
+        const [usersResult, assessmentsResult, avgScoreResult] = await Promise.all([
+            db.query(queries.totalUsers),
+            db.query(queries.totalAssessments),
+            db.query(queries.averageScore)
+        ]);
+        
         res.json({
-            totalUsers,
-            totalAssessments,
-            averageScore
+            totalUsers: parseInt(usersResult.rows[0].count),
+            totalAssessments: parseInt(assessmentsResult.rows[0].count),
+            averageScore: Math.round(parseFloat(avgScoreResult.rows[0].average) || 0)
         });
-    }).catch(err => {
+    } catch (err) {
         console.error('Error fetching stats:', err.message);
         res.status(500).json({ error: 'Failed to fetch statistics' });
-    });
+    }
 });
 
 // API endpoint to join Menvy waitlist
-app.post('/api/join-waitlist', (req, res) => {
+app.post('/api/join-waitlist', async (req, res) => {
     const { email } = req.body;
     
     if (!email) {
@@ -339,13 +288,11 @@ app.post('/api/join-waitlist', (req, res) => {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    // Check if user is already on waitlist
-    const checkQuery = 'SELECT user_id, is_waitlist, waitlist_position FROM users WHERE email = ?';
-    db.get(checkQuery, [email], (err, row) => {
-        if (err) {
-            console.error('Error checking waitlist status:', err.message);
-            return res.status(500).json({ error: 'Failed to check waitlist status' });
-        }
+    try {
+        // Check if user is already on waitlist
+        const checkQuery = 'SELECT user_id, is_waitlist, waitlist_position FROM users WHERE email = $1';
+        const userResult = await db.query(checkQuery, [email]);
+        const row = userResult.rows[0];
 
         if (row && row.is_waitlist) {
             return res.json({
@@ -358,66 +305,46 @@ app.post('/api/join-waitlist', (req, res) => {
 
         // Get current waitlist count to determine next position
         const countQuery = 'SELECT COUNT(*) as count FROM users WHERE is_waitlist = TRUE';
-        db.get(countQuery, [], (err, countRow) => {
-            if (err) {
-                console.error('Error counting waitlist:', err.message);
-                return res.status(500).json({ error: 'Failed to get waitlist count' });
-            }
+        const countResult = await db.query(countQuery);
+        const nextPosition = 1007 + parseInt(countResult.rows[0].count);
 
-            const nextPosition = 1007 + countRow.count;
+        if (row) {
+            // Update existing user
+            const updateQuery = 'UPDATE users SET is_waitlist = TRUE, waitlist_position = $1 WHERE email = $2';
+            await db.query(updateQuery, [nextPosition, email]);
+        } else {
+            // Create new user on waitlist
+            const insertQuery = 'INSERT INTO users (email, is_waitlist, waitlist_position) VALUES ($1, TRUE, $2)';
+            await db.query(insertQuery, [email, nextPosition]);
+        }
 
-            if (row) {
-                // Update existing user
-                const updateQuery = 'UPDATE users SET is_waitlist = TRUE, waitlist_position = ? WHERE email = ?';
-                db.run(updateQuery, [nextPosition, email], function(err) {
-                    if (err) {
-                        console.error('Error updating user waitlist status:', err.message);
-                        return res.status(500).json({ error: 'Failed to join waitlist' });
-                    }
-
-                    res.json({
-                        success: true,
-                        message: 'Successfully joined Menvy waitlist!',
-                        position: nextPosition
-                    });
-                });
-            } else {
-                // Create new user on waitlist
-                const insertQuery = 'INSERT INTO users (email, is_waitlist, waitlist_position) VALUES (?, TRUE, ?)';
-                db.run(insertQuery, [email, nextPosition], function(err) {
-                    if (err) {
-                        console.error('Error adding user to waitlist:', err.message);
-                        return res.status(500).json({ error: 'Failed to join waitlist' });
-                    }
-
-                    res.json({
-                        success: true,
-                        message: 'Successfully joined Menvy waitlist!',
-                        position: nextPosition
-                    });
-                });
-            }
+        res.json({
+            success: true,
+            message: 'Successfully joined Menvy waitlist!',
+            position: nextPosition
         });
-    });
+    } catch (err) {
+        console.error('Error joining waitlist:', err.message);
+        return res.status(500).json({ error: 'Failed to join waitlist' });
+    }
 });
 
 // API endpoint to get waitlist stats
-app.get('/api/waitlist-stats', (req, res) => {
+app.get('/api/waitlist-stats', async (req, res) => {
     const query = 'SELECT COUNT(*) as count FROM users WHERE is_waitlist = TRUE';
     
-    db.get(query, [], (err, row) => {
-        if (err) {
-            console.error('Error getting waitlist stats:', err.message);
-            return res.status(500).json({ error: 'Failed to get waitlist stats' });
-        }
-
-        const actualCount = row?.count ?? 0;
+    try {
+        const result = await db.query(query);
+        const actualCount = parseInt(result.rows[0]?.count) || 0;
 
         res.json({
             totalWaitlist: DUMMY_START + actualCount,
             nextPosition: DUMMY_START + actualCount   // next user will get this position
         });
-    });
+    } catch (err) {
+        console.error('Error getting waitlist stats:', err.message);
+        return res.status(500).json({ error: 'Failed to get waitlist stats' });
+    }
 });
 
 // Simple admin login endpoint
@@ -453,14 +380,13 @@ app.listen(PORT, () => {
 });
 
 // Graceful shutdown
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
     console.log('\nShutting down server...');
-    db.close((err) => {
-        if (err) {
-            console.error('Error closing database:', err.message);
-        } else {
-            console.log('Database connection closed');
-        }
-        process.exit(0);
-    });
+    try {
+        await db.end();
+        console.log('Database connection closed');
+    } catch (err) {
+        console.error('Error closing database:', err.message);
+    }
+    process.exit(0);
 });
