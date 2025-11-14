@@ -145,7 +145,110 @@ This project has been migrated from SQLite to PostgreSQL. See `DATABASE_MIGRATIO
 
 ## 📝 License
 
+
+How to deploy in Google cloud?
+
+1. Install the required tools
+Install Google Cloud SDK
+https://cloud.google.com/sdk/docs/install
+
+Authenticate
+gcloud auth login
+gcloud config set project <YOUR_PROJECT_ID>
+
+2. Enable required Google Cloud APIs
+
+Run:
+
+gcloud services enable run.googleapis.com \
+  cloudbuild.googleapis.com \
+  artifactregistry.googleapis.com
+
+3. Create a Dockerfile (if not already created)
+
+Example:
+
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 8080
+CMD ["npm", "start"]
+
+4. Build and push the container to Google Artifact Registry
+Create a Docker repository (one-time)
+gcloud artifacts repositories create my-repo \
+  --repository-format=docker \
+  --location=us-central1
+
+Build and push the image
+gcloud builds submit --tag us-central1-docker.pkg.dev/<PROJECT_ID>/my-repo/health-fit
+
+5. Deploy the service to Cloud Run
+gcloud run deploy health-fit \
+  --image=us-central1-docker.pkg.dev/<PROJECT_ID>/my-repo/health-fit \
+  --region=us-central1 \
+  --platform=managed \
+  --allow-unauthenticated
+
+✅ 6. Add Environment Variables from Google Cloud Console (UI)
+
+This is the most important part since .env can't be uploaded directly.
+
+Step-by-step
+
+Go to Google Cloud Console
+https://console.cloud.google.com/run
+
+Click on your service: health-fit
+
+Click Edit & Deploy New Revision
+
+Scroll down to the section "Environment variables, secrets & connections"
+
+Under Environment variables → Container, click ADD VARIABLE
+
+For each key in your .env, add:
+
+SUPABASE_SECRET_KEY = <your-key>
+SUPABASE_URL        = <your-url>
+DB_PASSWORD         = <password>
+ANY_OTHER_KEY       = <value>
+
+
+Click Save
+
+Click Deploy
+
+⏳ Wait ~10–20 seconds.
+Your service will redeploy with the updated environment variables.
+
 This project is licensed under the MIT License - see the package.json file for details.
+
+
+
+🔍 How to Find Your Google Cloud Project ID
+
+You can get your Project ID in several ways:
+
+✅ 1. From the Google Cloud Console (UI)
+
+Go to: https://console.cloud.google.com
+
+Look at the top navigation bar → the project dropdown shows:
+
+Project Name
+
+Project ID
+
+Project Number
+
+Example:
+
+Project name: my-app
+Project ID: my-app-12345
+
 
 ## 🆘 Support
 
