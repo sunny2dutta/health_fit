@@ -157,24 +157,27 @@ class HealthAssessment {
 
         if (!email) return;
 
-        this.setLoading(submitBtn, true);
+        // Optimistic UI: Switch immediately
+        this.state.userEmail = email;
+        this.switchSection(this.elements.sections.email, this.elements.sections.question);
+        this.loadQuestion();
 
-        try {
-            this.state.userEmail = email;
-
-            const result = await this.postData("/api/save-email", { email });
-
-            if (result && result.user_id) {
-                this.state.userId = result.user_id;
-                this.switchSection(this.elements.sections.email, this.elements.sections.question);
-                this.loadQuestion();
-            }
-        } catch (error) {
-            console.error("Email submission failed:", error);
-            alert("Failed to save email. Please try again. Error: " + (error.message || error));
-        } finally {
-            this.setLoading(submitBtn, false);
-        }
+        // Save in background
+        this.emailSavePromise = this.postData("/api/save-email", { email })
+            .then(result => {
+                if (result && result.user_id) {
+                    this.state.userId = result.user_id;
+                    console.log("Email saved successfully, User ID:", result.user_id);
+                } else {
+                    throw new Error("No user ID returned");
+                }
+            })
+            .catch(error => {
+                console.error("Email submission failed:", error);
+                alert("Failed to save email. Please check your connection. Error: " + (error.message || error));
+                // Optionally navigate back to email section on critical failure
+                this.switchSection(this.elements.sections.question, this.elements.sections.email);
+            });
     }
 
     // --- Step 2: Questions ---
