@@ -1,6 +1,4 @@
 import dotenv from 'dotenv';
-dotenv.config({ path: './.env' });
-
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -8,37 +6,29 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 
-dotenv.config();
+// Load environment variables
+dotenv.config({ path: './.env' });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/* ============================================================================
-   SUPABASE CLIENT (SERVICE-ROLE KEY) — FULL DB ACCESS
-============================================================================ */
+// Supabase Client
 const SUPABASE_URL = "https://akkzhpkpegrjdlrxoutx.supabase.co";
-const SUPABASE_KEY = process.env.SUPABASE_SECRET_KEY; // MUST be service role
+const SUPABASE_KEY = process.env.SUPABASE_SECRET_KEY;
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* ============================================================================
-   MIDDLEWARE
-============================================================================ */
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('.'));
 
-/* ============================================================================
-   ERROR HELPER
-============================================================================ */
+// Helper Functions
 function sendError(res, message, err) {
   console.error(`❌ ${message}`, err.message || err);
   res.status(500).json({ error: message, details: err.message || err });
 }
 
-/* ============================================================================
-   ADMIN MIDDLEWARE
-============================================================================ */
 function requireAdmin(req, res, next) {
   const auth = req.headers.authorization;
   if (auth?.startsWith("Bearer ")) {
@@ -50,9 +40,9 @@ function requireAdmin(req, res, next) {
   res.status(403).json({ error: "Unauthorized" });
 }
 
-/* ============================================================================
-   1️⃣ SAVE EMAIL → returns stable user_id
-============================================================================ */
+// Routes
+
+// Save Email
 app.post('/api/save-email', async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "Email required" });
@@ -77,9 +67,7 @@ app.post('/api/save-email', async (req, res) => {
   }
 });
 
-/* ============================================================================
-   2️⃣ JOIN WAITLIST
-============================================================================ */
+// Join Waitlist
 app.post('/api/join-waitlist', async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "Email required" });
@@ -106,7 +94,6 @@ app.post('/api/join-waitlist', async (req, res) => {
     }
 
     await supabase.from("users").insert([{ email_id: email, is_waitlisted: true }]);
-
     res.json({ success: true, created: true });
 
   } catch (err) {
@@ -114,9 +101,7 @@ app.post('/api/join-waitlist', async (req, res) => {
   }
 });
 
-/* ============================================================================
-   3️⃣ PERSONAL INFO
-============================================================================ */
+// Save Personal Info
 app.post('/api/save-personal-info', async (req, res) => {
   const { user_id, full_name, date_of_birth, phone } = req.body;
 
@@ -125,14 +110,12 @@ app.post('/api/save-personal-info', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('personal_info')
-      .insert([
-        {
-          user_id,
-          full_name,
-          date_of_birth,
-          phone
-        }
-      ])
+      .insert([{
+        user_id,
+        full_name,
+        date_of_birth,
+        phone
+      }])
       .select()
       .single();
 
@@ -141,13 +124,11 @@ app.post('/api/save-personal-info', async (req, res) => {
     res.json({ success: true, message: 'Personal info saved', data });
 
   } catch (err) {
-    handleError(res, 'Failed to save personal info', err);
+    sendError(res, 'Failed to save personal info', err);
   }
 });
 
-/* ============================================================================
-   4️⃣ HEALTH CONCERNS
-============================================================================ */
+// Save Health Concerns
 app.post('/api/save-health-concerns', async (req, res) => {
   const { user_id, concerns } = req.body;
   if (!user_id) return res.status(400).json({ error: "user_id required" });
@@ -167,9 +148,7 @@ app.post('/api/save-health-concerns', async (req, res) => {
   }
 });
 
-/* ============================================================================
-   5️⃣ SERVICE PREFERENCES
-============================================================================ */
+// Save Service Preferences
 app.post('/api/save-service-preferences', async (req, res) => {
   const { user_id, preferences } = req.body;
   if (!user_id) return res.status(400).json({ error: "user_id required" });
@@ -190,9 +169,7 @@ app.post('/api/save-service-preferences', async (req, res) => {
   }
 });
 
-/* ============================================================================
-   6️⃣ ASSESSMENT
-============================================================================ */
+// Save Assessment
 app.post('/api/save-assessment', async (req, res) => {
   const { user_id, email, score, answers } = req.body;
 
@@ -221,9 +198,7 @@ app.post('/api/save-assessment', async (req, res) => {
   }
 });
 
-/* ============================================================================
-   ADMIN LOGIN
-============================================================================ */
+// Admin Login
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body;
 
@@ -238,24 +213,18 @@ app.post('/api/admin/login', (req, res) => {
   res.status(401).json({ error: "Invalid credentials" });
 });
 
-/* ============================================================================
-   STATIC PAGES
-============================================================================ */
+// Static Pages
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/admin', requireAdmin, (req, res) =>
   res.sendFile(path.join(__dirname, 'admin.html'))
 );
 
-/* ============================================================================
-   START SERVER
-============================================================================ */
+// Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
 
-/* ============================================================================
-   GRACEFUL SHUTDOWN
-============================================================================ */
+// Graceful Shutdown
 process.on("SIGINT", () => {
   console.log("🛑 Server shutting down...");
   process.exit(0);

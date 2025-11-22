@@ -1,3 +1,30 @@
+:root {
+    /* Colors */
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --accent-color: #f5576c;
+    --background-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    --text-color: #333;
+    --text-light: #555;
+    --text-muted: #666;
+    --white: #ffffff;
+    --border-color: #e1e5e9;
+    --bg-light: #f8f9ff;
+    
+    /* Typography */
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
+    /* Spacing */
+    --spacing-sm: 10px;
+    --spacing-md: 20px;
+    --spacing-lg: 30px;
+    --spacing-xl: 40px;
+    
+    /* Shadows */
+    --shadow-md: 0 20px 40px rgba(0, 0, 0, 0.1);
+    --shadow-sm: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -5,33 +32,37 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--font-family);
     line-height: 1.6;
-    color: #333;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--text-color);
+    background: var(--background-gradient);
     min-height: 100vh;
 }
 
 .container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
+    padding: var(--spacing-md);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
+/* Typography */
+h1, h2, h3, h4, h5 {
+    font-weight: 300;
+}
+
 header {
     text-align: center;
-    margin-bottom: 40px;
-    color: white;
+    margin-bottom: var(--spacing-xl);
+    color: var(--white);
 }
 
 header h1 {
     font-size: 2.5rem;
-    margin-bottom: 10px;
-    font-weight: 300;
+    margin-bottom: var(--spacing-sm);
 }
 
 header p {
@@ -39,13 +70,27 @@ header p {
     opacity: 0.9;
 }
 
+h2 {
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-md);
+    font-size: 2rem;
+    text-align: center;
+}
+
+h3 {
+    color: var(--text-light);
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+/* Sections */
 .section {
     display: none;
-    background: white;
+    background: var(--white);
     border-radius: 15px;
-    padding: 40px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-md);
 }
 
 .section.active {
@@ -54,91 +99,77 @@ header p {
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-h2 {
-    color: #667eea;
-    margin-bottom: 20px;
-    font-size: 2rem;
-    text-align: center;
+/* Forms & Inputs */
+.form-group {
+    margin-bottom: var(--spacing-md);
+    text-align: left;
 }
 
-h3 {
-    color: #555;
-    margin-bottom: 15px;
-    font-size: 1.3rem;
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: var(--text-light);
 }
 
-/* Email Section */
-#email-section form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    max-width: 400px;
-    margin: 0 auto;
-}
-
-#email-section input {
+input[type="text"],
+input[type="email"],
+input[type="date"],
+input[type="tel"] {
+    width: 100%;
     padding: 15px;
-    border: 2px solid #e1e5e9;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
 }
 
-#email-section input:focus {
+input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--primary-color);
+}
+
+button {
+    background: var(--background-gradient);
+    color: var(--white);
+    border: none;
+    padding: 15px 40px;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Specific Section Styles */
+
+/* Email Section */
+#email-section form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-width: 400px;
+    margin: 0 auto;
 }
 
 #email-section button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 15px;
+    width: 100%;
     border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-#email-section button:hover {
-    transform: translateY(-2px);
-}
-
-/* Progress Bar */
-.progress-bar {
-    position: relative;
-    background: #e1e5e9;
-    height: 8px;
-    border-radius: 4px;
-    margin-bottom: 30px;
-    overflow: hidden;
-}
-
-.progress-fill {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s ease;
-    width: 10%;
-}
-
-.progress-text {
-    position: absolute;
-    top: 15px;
-    right: 0;
-    font-size: 0.9rem;
-    color: #666;
-    font-weight: 500;
 }
 
 /* Question Section */
@@ -148,67 +179,103 @@ h3 {
 
 #question-text {
     font-size: 1.4rem;
-    margin-bottom: 30px;
-    color: #333;
-    line-height: 1.4;
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-color);
 }
 
 .options {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    margin-bottom: 30px;
+    margin-bottom: var(--spacing-lg);
 }
 
 .option-btn {
-    background: white;
-    border: 2px solid #e1e5e9;
-    padding: 20px;
+    background: var(--white);
+    border: 2px solid var(--border-color);
+    padding: var(--spacing-md);
     border-radius: 10px;
     font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
     text-align: left;
+    color: var(--text-color);
 }
 
 .option-btn:hover {
-    border-color: #667eea;
-    background: #f8f9ff;
+    border-color: var(--primary-color);
+    background: var(--bg-light);
 }
 
 .option-btn.selected {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
-    color: white;
+    background: var(--background-gradient);
+    border-color: var(--primary-color);
+    color: var(--white);
 }
 
 .next-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 15px 40px;
-    border-radius: 25px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
     margin: 0 auto;
     display: block;
 }
 
-.next-button:disabled {
-    background: #ccc;
-    cursor: not-allowed;
+/* Checkbox Groups */
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: var(--spacing-lg);
 }
 
-.next-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    padding: 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.checkbox-item:hover {
+    border-color: var(--primary-color);
+    background: var(--bg-light);
+}
+
+.checkbox-item input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    margin-right: 15px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.checkbox-item input[type="checkbox"]:checked + .checkmark {
+    background: var(--background-gradient);
+    border-color: var(--primary-color);
+}
+
+.checkbox-item input[type="checkbox"]:checked + .checkmark::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--white);
+    font-weight: bold;
+    font-size: 12px;
 }
 
 /* Results Section */
 #score-display {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: var(--spacing-lg);
 }
 
 .score-circle {
@@ -218,12 +285,11 @@ h3 {
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: var(--background-gradient);
+    color: var(--white);
     font-size: 2rem;
     font-weight: bold;
-    margin-bottom: 20px;
-    position: relative;
+    margin-bottom: var(--spacing-md);
 }
 
 #score-number {
@@ -232,7 +298,7 @@ h3 {
 }
 
 #score-category {
-    color: #667eea;
+    color: var(--primary-color);
     font-size: 1.8rem;
     margin-bottom: 15px;
     text-align: center;
@@ -241,20 +307,19 @@ h3 {
 #score-description {
     font-size: 1.1rem;
     text-align: center;
-    margin-bottom: 30px;
-    color: #555;
-    line-height: 1.6;
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-light);
 }
 
 #recommendations {
-    background: #f8f9ff;
+    background: var(--bg-light);
     padding: 25px;
     border-radius: 10px;
-    margin-bottom: 30px;
+    margin-bottom: var(--spacing-lg);
 }
 
 #recommendations h4 {
-    color: #667eea;
+    color: var(--primary-color);
     margin-bottom: 15px;
     font-size: 1.3rem;
 }
@@ -266,7 +331,7 @@ h3 {
 
 #recommendation-list li {
     padding: 10px 0;
-    border-bottom: 1px solid #e1e5e9;
+    border-bottom: 1px solid var(--border-color);
     position: relative;
     padding-left: 25px;
 }
@@ -279,162 +344,52 @@ h3 {
     content: "✓";
     position: absolute;
     left: 0;
-    color: #667eea;
+    color: var(--primary-color);
     font-weight: bold;
-}
-
-.confidence-message {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-    padding: 25px;
-    border-radius: 10px;
-    margin-bottom: 30px;
-    text-align: center;
-}
-
-.confidence-message h4 {
-    color: #667eea;
-    margin-bottom: 15px;
-    font-size: 1.3rem;
-}
-
-.confidence-message p {
-    color: #555;
-    line-height: 1.6;
 }
 
 #restart-btn {
     background: transparent;
-    color: #667eea;
-    border: 2px solid #667eea;
-    padding: 12px 30px;
-    border-radius: 25px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
     display: block;
     margin: 0 auto;
 }
 
 #restart-btn:hover {
-    background: #667eea;
-    color: white;
-    transform: translateY(-2px);
+    background: var(--primary-color);
+    color: var(--white);
 }
 
-/* Personal Info, Health Concerns, and Service Preferences Forms */
-.form-group {
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: #555;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 15px;
-    border: 2px solid #e1e5e9;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
-.checkbox-group {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 30px;
-}
-
-.checkbox-item {
-    display: flex;
-    align-items: center;
-    position: relative;
-    cursor: pointer;
-    padding: 15px;
-    border: 2px solid #e1e5e9;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.checkbox-item:hover {
-    border-color: #667eea;
-    background: #f8f9ff;
-}
-
-.checkbox-item input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.checkmark {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #e1e5e9;
-    border-radius: 4px;
-    margin-right: 15px;
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-.checkbox-item input[type="checkbox"]:checked + .checkmark {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
-}
-
-.checkbox-item input[type="checkbox"]:checked + .checkmark::after {
-    content: "✓";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-weight: bold;
-    font-size: 12px;
-}
-
-#personal-info-form button,
-#health-concerns-form button,
-#service-preferences-form button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 15px 40px;
-    border-radius: 25px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: block;
-    margin: 20px auto 0;
-}
-
-#personal-info-form button:hover,
-#health-concerns-form button:hover,
-#service-preferences-form button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-}
-
-.details-message {
+/* Waitlist Styles */
+.menvy-waitlist {
+    background: linear-gradient(135deg, #f093fb 0%, var(--accent-color) 100%);
+    border-radius: 15px;
+    padding: var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
     text-align: center;
-    margin-bottom: 20px;
+    color: var(--white);
+    box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);
 }
 
-.details-message h2 {
-    color: #667eea;
-    font-size: 1.8rem;
-    font-weight: 400;
-    margin-bottom: 10px;
+.menvy-waitlist h4 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.waitlist-btn {
+    background: var(--white);
+    color: var(--accent-color);
+    font-weight: 600;
+    margin: 10px 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.waitlist-btn:hover {
+    background: #f8f9fa;
+    color: var(--accent-color);
+    transform: translateY(-2px);
 }
 
 /* Responsive Design */
@@ -455,14 +410,6 @@ h3 {
         font-size: 1.5rem;
     }
     
-    #question-text {
-        font-size: 1.2rem;
-    }
-    
-    .option-btn {
-        padding: 15px;
-    }
-    
     .score-circle {
         width: 120px;
         height: 120px;
@@ -481,94 +428,4 @@ h3 {
     .section {
         padding: 20px 15px;
     }
-    
-    #question-text {
-        font-size: 1.1rem;
-    }
-}
-
-/* Waitlist Styles */
-.menvy-waitlist {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    border-radius: 15px;
-    padding: 30px;
-    margin: 30px 0;
-    text-align: center;
-    color: white;
-    box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);
-}
-
-.menvy-waitlist h4 {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-.menvy-waitlist p {
-    font-size: 1rem;
-    margin-bottom: 20px;
-    opacity: 0.95;
-}
-
-.waitlist-btn {
-    background: white;
-    color: #f5576c;
-    border: none;
-    padding: 15px 35px;
-    border-radius: 25px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin: 10px 0;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.waitlist-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    background: #f8f9fa;
-}
-
-.waitlist-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.waitlist-info {
-    font-size: 0.9rem;
-    margin-top: 10px;
-    opacity: 0.8;
-}
-
-.waitlist-success {
-    animation: fadeIn 0.5s ease-in;
-}
-
-.success-icon {
-    font-size: 3rem;
-    margin-bottom: 15px;
-}
-
-.waitlist-success h5 {
-    font-size: 1.3rem;
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-.waitlist-stats {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    padding: 15px;
-    margin-top: 15px;
-}
-
-.waitlist-stats p {
-    margin: 5px 0;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
 }
