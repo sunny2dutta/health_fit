@@ -106,6 +106,11 @@ class HealthAssessment {
         this.elements.forms.personalInfo.addEventListener("submit", (e) => this.handlePersonalInfoSubmit(e));
         this.elements.forms.healthConcerns.addEventListener("submit", (e) => this.handleHealthConcernsSubmit(e));
         this.elements.forms.servicePreferences.addEventListener("submit", (e) => this.handleServicePreferencesSubmit(e));
+
+        const waitlistBtn = document.getElementById("join-waitlist-btn-results");
+        if (waitlistBtn) {
+            waitlistBtn.addEventListener("click", () => this.handleWaitlistSubmit());
+        }
         this.elements.nextBtn.addEventListener("click", () => this.handleNextQuestion());
         this.elements.restartBtn.addEventListener("click", () => this.restartAssessment());
     }
@@ -351,7 +356,40 @@ class HealthAssessment {
             const li = document.createElement("li");
             li.textContent = rec;
             this.elements.results.recommendationList.appendChild(li);
+            this.elements.results.recommendationList.appendChild(li);
         });
+
+        // Fetch and animate waitlist count
+        this.updateWaitlistCount();
+    }
+
+    async updateWaitlistCount() {
+        const countElement = document.getElementById("current-waitlist-count-results");
+        if (!countElement) return;
+
+        try {
+            const response = await fetch("/api/waitlist-count");
+            const data = await response.json();
+            const targetCount = data.count || 1243;
+
+            // Animate count
+            let start = 0;
+            const duration = 2000;
+            const step = timestamp => {
+                if (!start) start = timestamp;
+                const progress = Math.min((timestamp - start) / duration, 1);
+                const current = Math.floor(progress * targetCount);
+                countElement.textContent = current.toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+
+        } catch (error) {
+            console.error("Failed to update waitlist count:", error);
+            countElement.textContent = "1,243";
+        }
     }
 
     getHealthProfile(score) {

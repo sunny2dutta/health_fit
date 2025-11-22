@@ -101,6 +101,26 @@ app.post('/api/join-waitlist', async (req, res) => {
   }
 });
 
+// Get Waitlist Count
+app.get('/api/waitlist-count', async (req, res) => {
+  try {
+    const { count, error } = await supabase
+      .from("users")
+      .select("*", { count: "exact", head: true })
+      .eq("is_waitlisted", true);
+
+    if (error) throw error;
+
+    // Add a base number to make it look popular initially (e.g., 1200 + real count)
+    const totalCount = 1243 + (count || 0);
+
+    res.json({ count: totalCount });
+  } catch (err) {
+    console.error("Failed to get waitlist count:", err);
+    res.json({ count: 1243 }); // Fallback
+  }
+});
+
 // Save Personal Info
 app.post('/api/save-personal-info', async (req, res) => {
   const { user_id, full_name, date_of_birth, phone } = req.body;
