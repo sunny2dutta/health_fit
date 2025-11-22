@@ -10,16 +10,16 @@
     --white: #ffffff;
     --border-color: #e1e5e9;
     --bg-light: #f8f9ff;
-    
+
     /* Typography */
     --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    
+
     /* Spacing */
     --spacing-sm: 10px;
     --spacing-md: 20px;
     --spacing-lg: 30px;
     --spacing-xl: 40px;
-    
+
     /* Shadows */
     --shadow-md: 0 20px 40px rgba(0, 0, 0, 0.1);
     --shadow-sm: 0 5px 15px rgba(102, 126, 234, 0.4);
@@ -50,7 +50,11 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
     font-weight: 300;
 }
 
@@ -99,8 +103,15 @@ h3 {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Forms & Inputs */
@@ -256,12 +267,12 @@ button:disabled {
     transition: all 0.3s ease;
 }
 
-.checkbox-item input[type="checkbox"]:checked + .checkmark {
+.checkbox-item input[type="checkbox"]:checked+.checkmark {
     background: var(--background-gradient);
     border-color: var(--primary-color);
 }
 
-.checkbox-item input[type="checkbox"]:checked + .checkmark::after {
+.checkbox-item input[type="checkbox"]:checked+.checkmark::after {
     content: "✓";
     position: absolute;
     top: 50%;
@@ -397,24 +408,24 @@ button:disabled {
     .container {
         padding: 10px;
     }
-    
+
     .section {
         padding: 30px 20px;
     }
-    
+
     header h1 {
         font-size: 2rem;
     }
-    
+
     h2 {
         font-size: 1.5rem;
     }
-    
+
     .score-circle {
         width: 120px;
         height: 120px;
     }
-    
+
     #score-number {
         font-size: 2.5rem;
     }
@@ -424,8 +435,77 @@ button:disabled {
     header h1 {
         font-size: 1.8rem;
     }
-    
+
     .section {
         padding: 20px 15px;
+    }
+}
+
+/* Menvy Branding */
+.menvy-brand {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.menvy-logo {
+    font-size: 3.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    letter-spacing: -1px;
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.menvy-logo::after {
+    content: '';
+    position: absolute;
+    bottom: 10px;
+    right: -10px;
+    width: 8px;
+    height: 8px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.menvy-tagline {
+    font-size: 1rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
     }
 }
