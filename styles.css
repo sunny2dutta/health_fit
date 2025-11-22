@@ -195,31 +195,41 @@ button:disabled {
 }
 
 .options {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
     margin-bottom: var(--spacing-lg);
 }
 
 .option-btn {
     background: var(--white);
     border: 2px solid var(--border-color);
-    padding: var(--spacing-md);
-    border-radius: 10px;
-    font-size: 1rem;
-    text-align: left;
+    padding: 20px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    text-align: center;
     color: var(--text-color);
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .option-btn:hover {
     border-color: var(--primary-color);
-    background: var(--bg-light);
+    background: var(--white);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
 }
 
 .option-btn.selected {
     background: var(--background-gradient);
-    border-color: var(--primary-color);
+    border-color: transparent;
     color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
 .next-button {
