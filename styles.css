@@ -445,21 +445,21 @@ button:disabled {
 .menvy-brand {
     text-align: center;
     margin-bottom: var(--spacing-lg);
-    /* animation: fadeInUp 0.8s ease-out; */
+    animation: fadeInUp 0.8s ease-out;
 }
 
 .menvy-logo {
     font-size: 3.5rem;
     font-weight: 700;
-    color: var(--primary-color);
-    /* Fallback solid color */
-    /* background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); */
-    /* -webkit-background-clip: text; */
-    /* -webkit-text-fill-color: transparent; */
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--primary-color) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     display: inline-block;
     letter-spacing: -1px;
     margin-bottom: 5px;
     position: relative;
+    animation: shine 5s linear infinite;
 }
 
 .menvy-logo::after {

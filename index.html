@@ -78,216 +78,216 @@
 
 <body>
     <div class="container">
-        <header>
-            <h1>Men's Reproductive Health Assessment</h1>
-            <p>Take control of your health and build confidence through knowledge</p>
-        </header>
-
-        <!-- Email Collection Section -->
-        <section id="email-section" class="section active" aria-labelledby="email-heading">
-            <div class="menvy-brand">
-                <span class="menvy-logo">Menvy</span>
-                <p class="menvy-tagline">Your AI Wellness Companion</p>
-            </div>
-            <h2 id="email-heading">Get Started</h2>
-            <p>Enter your email to receive your personalized health assessment results</p>
-            <form id="email-form">
-                <label for="email" class="sr-only" style="position:absolute; left:-9999px;">Email Address</label>
-                <input type="email" id="email" placeholder="Enter your email address"
-                    pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
-                    title="Please enter a valid email address (e.g., name@domain.com)" required
-                    aria-label="Email Address">
-                <button type="submit">Continue</button>
-            </form>
-        </section>
-
-        <!-- Personal Information Section -->
-        <section id="personal-info-section" class="section" aria-labelledby="personal-info-heading">
-            <h2 id="personal-info-heading">Personal Information</h2>
-            <p>Please provide some basic information about yourself</p>
-            <form id="personal-info-form">
-                <div class="form-group">
-                    <label for="full-name">What do we call you?</label>
-                    <input type="text" id="full-name" placeholder="Enter your full name" required>
+        <div class="container">
+            <!-- Email Collection Section -->
+            <section id="email-section" class="section active" aria-labelledby="email-heading">
+                <div class="menvy-brand">
+                    <span class="menvy-logo">Menvy</span>
+                    <p class="menvy-tagline">Understand and improve your reproductive health</p>
                 </div>
-                <div class="form-group">
-                    <label for="dob">When were you born?</label>
-                    <input type="date" id="dob" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">How do reach you?</label>
-                    <input type="tel" id="phone" placeholder="Enter your phone number" required>
-                </div>
-                <button type="submit">Continue</button>
-            </form>
-        </section>
+                <p class="instruction-text">Enter your email to receive your personalized health assessment results</p>
+                <form id="email-form">
+                    <label for="email" class="sr-only" style="position:absolute; left:-9999px;">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email address"
+                        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                        title="Please enter a valid email address (e.g., name@domain.com)" required
+                        aria-label="Email Address">
+                    <button type="submit">Continue</button>
+                </form>
+            </section>
 
-        <!-- Health Concerns Section -->
-        <section id="health-concerns-section" class="section" aria-labelledby="concerns-heading">
-            <h2 id="concerns-heading">Health Concerns</h2>
-            <p>What brings you here? (Select all that apply)</p>
-            <form id="health-concerns-form">
-                <div class="checkbox-group" role="group" aria-label="Health Concerns Options">
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="health-concerns" value="sexual-health-ed">
-                        <span class="checkmark"></span>
-                        Sexual health/ED
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="health-concerns" value="fertility">
-                        <span class="checkmark"></span>
-                        Fertility
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="health-concerns" value="hair-loss">
-                        <span class="checkmark"></span>
-                        Hair loss
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="health-concerns" value="weight-fitness">
-                        <span class="checkmark"></span>
-                        Weight/fitness
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="health-concerns" value="hormone-issues">
-                        <span class="checkmark"></span>
-                        Hormone issues
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="health-concerns" value="mental-health">
-                        <span class="checkmark"></span>
-                        Mental health
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="health-concerns" value="heart-health">
-                        <span class="checkmark"></span>
-                        Heart Health
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="health-concerns" value="general-wellness">
-                        <span class="checkmark"></span>
-                        General wellness
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="health-concerns" value="prefer-not-say">
-                        <span class="checkmark"></span>
-                        Prefer not to say
-                    </label>
-                </div>
-                <button type="submit">Continue</button>
-            </form>
-        </section>
+            <!-- Personal Information Section -->
+            <section id="personal-info-section" class="section" aria-labelledby="personal-info-heading">
+                <h2 id="personal-info-heading">Personal Information</h2>
+                <p>Please provide some basic information about yourself</p>
+                <form id="personal-info-form">
+                    <div class="form-group">
+                        <label for="full-name">What do we call you?</label>
+                        <input type="text" id="full-name" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dob">When were you born?</label>
+                        <input type="date" id="dob" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">How do reach you?</label>
+                        <input type="tel" id="phone" placeholder="Enter your phone number" required>
+                    </div>
+                    <button type="submit">Continue</button>
+                </form>
+            </section>
 
-        <!-- Service Preferences Section -->
-        <section id="service-preferences-section" class="section" aria-labelledby="preferences-heading">
-            <h2 id="preferences-heading">Service Preferences</h2>
-            <p>What would make you choose an online men's health service? (Select all that apply)</p>
-            <form id="service-preferences-form">
-                <div class="checkbox-group" role="group" aria-label="Service Preferences Options">
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="service-preferences" value="privacy-discretion">
-                        <span class="checkmark"></span>
-                        Privacy/discretion
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="service-preferences" value="convenience">
-                        <span class="checkmark"></span>
-                        Convenience
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="service-preferences" value="cost">
-                        <span class="checkmark"></span>
-                        Cost
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="service-preferences" value="expert-doctors">
-                        <span class="checkmark"></span>
-                        Expert doctors
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="service-preferences" value="quick-appointments">
-                        <span class="checkmark"></span>
-                        Quick appointments
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="service-preferences" value="home-delivery">
-                        <span class="checkmark"></span>
-                        Home delivery of medications
-                    </label>
-                </div>
-                <button type="submit">Start Assessment</button>
-            </form>
-        </section>
+            <!-- Health Concerns Section -->
+            <section id="health-concerns-section" class="section" aria-labelledby="concerns-heading">
+                <h2 id="concerns-heading">Health Concerns</h2>
+                <p>What brings you here? (Select all that apply)</p>
+                <form id="health-concerns-form">
+                    <div class="checkbox-group" role="group" aria-label="Health Concerns Options">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="health-concerns" value="sexual-health-ed">
+                            <span class="checkmark"></span>
+                            Sexual health/ED
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="health-concerns" value="fertility">
+                            <span class="checkmark"></span>
+                            Fertility
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="health-concerns" value="hair-loss">
+                            <span class="checkmark"></span>
+                            Hair loss
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="health-concerns" value="weight-fitness">
+                            <span class="checkmark"></span>
+                            Weight/fitness
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="health-concerns" value="hormone-issues">
+                            <span class="checkmark"></span>
+                            Hormone issues
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="health-concerns" value="mental-health">
+                            <span class="checkmark"></span>
+                            Mental health
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="health-concerns" value="heart-health">
+                            <span class="checkmark"></span>
+                            Heart Health
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="health-concerns" value="general-wellness">
+                            <span class="checkmark"></span>
+                            General wellness
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="health-concerns" value="prefer-not-say">
+                            <span class="checkmark"></span>
+                            Prefer not to say
+                        </label>
+                    </div>
+                    <button type="submit">Continue</button>
+                </form>
+            </section>
 
-        <!-- Question Section -->
-        <section id="question-section" class="section" aria-labelledby="question-heading">
-            <h2 id="question-heading" class="sr-only" style="position:absolute; left:-9999px;">Assessment Questions</h2>
-            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-fill" id="progress-fill"></div>
-                <span class="progress-text" id="progress-text">Question 1 of 5</span>
-            </div>
+            <!-- Service Preferences Section -->
+            <section id="service-preferences-section" class="section" aria-labelledby="preferences-heading">
+                <h2 id="preferences-heading">Service Preferences</h2>
+                <p>What would make you choose an online men's health service? (Select all that apply)</p>
+                <form id="service-preferences-form">
+                    <div class="checkbox-group" role="group" aria-label="Service Preferences Options">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="service-preferences" value="privacy-discretion">
+                            <span class="checkmark"></span>
+                            Privacy/discretion
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="service-preferences" value="convenience">
+                            <span class="checkmark"></span>
+                            Convenience
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="service-preferences" value="cost">
+                            <span class="checkmark"></span>
+                            Cost
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="service-preferences" value="expert-doctors">
+                            <span class="checkmark"></span>
+                            Expert doctors
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="service-preferences" value="quick-appointments">
+                            <span class="checkmark"></span>
+                            Quick appointments
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="service-preferences" value="home-delivery">
+                            <span class="checkmark"></span>
+                            Home delivery of medications
+                        </label>
+                    </div>
+                    <button type="submit">Start Assessment</button>
+                </form>
+            </section>
 
-            <div class="question-container">
-                <h3 id="question-text"></h3>
-                <div class="options" id="options-container"></div>
-                <button id="next-btn" class="next-button" disabled>Next</button>
-            </div>
-        </section>
-
-        <!-- Results Section -->
-        <section id="results-section" class="section" aria-labelledby="results-heading">
-            <div class="details-message">
-                <h2 id="results-heading">Now a bit more details</h2>
-            </div>
-
-            <!-- Menvy Waitlist Section -->
-            <section class="menvy-waitlist-results" aria-labelledby="waitlist-heading">
-                <h3 id="waitlist-heading">🚀 Join the Future of Men's Wellness</h3>
-                <p>Get early access to <strong>Menvy</strong> - the AI-powered men's wellness companion that provides
-                    personalized health guidance, tracks your progress, and helps you achieve your wellness goals.</p>
-
-                <div id="waitlist-counter-results" class="waitlist-counter">
-                    <p><strong id="current-waitlist-count-results">1000</strong> people have joined the Menvy waitlist
-                    </p>
+            <!-- Question Section -->
+            <section id="question-section" class="section" aria-labelledby="question-heading">
+                <h2 id="question-heading" class="sr-only" style="position:absolute; left:-9999px;">Assessment Questions
+                </h2>
+                <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-fill" id="progress-fill"></div>
+                    <span class="progress-text" id="progress-text">Question 1 of 5</span>
                 </div>
 
-                <div id="waitlist-form-results" class="waitlist-form">
-                    <button id="join-waitlist-btn-results" class="waitlist-btn">Join Menvy Waitlist</button>
-                    <p class="waitlist-info">Be among the first to experience personalized AI wellness coaching</p>
-                </div>
-
-                <div id="waitlist-success-results" class="waitlist-success" style="display: none;">
-                    <div class="success-icon">✅</div>
-                    <h5>Welcome to the Menvy Waitlist!</h5>
-                    <p id="waitlist-position-text-results"></p>
-                    <div id="waitlist-stats-results" class="waitlist-stats"></div>
+                <div class="question-container">
+                    <h3 id="question-text"></h3>
+                    <div class="options" id="options-container"></div>
+                    <button id="next-btn" class="next-button" disabled>Next</button>
                 </div>
             </section>
 
-            <h2>Your Health Assessment Results</h2>
-            <div id="score-display">
-                <div class="score-circle">
-                    <span id="score-number">0</span>
-                    <span>/100</span>
-                </div>
-            </div>
-            <div id="results-content">
-                <h3 id="score-category"></h3>
-                <p id="score-description"></p>
-                <div id="recommendations">
-                    <h4>Personalized Recommendations</h4>
-                    <ul id="recommendation-list"></ul>
-                </div>
-                <div class="confidence-message">
-                    <h4>Building Your Confidence</h4>
-                    <p>Knowledge is power. By taking this assessment, you've already taken the first step toward better
-                        health. Remember, small consistent changes lead to significant improvements over time.</p>
+            <!-- Results Section -->
+            <section id="results-section" class="section" aria-labelledby="results-heading">
+                <div class="details-message">
+                    <h2 id="results-heading">Now a bit more details</h2>
                 </div>
 
-                <button id="restart-btn">Take Assessment Again</button>
-            </div>
-        </section>
-    </div>
+                <!-- Menvy Waitlist Section -->
+                <section class="menvy-waitlist-results" aria-labelledby="waitlist-heading">
+                    <h3 id="waitlist-heading">🚀 Join the Future of Men's Wellness</h3>
+                    <p>Get early access to <strong>Menvy</strong> - the AI-powered men's wellness companion that
+                        provides
+                        personalized health guidance, tracks your progress, and helps you achieve your wellness goals.
+                    </p>
+
+                    <div id="waitlist-counter-results" class="waitlist-counter">
+                        <p><strong id="current-waitlist-count-results">1000</strong> people have joined the Menvy
+                            waitlist
+                        </p>
+                    </div>
+
+                    <div id="waitlist-form-results" class="waitlist-form">
+                        <button id="join-waitlist-btn-results" class="waitlist-btn">Join Menvy Waitlist</button>
+                        <p class="waitlist-info">Be among the first to experience personalized AI wellness coaching</p>
+                    </div>
+
+                    <div id="waitlist-success-results" class="waitlist-success" style="display: none;">
+                        <div class="success-icon">✅</div>
+                        <h5>Welcome to the Menvy Waitlist!</h5>
+                        <p id="waitlist-position-text-results"></p>
+                        <div id="waitlist-stats-results" class="waitlist-stats"></div>
+                    </div>
+                </section>
+
+                <h2>Your Health Assessment Results</h2>
+                <div id="score-display">
+                    <div class="score-circle">
+                        <span id="score-number">0</span>
+                        <span>/100</span>
+                    </div>
+                </div>
+                <div id="results-content">
+                    <h3 id="score-category"></h3>
+                    <p id="score-description"></p>
+                    <div id="recommendations">
+                        <h4>Personalized Recommendations</h4>
+                        <ul id="recommendation-list"></ul>
+                    </div>
+                    <div class="confidence-message">
+                        <h4>Building Your Confidence</h4>
+                        <p>Knowledge is power. By taking this assessment, you've already taken the first step toward
+                            better
+                            health. Remember, small consistent changes lead to significant improvements over time.</p>
+                    </div>
+
+                    <button id="restart-btn">Take Assessment Again</button>
+                </div>
+            </section>
+        </div>
 </body>
 
 </html>
