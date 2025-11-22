@@ -134,6 +134,12 @@ class HealthAssessment {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server Error ${response.status}: ${errorText}`);
+            }
+
             return await response.json();
         } catch (error) {
             console.error(`Error posting to ${url}:`, error);
@@ -165,7 +171,7 @@ class HealthAssessment {
             }
         } catch (error) {
             console.error("Email submission failed:", error);
-            // Ideally show an error message to the user here
+            alert("Failed to save email. Please try again. Error: " + (error.message || error));
         } finally {
             this.setLoading(submitBtn, false);
         }
