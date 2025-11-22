@@ -116,6 +116,17 @@ class HealthAssessment {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    setLoading(button, isLoading, loadingText = "Processing...") {
+        if (isLoading) {
+            button.dataset.originalText = button.textContent;
+            button.textContent = loadingText;
+            button.disabled = true;
+        } else {
+            button.textContent = button.dataset.originalText || "Continue";
+            button.disabled = false;
+        }
+    }
+
     async postData(url, data) {
         try {
             const response = await fetch(url, {
@@ -136,17 +147,27 @@ class HealthAssessment {
         e.preventDefault();
         const emailInput = document.getElementById("email");
         const email = emailInput.value.trim();
+        const submitBtn = this.elements.forms.email.querySelector("button");
 
         if (!email) return;
 
-        this.state.userEmail = email;
+        this.setLoading(submitBtn, true);
 
-        const result = await this.postData("/api/save-email", { email });
+        try {
+            this.state.userEmail = email;
 
-        if (result && result.user_id) {
-            this.state.userId = result.user_id;
-            this.switchSection(this.elements.sections.email, this.elements.sections.question);
-            this.loadQuestion();
+            const result = await this.postData("/api/save-email", { email });
+
+            if (result && result.user_id) {
+                this.state.userId = result.user_id;
+                this.switchSection(this.elements.sections.email, this.elements.sections.question);
+                this.loadQuestion();
+            }
+        } catch (error) {
+            console.error("Email submission failed:", error);
+            // Ideally show an error message to the user here
+        } finally {
+            this.setLoading(submitBtn, false);
         }
     }
 
@@ -156,6 +177,14 @@ class HealthAssessment {
         const questionData = QUESTIONS[this.state.currentQuestionIndex];
         this.elements.questionText.textContent = questionData.question;
         this.elements.optionsContainer.innerHTML = "";
+
+        // Update progress bar
+        const progressFill = document.getElementById("progress-fill");
+        const progressText = document.getElementById("progress-text");
+        const progress = ((this.state.currentQuestionIndex + 1) / QUESTIONS.length) * 100;
+
+        if (progressFill) progressFill.style.width = `${progress}%`;
+        if (progressText) progressText.textContent = `Question ${this.state.currentQuestionIndex + 1} of ${QUESTIONS.length}`;
 
         questionData.options.forEach(opt => {
             const btn = document.createElement("button");
@@ -205,54 +234,83 @@ class HealthAssessment {
         const name = document.getElementById("full-name").value.trim();
         const dateOfBirth = document.getElementById("dob").value;
         const phone = document.getElementById("phone").value.trim();
+        const submitBtn = this.elements.forms.personalInfo.querySelector("button");
 
-        this.state.userData = { ...this.state.userData, name, dateOfBirth, phone };
+        this.setLoading(submitBtn, true);
 
-        await this.postData("/api/save-personal-info", {
-            user_id: this.state.userId,
-            full_name: name,
-            date_of_birth: dateOfBirth,
-            phone
-        });
+        try {
+            this.state.userData = { ...this.state.userData, name, dateOfBirth, phone };
 
-        this.switchSection(this.elements.sections.personalInfo, this.elements.sections.healthConcerns);
+            await this.postData("/api/save-personal-info", {
+                user_id: this.state.userId,
+                full_name: name,
+                date_of_birth: dateOfBirth,
+                phone
+            });
+
+            this.switchSection(this.elements.sections.personalInfo, this.elements.sections.healthConcerns);
+        } catch (error) {
+            console.error("Personal info submission failed:", error);
+        } finally {
+            this.setLoading(submitBtn, false);
+        }
     }
 
     // --- Step 4: Health Concerns ---
 
     async handleHealthConcernsSubmit(e) {
         e.preventDefault();
-        const concerns = Array.from(
-            document.querySelectorAll('input[name="health-concerns"]:checked')
-        ).map(cb => cb.value);
+        const submitBtn = this.elements.forms.healthConcerns.querySelector("button");
 
-        this.state.userData.healthConcerns = concerns;
+        this.setLoading(submitBtn, true);
 
-        await this.postData("/api/save-health-concerns", {
-            user_id: this.state.userId,
-            concerns
-        });
+        try {
+            const concerns = Array.from(
+                document.querySelectorAll('input[name="health-concerns"]:checked')
+            ).map(cb => cb.value);
 
-        this.switchSection(this.elements.sections.healthConcerns, this.elements.sections.servicePreferences);
+            this.state.userData.healthConcerns = concerns;
+
+            await this.postData("/api/save-health-concerns", {
+                user_id: this.state.userId,
+                concerns
+            });
+
+            this.switchSection(this.elements.sections.healthConcerns, this.elements.sections.servicePreferences);
+        } catch (error) {
+            console.error("Health concerns submission failed:", error);
+        } finally {
+            this.setLoading(submitBtn, false);
+        }
     }
 
     // --- Step 5: Service Preferences ---
 
     async handleServicePreferencesSubmit(e) {
         e.preventDefault();
-        const preferences = Array.from(
-            document.querySelectorAll('input[name="service-preferences"]:checked')
-        ).map(cb => cb.value);
+        const submitBtn = this.elements.forms.servicePreferences.querySelector("button");
 
-        this.state.userData.servicePreferences = preferences;
+        this.setLoading(submitBtn, true);
 
-        await this.postData("/api/save-service-preferences", {
-            user_id: this.state.userId,
-            preferences
-        });
+        try {
+            const preferences = Array.from(
+                document.querySelectorAll('input[name="service-preferences"]:checked')
+            ).map(cb => cb.value);
 
-        this.switchSection(this.elements.sections.servicePreferences, this.elements.sections.results);
-        this.showResults();
+            this.state.userData.servicePreferences = preferences;
+
+            await this.postData("/api/save-service-preferences", {
+                user_id: this.state.userId,
+                preferences
+            });
+
+            this.switchSection(this.elements.sections.servicePreferences, this.elements.sections.results);
+            this.showResults();
+        } catch (error) {
+            console.error("Service preferences submission failed:", error);
+        } finally {
+            this.setLoading(submitBtn, false);
+        }
     }
 
     // --- Step 6: Results ---
@@ -260,13 +318,17 @@ class HealthAssessment {
     async showResults() {
         const finalScore = this.state.totalScore;
 
-        // Save Assessment
-        await this.postData("/api/save-assessment", {
-            user_id: this.state.userId,
-            email: this.state.userEmail,
-            score: finalScore,
-            answers: this.state.answers
-        });
+        // Save Assessment (fire and forget or await if critical)
+        try {
+            await this.postData("/api/save-assessment", {
+                user_id: this.state.userId,
+                email: this.state.userEmail,
+                score: finalScore,
+                answers: this.state.answers
+            });
+        } catch (error) {
+            console.error("Assessment save failed:", error);
+        }
 
         // Display Results
         this.elements.results.scoreNumber.textContent = finalScore;
