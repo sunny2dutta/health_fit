@@ -16,8 +16,17 @@ export class UserService {
      * @returns {Promise<Object>}
      */
     async registerEmail(email) {
-        // Logic: Check if exists? For now, just create (as per original logic)
-        // In a real app, we'd check for duplicates here.
+        // Check if user already exists
+        const existingUser = await this.userRepo.findByEmail(email);
+
+        if (existingUser) {
+            return {
+                ...existingUser,
+                isExisting: true
+            };
+        }
+
+        // Create new user if not exists
         return await this.userRepo.createUser(email);
     }
 
