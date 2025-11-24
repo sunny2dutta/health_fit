@@ -36,7 +36,7 @@ export class UserRepository {
     async findByEmail(email) {
         const { data, error } = await this.supabase
             .from("users")
-            .select("id, is_waitlisted")
+            .select("id, email_id, is_waitlisted")
             .eq("email_id", email)
             .single();
 
