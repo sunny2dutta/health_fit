@@ -1,14 +1,3 @@
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import { createApiRoutes } from './routes/apiRoutes.js';
-import { AppError } from './utils/AppError.js';
-
-/**
- * Initializes the Express application.
- * @param {Object} dependencies - Injected dependencies.
- * @returns {express.Application}
- */
 export const createApp = ({ userController }) => {
     const app = express();
 
@@ -16,6 +5,16 @@ export const createApp = ({ userController }) => {
     app.use(cors());
     app.use(bodyParser.json());
     app.use(express.static('.')); // Serve static files from root
+
+    // 🔥 Serve sitemap.xml explicitly
+    app.get('/sitemap.xml', (req, res) => {
+        res.sendFile('sitemap.xml', { root: '.' });
+    });
+
+    // 🔥 Serve robots.txt explicitly (good for SEO)
+    app.get('/robots.txt', (req, res) => {
+        res.sendFile('robots.txt', { root: '.' });
+    });
 
     // Routes
     app.use('/api', createApiRoutes(userController));
@@ -31,7 +30,6 @@ export const createApp = ({ userController }) => {
             });
         }
 
-        // Generic fallback
         res.status(500).json({
             status: 'error',
             message: 'Internal Server Error'
@@ -40,3 +38,4 @@ export const createApp = ({ userController }) => {
 
     return app;
 };
+
