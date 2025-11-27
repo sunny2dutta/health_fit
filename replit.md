@@ -1,11 +1,19 @@
-# Health Fit - Men's Health Assessment Platform
+# Menvy - Men's Health Assessment Platform
 
 ## Overview
-Health Fit is a comprehensive web application for men's reproductive health assessment. It features an interactive multi-step questionnaire, email collection, waitlist management, and integrates with Supabase for data storage.
+Menvy is a comprehensive web application for men's reproductive health assessment. It features an interactive multi-step questionnaire, email collection, AI-powered chat assistant (Menvy), and integrates with Supabase for data storage.
 
 **Current State**: Fully functional and running on Replit with proper configuration for development and deployment.
 
 ## Recent Changes
+- **2025-11-27**: Added "Chat with Menvy" AI feature
+  - Replaced waitlist functionality with embedded AI chat window
+  - Integrated Fireworks AI using Qwen3-30b-a3b model
+  - Created ChatService (server-side) for secure API key handling
+  - Added ChatController with proper error handling
+  - Implemented responsive chat UI with mobile support
+  - API key stored securely in Replit secrets (FIREWORKS_API_KEY)
+
 - **2025-11-27**: Migrated project to Replit environment
   - Added ES module support to package.json
   - Fixed missing imports in src/app.js
