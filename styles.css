@@ -413,6 +413,17 @@ button:disabled {
     line-height: 1.7;
 }
 
+.menvy-chat-section .trusted-text {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.menvy-chat-section .trusted-text strong {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
 .chat-form {
     display: flex;
     flex-direction: column;
