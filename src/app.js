@@ -1,3 +1,9 @@
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import { createApiRoutes } from './routes/apiRoutes.js';
+import { AppError } from './utils/AppError.js';
+
 export const createApp = ({ userController }) => {
     const app = express();
 
