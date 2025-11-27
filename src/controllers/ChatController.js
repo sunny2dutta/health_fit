@@ -29,6 +29,20 @@ export class ChatController {
                 });
             }
             
+            if (error.message.includes('AI service error: 401') || error.message.includes('AI service error: 403')) {
+                return res.status(503).json({
+                    success: false,
+                    message: "Chat service is experiencing authentication issues. Please contact support."
+                });
+            }
+
+            if (error.message.includes('AI service error')) {
+                return res.status(503).json({
+                    success: false,
+                    message: "Chat service is temporarily unavailable. Please try again in a moment."
+                });
+            }
+            
             next(error);
         }
     };
