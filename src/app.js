@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import { createApiRoutes } from './routes/apiRoutes.js';
 import { AppError } from './utils/AppError.js';
 
-export const createApp = ({ userController }) => {
+export const createApp = ({ userController, chatController }) => {
     const app = express();
 
     // Middleware
@@ -23,7 +23,7 @@ export const createApp = ({ userController }) => {
     });
 
     // Routes
-    app.use('/api', createApiRoutes(userController));
+    app.use('/api', createApiRoutes(userController, chatController));
 
     // Global Error Handler
     app.use((err, req, res, next) => {

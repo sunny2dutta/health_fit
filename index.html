@@ -250,32 +250,44 @@
                     <h2 id="results-heading">Now a bit more details</h2>
                 </div>
 
-                <!-- Menvy Waitlist Section -->
-                <section class="menvy-waitlist-results" aria-labelledby="waitlist-heading">
-                    <h3 id="waitlist-heading">🚀 Join the Future of Men's Wellness</h3>
-                    <p>Get early access to <strong>Menvy</strong> - the AI-powered men's wellness companion that
-                        provides
-                        personalized health guidance, tracks your progress, and helps you achieve your wellness goals.
+                <!-- Menvy Chat Section -->
+                <section class="menvy-chat-section" aria-labelledby="chat-heading">
+                    <h3 id="chat-heading">💬 Chat with Menvy</h3>
+                    <p>Get personalized health guidance from <strong>Menvy</strong> - your AI-powered men's wellness companion.
+                        Ask questions about your results, get wellness tips, or explore ways to improve your health.
                     </p>
 
-                    <div id="waitlist-counter-results" class="waitlist-counter">
-                        <p><strong id="current-waitlist-count-results">1000</strong> people have joined the Menvy
-                            waitlist
-                        </p>
-                    </div>
-
-                    <div id="waitlist-form-results" class="waitlist-form">
-                        <button id="join-waitlist-btn-results" class="waitlist-btn">Join Menvy Waitlist</button>
-                        <p class="waitlist-info">Be among the first to experience personalized AI wellness coaching</p>
-                    </div>
-
-                    <div id="waitlist-success-results" class="waitlist-success" style="display: none;">
-                        <div class="success-icon">✅</div>
-                        <h5>Welcome to the Menvy Waitlist!</h5>
-                        <p id="waitlist-position-text-results"></p>
-                        <div id="waitlist-stats-results" class="waitlist-stats"></div>
+                    <div id="chat-form-results" class="chat-form">
+                        <button id="chat-with-menvy-btn" class="chat-btn">Chat with Menvy</button>
+                        <p class="chat-info">Start a conversation with your personal AI wellness coach</p>
                     </div>
                 </section>
+
+                <!-- Chat Window (Hidden by default) -->
+                <div id="chat-window" class="chat-window" style="display: none;">
+                    <div class="chat-header">
+                        <div class="chat-header-info">
+                            <span class="chat-avatar">💬</span>
+                            <span class="chat-title">Menvy AI</span>
+                        </div>
+                        <button id="chat-close-btn" class="chat-close-btn" aria-label="Close chat">&times;</button>
+                    </div>
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="chat-message assistant">
+                            <div class="message-content">
+                                Hi! I'm Menvy, your AI wellness companion. Based on your assessment results, I'm here to help you understand your health better and provide personalized guidance. What would you like to know?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Type your message..." autocomplete="off">
+                        <button id="chat-send-btn" class="chat-send-btn" aria-label="Send message">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
 
                 <h2>Your Health Assessment Results</h2>
                 <div id="score-display">
