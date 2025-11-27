@@ -2,6 +2,7 @@
   "name": "mens-health-assessment",
   "version": "1.0.0",
   "description": "Men's reproductive health assessment website with email collection",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
