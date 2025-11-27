@@ -107,10 +107,6 @@ class HealthAssessment {
         this.elements.forms.healthConcerns.addEventListener("submit", (e) => this.handleHealthConcernsSubmit(e));
         this.elements.forms.servicePreferences.addEventListener("submit", (e) => this.handleServicePreferencesSubmit(e));
 
-        const waitlistBtn = document.getElementById("join-waitlist-btn-results");
-        if (waitlistBtn) {
-            waitlistBtn.addEventListener("click", () => this.handleWaitlistSubmit());
-        }
         this.elements.nextBtn.addEventListener("click", () => this.handleNextQuestion());
         this.elements.restartBtn.addEventListener("click", () => this.restartAssessment());
     }
@@ -356,11 +352,7 @@ class HealthAssessment {
             const li = document.createElement("li");
             li.textContent = rec;
             this.elements.results.recommendationList.appendChild(li);
-            this.elements.results.recommendationList.appendChild(li);
         });
-
-        // Fetch and animate waitlist count
-        this.updateWaitlistCount();
     }
 
     async updateWaitlistCount() {
@@ -475,7 +467,154 @@ class HealthAssessment {
 // Initialize App
 document.addEventListener("DOMContentLoaded", () => {
     new HealthAssessment();
+    new MenvyChat();
 });
+
+/**
+ * Menvy Chat - AI-powered wellness chat companion
+ */
+class MenvyChat {
+    constructor() {
+        this.chatWindow = document.getElementById('chat-window');
+        this.chatMessages = document.getElementById('chat-messages');
+        this.chatInput = document.getElementById('chat-input');
+        this.chatSendBtn = document.getElementById('chat-send-btn');
+        this.chatOpenBtn = document.getElementById('chat-with-menvy-btn');
+        this.chatCloseBtn = document.getElementById('chat-close-btn');
+        
+        this.messages = [];
+        this.isLoading = false;
+        
+        this.init();
+    }
+
+    init() {
+        if (this.chatOpenBtn) {
+            this.chatOpenBtn.addEventListener('click', () => this.openChat());
+        }
+        if (this.chatCloseBtn) {
+            this.chatCloseBtn.addEventListener('click', () => this.closeChat());
+        }
+        if (this.chatSendBtn) {
+            this.chatSendBtn.addEventListener('click', () => this.sendMessage());
+        }
+        if (this.chatInput) {
+            this.chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
+        }
+    }
+
+    openChat() {
+        if (this.chatWindow) {
+            this.chatWindow.style.display = 'flex';
+            this.chatInput.focus();
+        }
+    }
+
+    closeChat() {
+        if (this.chatWindow) {
+            this.chatWindow.style.display = 'none';
+        }
+    }
+
+    addMessage(content, role) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${role}`;
+        messageDiv.innerHTML = `<div class="message-content">${this.escapeHtml(content)}</div>`;
+        this.chatMessages.appendChild(messageDiv);
+        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+        
+        this.messages.push({ role, content });
+    }
+
+    showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'chat-message assistant';
+        typingDiv.id = 'typing-indicator';
+        typingDiv.innerHTML = `
+            <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        `;
+        this.chatMessages.appendChild(typingDiv);
+        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+    }
+
+    hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    getAssessmentContext() {
+        const scoreElement = document.getElementById('score-number');
+        const categoryElement = document.getElementById('score-category');
+        
+        if (scoreElement && categoryElement) {
+            const score = scoreElement.textContent;
+            const category = categoryElement.textContent;
+            return `User completed health assessment with score: ${score}/100 (${category})`;
+        }
+        return null;
+    }
+
+    async sendMessage() {
+        const message = this.chatInput.value.trim();
+        if (!message || this.isLoading) return;
+
+        this.addMessage(message, 'user');
+        this.chatInput.value = '';
+        this.isLoading = true;
+        this.chatSendBtn.disabled = true;
+        this.showTypingIndicator();
+
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    messages: this.messages.map(m => ({
+                        role: m.role === 'assistant' ? 'assistant' : 'user',
+                        content: m.content
+                    })),
+                    assessmentContext: this.getAssessmentContext()
+                })
+            });
+
+            const data = await response.json();
+            this.hideTypingIndicator();
+
+            if (data.success) {
+                this.addMessage(data.message, 'assistant');
+            } else {
+                this.addMessage(data.message || 'Sorry, I encountered an error. Please try again.', 'assistant');
+            }
+        } catch (error) {
+            console.error('Chat error:', error);
+            this.hideTypingIndicator();
+            this.addMessage('Sorry, I\'m having trouble connecting. Please try again later.', 'assistant');
+        } finally {
+            this.isLoading = false;
+            this.chatSendBtn.disabled = false;
+            this.chatInput.focus();
+        }
+    }
+}
 
 
 

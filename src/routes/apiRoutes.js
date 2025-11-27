@@ -2,10 +2,11 @@ import express from 'express';
 
 /**
  * Configures API routes.
- * @param {import('../controllers/UserController').UserController} userController 
+ * @param {import('../controllers/UserController').UserController} userController
+ * @param {import('../controllers/ChatController').ChatController} chatController
  * @returns {express.Router}
  */
-export const createApiRoutes = (userController) => {
+export const createApiRoutes = (userController, chatController) => {
     const router = express.Router();
 
     router.post('/save-email', userController.saveEmail);
@@ -16,6 +17,8 @@ export const createApiRoutes = (userController) => {
     router.post('/save-health-concerns', userController.saveHealthConcerns);
     router.post('/save-service-preferences', userController.saveServicePreferences);
     router.post('/save-assessment', userController.saveAssessment);
+
+    router.post('/chat', chatController.chat);
 
     return router;
 };
