@@ -1,16 +1,13 @@
-import dotenv from 'dotenv';
-
-dotenv.config();
-
 export class ChatService {
     constructor() {
-        this.apiKey = process.env.FIREWORKS_API_KEY;
         this.apiUrl = 'https://api.fireworks.ai/inference/v1/chat/completions';
-        this.model = 'accounts/fireworks/models/qwen2p5-72b-instruct';
+        this.model = 'accounts/fireworks/models/qwen3-30b-a3b';
     }
 
     async chat(messages, assessmentContext = null) {
-        if (!this.apiKey) {
+        const apiKey = process.env.FIREWORKS_API_KEY;
+        
+        if (!apiKey) {
             throw new Error('Fireworks AI API key is not configured');
         }
 
@@ -42,7 +39,7 @@ ${assessmentContext ? `User's assessment context: ${assessmentContext}` : ''}`
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.apiKey}`
+                    'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
                     model: this.model,
