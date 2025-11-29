@@ -58,7 +58,12 @@ ${assessmentContext ? `User's assessment context: ${assessmentContext}` : ''}`
             const data = await response.json();
             
             if (data.choices && data.choices.length > 0) {
-                return data.choices[0].message.content;
+                let content = data.choices[0].message.content;
+                
+                // Remove <think>...</think> tags from Qwen model responses
+                content = content.replace(/<think>[\s\S]*?<\/think>\s*/g, '').trim();
+                
+                return content;
             }
             
             throw new Error('No response from AI service');
