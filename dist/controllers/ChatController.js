@@ -18,19 +18,20 @@ export class ChatController {
         }
         catch (error) {
             console.error('Chat endpoint error:', error);
-            if (error.message === 'Fireworks AI API key is not configured') {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            if (errorMessage === 'Fireworks AI API key is not configured') {
                 return res.status(503).json({
                     success: false,
                     message: "Chat service is temporarily unavailable. Please try again later."
                 });
             }
-            if (error.message.includes('AI service error: 401') || error.message.includes('AI service error: 403')) {
+            if (errorMessage.includes('AI service error: 401') || errorMessage.includes('AI service error: 403')) {
                 return res.status(503).json({
                     success: false,
                     message: "Chat service is experiencing authentication issues. Please contact support."
                 });
             }
-            if (error.message.includes('AI service error')) {
+            if (errorMessage.includes('AI service error')) {
                 return res.status(503).json({
                     success: false,
                     message: "Chat service is temporarily unavailable. Please try again in a moment."
