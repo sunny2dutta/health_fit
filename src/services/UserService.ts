@@ -1,4 +1,5 @@
 import { UserRepository, User, PersonalInfo } from '../repositories/UserRepository.js';
+import { AssessmentInput } from '../validators/userValidators.js';
 
 export class UserService {
     private userRepo: UserRepository;
@@ -47,7 +48,7 @@ export class UserService {
         await this.userRepo.saveServicePreferences(userId, preferences);
     }
 
-    async saveAssessment(userId: number, score: number, answers: any[]): Promise<void> {
+    async saveAssessment(userId: number, score: number, answers: AssessmentInput['answers']): Promise<void> {
         await this.userRepo.saveAssessment(userId, score, answers);
     }
 
