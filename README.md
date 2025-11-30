@@ -1,255 +1,135 @@
-# Health Fit - Men's Health Assessment Platform
+# Men's Health Assessment & AI Companion Platform
 
-A comprehensive web application for men's reproductive health assessment with email collection, waitlist management, and admin dashboard.
+This repository contains the source code for a privacy-focused men's health platform. It features a comprehensive health assessment tool, an AI-powered wellness companion ("Menvy"), and a waitlist management system. The application is built with a modern, type-safe Node.js backend and a vanilla JavaScript frontend.
 
-## 🚀 Features
+## 📋 Project Overview
 
-- **Health Assessment**: Interactive questionnaire for men's reproductive health
-- **Email Collection**: Capture user emails for marketing and follow-up
-- **Waitlist Management**: Users can join a waitlist for updates
-- **Admin Dashboard**: Protected admin interface for managing data
-- **Database Storage**: PostgreSQL backend with Supabase integration
-- **Responsive Design**: Mobile-friendly user interface
+The platform is designed to guide users through a multi-step health assessment, collecting data on:
+1.  **Personal Information:** Demographics and contact details.
+2.  **Health Concerns:** Specific issues like energy levels, sleep quality, etc.
+3.  **Service Preferences:** What kind of help the user is looking for (TRT, weight loss, etc.).
+4.  **Assessment Score:** A calculated health score based on user responses.
 
-## 🛠 Tech Stack
+Additionally, it provides an **AI Chat Interface** where users can ask health-related questions to "Menvy", a specialized AI agent.
 
-- **Backend**: Node.js with Express.js
-- **Database**: PostgreSQL (migrated from SQLite)
-- **Cloud Database**: Supabase
-- **Frontend**: Vanilla HTML, CSS, JavaScript
-- **Authentication**: Token-based admin authentication
-- **Deployment**: Docker support included
+## 🏗️ Technical Stack
 
-## 📋 Prerequisites
+### Backend
+-   **Runtime:** Node.js (v18+)
+-   **Language:** TypeScript (Strict Mode)
+-   **Framework:** Express.js
+-   **Validation:** Zod (Runtime schema validation for all inputs)
+-   **Security:** Helmet (Headers), Express Rate Limit (DDoS protection)
+-   **Testing:** Vitest (Unit testing), c8 (Coverage)
+-   **Linting:** ESLint (Airbnb/Standard style), Prettier
 
-- Node.js (v14 or higher)
-- PostgreSQL (v12 or higher)
-- npm or yarn package manager
+### Frontend
+-   **Core:** Vanilla JavaScript (ES6+)
+-   **Styling:** Custom CSS (Responsive design)
+-   **Structure:** Semantic HTML5
 
-## 🔧 Installation
+### External Services
+-   **Database:** Supabase (PostgreSQL) - Stores user data, assessments, and waitlist.
+-   **AI Inference:** Fireworks AI (Qwen 2.5 72B Model) - Powers the chat interface.
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd health_fit
-   ```
+## 📂 Repository Structure
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+```
+.
+├── src/
+│   ├── config/             # Configuration files (Supabase client, env vars)
+│   ├── controllers/        # Request handlers (Input -> Service -> Response)
+│   ├── repositories/       # Database access layer (Supabase interactions)
+│   ├── services/           # Business logic & external API calls (AI, User flows)
+│   ├── utils/              # Shared utilities (AppError, etc.)
+│   ├── validators/         # Zod schemas for request validation
+│   ├── routes/             # API route definitions
+│   ├── app.ts              # Express application setup & middleware
+│   └── server.ts           # Application entry point
+├── dist/                   # Compiled JavaScript (Production build)
+├── .github/workflows/      # CI/CD pipelines (GitHub Actions)
+├── public/                 # Static assets (images, icons)
+├── index.html              # Main application entry point
+├── script.js               # Frontend logic (Form handling, Chat UI)
+├── styles.css              # Global styles
+├── package.json            # Dependencies and scripts
+├── tsconfig.json           # TypeScript configuration
+└── vitest.config.ts        # Test runner configuration
+```
 
-3. **Set up environment variables**
-   Create a `.env` file in the root directory:
-   ```env
-   PORT=3000
-   SUPABASE_SECRET_KEY=your_supabase_service_role_key
-   ADMIN_TOKEN=your_admin_secret_token
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=health_assessment
-   DB_USER=postgres
-   DB_PASSWORD=your_password_here
-   ```
+## 🔌 API Endpoints
 
-4. **Set up the database**
-   ```bash
-   # Create PostgreSQL database
-   createdb health_assessment
-   
-   # Run the setup script
-   psql -U postgres -d health_assessment -f setup-db.sql
-   ```
+The backend exposes a RESTful API under the `/api` prefix:
 
-## 🚀 Usage
+### User Management
+-   `POST /api/save-email`: Registers a user's email.
+-   `POST /api/join-waitlist`: Adds a user to the waitlist.
+-   `GET  /api/waitlist-count`: Returns the current number of people on the waitlist.
+-   `POST /api/save-personal-info`: Updates user demographics.
+-   `POST /api/save-health-concerns`: Stores selected health issues.
+-   `POST /api/save-service-preferences`: Stores desired services.
+-   `POST /api/save-assessment`: Saves the final assessment score and answers.
+
+### AI Chat
+-   `POST /api/chat`: Sends a message history to the AI and returns the response.
+    -   **Context:** Automatically injects the user's assessment context if available.
+    -   **Guardrails:** Includes system prompts to restrict non-health topics.
+
+## 🚀 Getting Started
+
+### Prerequisites
+-   Node.js (v18 or higher)
+-   npm
+-   Supabase Account (URL & Secret Key)
+-   Fireworks AI Account (API Key)
+
+### Installation
+
+1.  **Clone the repo:**
+    ```bash
+    git clone <repository-url>
+    cd health_fit
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Configure Environment:**
+    Create a `.env` file in the root directory:
+    ```env
+    PORT=5000
+    SUPABASE_SECRET_KEY=your_supabase_service_role_key
+    FIREWORKS_API_KEY=your_fireworks_api_key
+    ```
 
 ### Development
+Start the development server with hot-reloading:
 ```bash
 npm run dev
 ```
 
-### Production
+### Production Build
+Compile TypeScript to JavaScript and run the production server:
 ```bash
+npm run build
 npm start
 ```
 
-The application will be available at `http://localhost:3000`
+## 🧪 Testing & Quality Assurance
 
-## 📁 Project Structure
+This repository enforces high code quality standards through automated tooling.
 
-```
-health_fit/
-├── index.html              # Main landing page
-├── admin.html             # Admin dashboard
-├── server.js              # Express server and API routes
-├── script.js              # Main frontend JavaScript
-├── styles.css             # Application styles
-├── supabaseClient.js      # Supabase client configuration
-├── setup-db.sql           # Database schema
-├── admin-protect.js       # Admin authentication middleware
-├── Dockerfile             # Docker configuration
-├── DATABASE_MIGRATION.md  # Migration documentation
-├── test-*.js              # API test files
-└── sthir/                 # Additional scripts
-    └── script.js
-```
+-   **Run Tests:** `npm test` (Runs Vitest suite)
+-   **Coverage Report:** `npm run test:coverage` (Generates code coverage metrics)
+-   **Lint Code:** `npm run lint` (Checks for style and potential errors)
+-   **Format Code:** `npm run format` (Auto-formats code using Prettier)
 
-## 🔐 Admin Access
+## 🔄 CI/CD Pipeline
 
-The admin panel is protected by token authentication. Access it at `/admin.html` with the proper authorization header or token.
-
-## 📊 API Endpoints
-
-- `POST /api/collect-email` - Collect user emails
-- `POST /api/submit-assessment` - Submit health assessment
-- `POST /api/join-waitlist` - Join the waitlist
-- `GET /api/admin/emails` - Get all emails (admin only)
-- `GET /api/admin/assessments` - Get all assessments (admin only)
-- `GET /api/admin/waitlist` - Get waitlist entries (admin only)
-
-## 🐳 Docker Support
-
-Build and run with Docker:
-
-```bash
-# Build the image
-docker build -t health-fit .
-
-# Run the container
-docker run -p 3000:3000 --env-file .env health-fit
-```
-
-## 🧪 Testing
-
-The project includes several test files for API endpoints:
-
-```bash
-node test-server-api.js      # Test server endpoints
-node test-assessment-api.js  # Test assessment functionality
-node test-email-api.js       # Test email collection
-node test-waitlist-api.js    # Test waitlist functionality
-node test-supabase.js        # Test Supabase integration
-```
-
-## 📈 Database Migration
-
-This project has been migrated from SQLite to PostgreSQL. See `DATABASE_MIGRATION.md` for detailed migration information and setup instructions.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📝 License
-
-
-How to deploy in Google cloud?
-
-1. Install the required tools
-Install Google Cloud SDK
-https://cloud.google.com/sdk/docs/install
-
-Authenticate
-gcloud auth login
-gcloud config set project <YOUR_PROJECT_ID>
-
-2. Enable required Google Cloud APIs
-
-Run:
-
-gcloud services enable run.googleapis.com \
-  cloudbuild.googleapis.com \
-  artifactregistry.googleapis.com
-
-3. Create a Dockerfile (if not already created)
-
-Example:
-
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-EXPOSE 8080
-CMD ["npm", "start"]
-
-4. Build and push the container to Google Artifact Registry
-Create a Docker repository (one-time)
-gcloud artifacts repositories create my-repo \
-  --repository-format=docker \
-  --location=us-central1
-
-Build and push the image
-gcloud builds submit --tag us-central1-docker.pkg.dev/<PROJECT_ID>/my-repo/health-fit
-
-5. Deploy the service to Cloud Run
-gcloud run deploy health-fit \
-  --image=us-central1-docker.pkg.dev/<PROJECT_ID>/my-repo/health-fit \
-  --region=us-central1 \
-  --platform=managed \
-  --allow-unauthenticated
-
-✅ 6. Add Environment Variables from Google Cloud Console (UI)
-
-This is the most important part since .env can't be uploaded directly.
-
-Step-by-step
-
-Go to Google Cloud Console
-https://console.cloud.google.com/run
-
-Click on your service: health-fit
-
-Click Edit & Deploy New Revision
-
-Scroll down to the section "Environment variables, secrets & connections"
-
-Under Environment variables → Container, click ADD VARIABLE
-
-For each key in your .env, add:
-
-SUPABASE_SECRET_KEY = <your-key>
-SUPABASE_URL        = <your-url>
-DB_PASSWORD         = <password>
-ANY_OTHER_KEY       = <value>
-
-
-Click Save
-
-Click Deploy
-
-⏳ Wait ~10–20 seconds.
-Your service will redeploy with the updated environment variables.
-
-This project is licensed under the MIT License - see the package.json file for details.
-
-
-
-🔍 How to Find Your Google Cloud Project ID
-
-You can get your Project ID in several ways:
-
-✅ 1. From the Google Cloud Console (UI)
-
-Go to: https://console.cloud.google.com
-
-Look at the top navigation bar → the project dropdown shows:
-
-Project Name
-
-Project ID
-
-Project Number
-
-Example:
-
-Project name: my-app
-Project ID: my-app-12345
-
-
-## 🆘 Support
-
-For support and questions, please refer to the project documentation or create an issue in the repository.
+A GitHub Actions workflow (`.github/workflows/ci.yml`) is configured to automatically run on every push to `main`:
+1.  Installs dependencies.
+2.  Lints the codebase.
+3.  Builds the project to check for type errors.
+4.  Runs the test suite.
