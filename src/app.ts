@@ -1,0 +1,81 @@
+import express, { Express, Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import { ZodError } from 'zod';
+import { createApiRoutes } from './routes/apiRoutes.js';
+import { AppError } from './utils/AppError.js';
+import { UserController } from './controllers/UserController.js';
+import { ChatController } from './controllers/ChatController.js';
+
+interface AppDependencies {
+    userController: UserController;
+    chatController: ChatController;
+}
+
+export const createApp = ({ userController, chatController }: AppDependencies): Express => {
+    const app = express();
+
+    // Security Middleware
+    app.use(helmet());
+
+    // Rate Limiting
+    const limiter = rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        max: 100, // Limit each IP to 100 requests per windowMs
+        message: 'Too many requests from this IP, please try again later.'
+    });
+    app.use('/api', limiter);
+
+    // Middleware
+    app.use(cors());
+    app.use(bodyParser.json());
+    app.use(express.static('.')); // Serve static files from root
+
+    // 🔥 Serve sitemap.xml explicitly
+    app.get('/sitemap.xml', (_req: Request, res: Response) => {
+        res.sendFile('sitemap.xml', { root: '.' });
+    });
+
+    // 🔥 Serve robots.txt explicitly (good for SEO)
+    app.get('/robots.txt', (_req: Request, res: Response) => {
+        res.sendFile('robots.txt', { root: '.' });
+    });
+
+    // Routes
+    app.use('/api', createApiRoutes(userController, chatController));
+
+    // Global Error Handler
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+        console.error("Error:", err);
+
+        // Handle Zod Validation Errors
+        if (err instanceof ZodError) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Validation Error',
+                errors: (err as any).errors.map((e: any) => ({
+                    field: e.path.join('.'),
+                    message: e.message
+                }))
+            });
+        }
+
+        // Handle Operational Errors
+        if (err instanceof AppError) {
+            return res.status(err.statusCode).json({
+                status: err.status,
+                message: err.message
+            });
+        }
+
+        // Handle Unknown Errors
+        return res.status(500).json({
+            status: 'error',
+            message: 'Internal Server Error'
+        });
+    });
+
+    return app;
+};
