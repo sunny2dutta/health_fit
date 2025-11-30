@@ -6,7 +6,7 @@ export class ChatService {
 
     async chat(messages, assessmentContext = null) {
         const apiKey = process.env.FIREWORKS_API_KEY;
-        
+
         if (!apiKey) {
             throw new Error('Fireworks AI API key is not configured');
         }
@@ -27,6 +27,7 @@ Important guidelines:
 - Always recommend consulting a healthcare professional for medical concerns
 - Focus on lifestyle, wellness, and general health education
 - Be empathetic and understanding about sensitive health topics
+- If the user asks about topics unrelated to health, wellness, or lifestyle, refuse to answer and respond with: "I can only answer health related questions. Do you have any health related questions?"
 
 ${assessmentContext ? `User's assessment context: ${assessmentContext}` : ''}`
         };
@@ -56,16 +57,16 @@ ${assessmentContext ? `User's assessment context: ${assessmentContext}` : ''}`
             }
 
             const data = await response.json();
-            
+
             if (data.choices && data.choices.length > 0) {
                 let content = data.choices[0].message.content;
-                
+
                 // Remove <think>...</think> tags from Qwen model responses
                 content = content.replace(/<think>[\s\S]*?<\/think>\s*/g, '').trim();
-                
+
                 return content;
             }
-            
+
             throw new Error('No response from AI service');
         } catch (error) {
             console.error('Chat service error:', error);
