@@ -1,5 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { AppError } from '../utils/AppError.js';
+import { AssessmentInput } from '../validators/userValidators.js';
 
 export interface User {
     id: number;
@@ -19,6 +20,8 @@ export class UserRepository {
     constructor(supabaseClient: SupabaseClient) {
         this.supabase = supabaseClient;
     }
+
+
 
     async createUser(email: string): Promise<User> {
         const { data, error } = await this.supabase
@@ -97,7 +100,7 @@ export class UserRepository {
         if (error) throw new AppError(`DB Error: ${error.message}`, 500);
     }
 
-    async saveAssessment(userId: number, score: number, answers: any[]): Promise<void> {
+    async saveAssessment(userId: number, score: number, answers: AssessmentInput['answers']): Promise<void> {
         const { data: user } = await this.supabase
             .from("users")
             .select("email_id")
