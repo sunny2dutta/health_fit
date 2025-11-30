@@ -30,7 +30,7 @@ describe('ChatService', () => {
                 choices: [{ message: { content: 'Hello there!' } }]
             })
         };
-        vi.mocked(global.fetch).mockResolvedValue(mockResponse as any);
+        vi.mocked(global.fetch).mockResolvedValue(mockResponse as unknown as Response);
 
         const response = await chatService.chat([{ role: 'user', content: 'Hi' }]);
 
@@ -45,7 +45,7 @@ describe('ChatService', () => {
                 choices: [{ message: { content: '<think>Processing...</think> Clean response' } }]
             })
         };
-        vi.mocked(global.fetch).mockResolvedValue(mockResponse as any);
+        vi.mocked(global.fetch).mockResolvedValue(mockResponse as unknown as Response);
 
         const response = await chatService.chat([{ role: 'user', content: 'Hi' }]);
 
@@ -58,7 +58,7 @@ describe('ChatService', () => {
             status: 500,
             text: async () => 'Internal Server Error'
         };
-        vi.mocked(global.fetch).mockResolvedValue(mockResponse as any);
+        vi.mocked(global.fetch).mockResolvedValue(mockResponse as unknown as Response);
 
         await expect(chatService.chat([])).rejects.toThrow('AI service error: 500');
     });
