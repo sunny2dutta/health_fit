@@ -1,9 +1,13 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import bodyParser from 'body-parser';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { ZodError } from 'zod';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import { createApiRoutes } from './routes/apiRoutes.js';
 import { AppError } from './utils/AppError.js';
 import { UserController } from './controllers/UserController.js';
@@ -32,8 +36,7 @@ export const createApp = ({ userController, chatController, feedbackController }
 
     // Middleware
     app.use(cors());
-    app.use(bodyParser.json());
-    app.use(express.static('.')); // Serve static files from root
+    app.use(express.json());
 
     // 🔥 Serve sitemap.xml explicitly
     app.get('/sitemap.xml', (_req: Request, res: Response) => {
@@ -48,8 +51,18 @@ export const createApp = ({ userController, chatController, feedbackController }
     // Routes
     app.use('/api', createApiRoutes(userController, chatController, feedbackController));
 
+    // Serve static files from the React app
+    const clientBuildPath = path.join(__dirname, '../client/dist');
+    app.use(express.static(clientBuildPath));
+
+    // The "catchall" handler: for any request that doesn't
+    // match one above, send back React's index.html file.
+    app.get('*', (_req, res) => {
+        res.sendFile(path.join(clientBuildPath, 'index.html'));
+    });
+
     // Global Error Handler
-    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
         console.error("Error:", err);
 
         // Handle Zod Validation Errors

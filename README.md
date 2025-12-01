@@ -1,6 +1,10 @@
 # Men's Health Assessment & AI Companion Platform
 
-This repository contains the source code for a privacy-focused men's health platform. It features a comprehensive health assessment tool, an AI-powered wellness companion ("Menvy"), and a waitlist management system. The application is built with a modern, type-safe Node.js backend and a vanilla JavaScript frontend.
+This repository contains the source code for a privacy-focused men's health platform. It features a comprehensive health assessment tool, an AI-powered wellness companion ("Menvy"), and a waitlist management system. 
+
+**Recently upgraded to an Enterprise-Grade Architecture:**
+- **Frontend:** React + TypeScript (Vite)
+- **Backend:** Node.js + TypeScript (Express)
 
 ## 📋 Project Overview
 
@@ -14,6 +18,15 @@ Additionally, it provides an **AI Chat Interface** where users can ask health-re
 
 ## 🏗️ Technical Stack
 
+### Frontend (New!)
+-   **Framework:** React 18
+-   **Language:** TypeScript
+-   **Build Tool:** Vite
+-   **Styling:** CSS Modules / Global CSS
+-   **State Management:** React Context API
+-   **Animations:** Framer Motion
+-   **Icons:** Lucide React
+
 ### Backend
 -   **Runtime:** Node.js (v18+)
 -   **Language:** TypeScript (Strict Mode)
@@ -21,12 +34,6 @@ Additionally, it provides an **AI Chat Interface** where users can ask health-re
 -   **Validation:** Zod (Runtime schema validation for all inputs)
 -   **Security:** Helmet (Headers), Express Rate Limit (DDoS protection)
 -   **Testing:** Vitest (Unit testing), c8 (Coverage)
--   **Linting:** ESLint (Airbnb/Standard style), Prettier
-
-### Frontend
--   **Core:** Vanilla JavaScript (ES6+)
--   **Styling:** Custom CSS (Responsive design)
--   **Structure:** Semantic HTML5
 
 ### External Services
 -   **Database:** Supabase (PostgreSQL) - Stores user data, assessments, and waitlist.
@@ -36,44 +43,29 @@ Additionally, it provides an **AI Chat Interface** where users can ask health-re
 
 ```
 .
-├── src/
-│   ├── config/             # Configuration files (Supabase client, env vars)
-│   ├── controllers/        # Request handlers (Input -> Service -> Response)
-│   ├── repositories/       # Database access layer (Supabase interactions)
-│   ├── services/           # Business logic & external API calls (AI, User flows)
-│   ├── utils/              # Shared utilities (AppError, etc.)
-│   ├── validators/         # Zod schemas for request validation
+├── client/                 # React Frontend
+│   ├── src/
+│   │   ├── components/     # UI Components (Steps, Chat, etc.)
+│   │   ├── context/        # State Management (AssessmentContext)
+│   │   ├── types/          # TypeScript Definitions
+│   │   ├── App.tsx         # Main Application Component
+│   │   └── main.tsx        # Entry Point
+│   ├── vite.config.ts      # Vite Configuration
+│   └── package.json        # Frontend Dependencies
+├── src/                    # Express Backend
+│   ├── config/             # Configuration files
+│   ├── controllers/        # Request handlers
+│   ├── repositories/       # Database access layer
+│   ├── services/           # Business logic
+│   ├── utils/              # Shared utilities
+│   ├── validators/         # Zod schemas
 │   ├── routes/             # API route definitions
-│   ├── app.ts              # Express application setup & middleware
+│   ├── app.ts              # Express application setup
 │   └── server.ts           # Application entry point
-├── dist/                   # Compiled JavaScript (Production build)
-├── .github/workflows/      # CI/CD pipelines (GitHub Actions)
-├── public/                 # Static assets (images, icons)
-├── index.html              # Main application entry point
-├── script.js               # Frontend logic (Form handling, Chat UI)
-├── styles.css              # Global styles
-├── package.json            # Dependencies and scripts
-├── tsconfig.json           # TypeScript configuration
-└── vitest.config.ts        # Test runner configuration
+├── .github/workflows/      # CI/CD pipelines
+├── package.json            # Backend Dependencies
+└── tsconfig.json           # Backend TypeScript Config
 ```
-
-## 🔌 API Endpoints
-
-The backend exposes a RESTful API under the `/api` prefix:
-
-### User Management
--   `POST /api/save-email`: Registers a user's email.
--   `POST /api/join-waitlist`: Adds a user to the waitlist.
--   `GET  /api/waitlist-count`: Returns the current number of people on the waitlist.
--   `POST /api/save-personal-info`: Updates user demographics.
--   `POST /api/save-health-concerns`: Stores selected health issues.
--   `POST /api/save-service-preferences`: Stores desired services.
--   `POST /api/save-assessment`: Saves the final assessment score and answers.
-
-### AI Chat
--   `POST /api/chat`: Sends a message history to the AI and returns the response.
-    -   **Context:** Automatically injects the user's assessment context if available.
-    -   **Guardrails:** Includes system prompts to restrict non-health topics.
 
 ## 🚀 Getting Started
 
@@ -91,12 +83,19 @@ The backend exposes a RESTful API under the `/api` prefix:
     cd health_fit
     ```
 
-2.  **Install dependencies:**
+2.  **Install Backend Dependencies:**
     ```bash
     npm install
     ```
 
-3.  **Configure Environment:**
+3.  **Install Frontend Dependencies:**
+    ```bash
+    cd client
+    npm install
+    cd ..
+    ```
+
+4.  **Configure Environment:**
     Create a `.env` file in the root directory:
     ```env
     PORT=5000
@@ -105,26 +104,52 @@ The backend exposes a RESTful API under the `/api` prefix:
     ```
 
 ### Development
-Start the development server with hot-reloading:
+
+You can run the frontend and backend independently or concurrently.
+
+**1. Start Backend (API):**
 ```bash
 npm run dev
 ```
+*(Runs on http://localhost:3000)*
+
+**2. Start Frontend (UI):**
+Open a new terminal:
+```bash
+cd client
+npm run dev
+```
+*(Runs on http://localhost:5173)*
+
+The frontend is configured to proxy API requests (`/api/...`) to the backend.
 
 ### Production Build
-Compile TypeScript to JavaScript and run the production server:
-```bash
-npm run build
-npm start
-```
 
-## 🧪 Testing & Quality Assurance
+To build the entire application for production:
 
-This repository enforces high code quality standards through automated tooling.
+1.  **Build Frontend:**
+    ```bash
+    cd client
+    npm run build
+    cd ..
+    ```
 
--   **Run Tests:** `npm test` (Runs Vitest suite)
--   **Coverage Report:** `npm run test:coverage` (Generates code coverage metrics)
--   **Lint Code:** `npm run lint` (Checks for style and potential errors)
--   **Format Code:** `npm run format` (Auto-formats code using Prettier)
+2.  **Build Backend:**
+    ```bash
+    npm run build
+    ```
+
+3.  **Start Server:**
+    ```bash
+    npm start
+    ```
+    *(The backend will serve the built React files from `client/dist`)*
+
+## 🧪 Testing
+
+-   **Backend Tests:** `npm test`
+-   **Coverage:** `npm run test:coverage`
+-   **Linting:** `npm run lint`
 
 ## 🔄 CI/CD Pipeline
 
