@@ -15,12 +15,11 @@ export class FeedbackRepository {
         this.supabase = supabaseClient;
     }
 
-    async saveFeedback(feedbackText: string, userId: number | null = null, email: string | null = null): Promise<void> {
+    async saveFeedback(feedbackText: string, userId: number | null = null): Promise<void> {
         const { error } = await this.supabase
             .from("feedback")
             .insert([{
                 user_id: userId,
-                email_id: email,
                 feedback_text: feedbackText
             }]);
 

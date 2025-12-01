@@ -4,8 +4,7 @@ import { z } from 'zod';
 
 const feedbackSchema = z.object({
     feedback: z.string().min(1, "Feedback cannot be empty"),
-    userId: z.number().nullable().optional(),
-    email: z.string().email().nullable().optional()
+    userId: z.number().nullable().optional()
 });
 
 export class FeedbackController {
@@ -18,10 +17,8 @@ export class FeedbackController {
     submitFeedback = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { feedback, userId } = feedbackSchema.parse(req.body);
-            const user = req.user; // Authenticated user
 
-            // Use assessment userId (number) and authenticated email
-            await this.feedbackService.submitFeedback(feedback, userId || null, user?.email);
+            await this.feedbackService.submitFeedback(feedback, userId || null);
 
             res.status(200).json({
                 success: true,

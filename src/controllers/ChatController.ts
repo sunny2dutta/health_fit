@@ -12,10 +12,6 @@ export class ChatController {
     chat = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { messages, assessmentContext } = req.body;
-            const user = req.user; // Authenticated user from middleware
-
-            // Optional: You can now use user.id to save chat history or personalize response
-            console.log(`Chat request from user: ${user.id}`);
 
             if (!messages || !Array.isArray(messages) || messages.length === 0) {
                 throw new AppError("Messages array is required", 400);
