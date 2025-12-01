@@ -6,8 +6,10 @@ import rateLimit from 'express-rate-limit';
 import { ZodError } from 'zod';
 import { createApiRoutes } from './routes/apiRoutes.js';
 import { AppError } from './utils/AppError.js';
-export const createApp = ({ userController, chatController }) => {
+import { createAuthMiddleware } from './middleware/authMiddleware.js';
+export const createApp = ({ userController, chatController, feedbackController, authController, configController, supabase }) => {
     const app = express();
+    const requireAuth = createAuthMiddleware(supabase);
     // Security Middleware
     app.use(helmet());
     // Rate Limiting
@@ -30,7 +32,7 @@ export const createApp = ({ userController, chatController }) => {
         res.sendFile('robots.txt', { root: '.' });
     });
     // Routes
-    app.use('/api', createApiRoutes(userController, chatController));
+    app.use('/api', createApiRoutes(userController, chatController, feedbackController, authController, configController, requireAuth));
     // Global Error Handler
     app.use((err, _req, res, _next) => {
         console.error("Error:", err);

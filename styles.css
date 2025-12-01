@@ -476,6 +476,7 @@ button:disabled {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -548,6 +549,7 @@ button:disabled {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -653,12 +655,25 @@ button:disabled {
     animation: bounce 1.4s infinite ease-in-out;
 }
 
-.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+.typing-indicator span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: -0.16s;
+}
 
 @keyframes bounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1); }
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+    }
+
+    40% {
+        transform: scale(1);
+    }
 }
 
 /* Responsive */
@@ -695,4 +710,177 @@ button:disabled {
     .menvy-chat-section h3 {
         font-size: 1.3rem;
     }
+}
+
+/* Feedback Form Styles */
+.feedback-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    gap: 20px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.feedback-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.feedback-buttons {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    justify-content: center;
+}
+
+.feedback-btn {
+    padding: 12px 24px;
+    border-radius: 25px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    max-width: 100px;
+}
+
+.feedback-btn.yes {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.feedback-btn.no {
+    background: var(--input-bg);
+    color: var(--text-main);
+}
+
+.feedback-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
+}
+
+.feedback-textarea {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    resize: none;
+    height: 120px;
+    background: var(--input-bg);
+    color: var(--text-main);
+}
+
+.feedback-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: #fff;
+}
+
+/* Auth Modal Styles */
+.auth-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.auth-content {
+    background: var(--bg-card);
+    padding: 40px;
+    border-radius: 24px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-out;
+}
+
+.auth-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color 0.2s;
+}
+
+.auth-close-btn:hover {
+    color: var(--text-main);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h3 {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+}
+
+.auth-header p {
+    color: var(--text-muted);
+}
+
+.auth-tabs {
+    display: flex;
+    background: var(--input-bg);
+    padding: 4px;
+    border-radius: 50px;
+    margin-bottom: 24px;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: none;
+    border-radius: 50px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.auth-tab.active {
+    background: #fff;
+    color: var(--primary-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-error {
+    color: #ef4444;
+    font-size: 0.9rem;
+    text-align: center;
+    min-height: 20px;
+}
+
+#auth-submit-btn {
+    margin-top: 10px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
 }

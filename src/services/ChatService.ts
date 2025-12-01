@@ -58,7 +58,7 @@ ${assessmentContext ? `User's assessment context: ${assessmentContext}` : ''}`
                 },
                 body: JSON.stringify({
                     model: this.model,
-                    max_tokens: 500,
+                    max_tokens: 1500, // Increased to ensure thinking completes
                     temperature: 0.7,
                     messages: chatMessages
                 })
@@ -75,8 +75,9 @@ ${assessmentContext ? `User's assessment context: ${assessmentContext}` : ''}`
             if (data.choices && data.choices.length > 0) {
                 let content = data.choices[0].message.content;
 
-                // Remove <think>...</think> tags from Qwen model responses
-                content = content.replace(/<think>[\s\S]*?<\/think>\s*/g, '').trim();
+                // Remove <think>...</think> tags (case insensitive, multiline)
+                // Also handles unclosed <think> tags at the end of the string
+                content = content.replace(/<think>[\s\S]*?(?:<\/think>|$)/gi, '').trim();
 
                 return content;
             }

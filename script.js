@@ -465,10 +465,160 @@ class HealthAssessment {
 }
 
 // Initialize App
+// Initialize App
 document.addEventListener("DOMContentLoaded", () => {
-    new HealthAssessment();
-    new MenvyChat();
+    window.healthAssessment = new HealthAssessment();
+    window.authManager = new AuthManager();
+    window.menvyChat = new MenvyChat();
 });
+
+/**
+ * Auth Manager - Handles Supabase Authentication
+ */
+class AuthManager {
+    constructor() {
+        // Initialize Supabase client
+        this.initSupabase();
+
+        // Note: You need to add the Supabase JS CDN to index.html first
+        // For now, assuming window.supabase is available or we use fetch directly?
+        // Actually, the user has supabase-js in node_modules, but for frontend vanilla JS,
+        // we usually need a CDN script or a bundler. 
+        // Since we are using vanilla JS without a bundler for frontend, we need the CDN.
+        // I will add the CDN link to index.html in the next step.
+
+        // Hardcoding keys for now as they are public in frontend
+        this.supabaseUrl = 'https://<YOUR_SUPABASE_URL>.supabase.co';
+        this.supabaseKey = '<YOUR_SUPABASE_KEY>';
+        // WAIT: I don't have the keys here. I should read them from .env but I can't in browser.
+        // I will assume the user will provide them or I need to inject them.
+        // For this step, I will use placeholders and ask user to fill them or inject via server.
+
+        // BETTER APPROACH: The server serves the HTML. We can inject config there.
+        // But for now, let's build the UI logic.
+
+        this.modal = document.getElementById('auth-modal');
+        this.form = document.getElementById('auth-form');
+        this.emailInput = document.getElementById('auth-email');
+        this.passwordInput = document.getElementById('auth-password');
+        this.submitBtn = document.getElementById('auth-submit-btn');
+        this.errorDisplay = document.getElementById('auth-error');
+        this.tabs = document.querySelectorAll('.auth-tab');
+        this.closeBtn = document.getElementById('auth-close-btn');
+
+        this.mode = 'signin'; // or 'signup'
+        this.session = null;
+
+        this.init();
+    }
+
+    async initSupabase() {
+        try {
+            const response = await fetch('/api/config');
+            const config = await response.json();
+
+            if (window.supabase) {
+                this.supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+
+                // Check for existing session
+                const { data: { session } } = await this.supabase.auth.getSession();
+                this.session = session;
+
+                // Listen for auth changes
+                this.supabase.auth.onAuthStateChange((_event, session) => {
+                    this.session = session;
+                });
+            }
+        } catch (error) {
+            console.error('Failed to load config:', error);
+        }
+    }
+
+    init() {
+        // Event Listeners
+        this.tabs.forEach(tab => {
+            tab.addEventListener('click', () => this.switchTab(tab.dataset.tab));
+        });
+
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+
+        if (this.closeBtn) {
+            this.closeBtn.addEventListener('click', () => this.hideModal());
+        }
+
+        // Close on outside click
+        window.addEventListener('click', (e) => {
+            if (e.target === this.modal) {
+                this.hideModal();
+            }
+        });
+
+        // Check for existing session (if we had the client)
+        // this.checkSession();
+    }
+
+    switchTab(mode) {
+        this.mode = mode;
+        this.tabs.forEach(t => t.classList.remove('active'));
+        document.querySelector(`.auth-tab[data-tab="${mode}"]`).classList.add('active');
+        this.submitBtn.textContent = mode === 'signin' ? 'Sign In' : 'Sign Up';
+        this.errorDisplay.textContent = '';
+    }
+
+    showModal() {
+        this.modal.style.display = 'flex';
+    }
+
+    hideModal() {
+        this.modal.style.display = 'none';
+        this.errorDisplay.textContent = '';
+        this.form.reset();
+    }
+
+    async handleSubmit(e) {
+        e.preventDefault();
+        const email = this.emailInput.value;
+        const password = this.passwordInput.value;
+
+        this.submitBtn.disabled = true;
+        this.submitBtn.textContent = 'Processing...';
+        this.errorDisplay.textContent = '';
+
+        try {
+            if (!this.supabase) throw new Error('Auth service not initialized');
+
+            const { data, error } = this.mode === 'signin'
+                ? await this.supabase.auth.signInWithPassword({ email, password })
+                : await this.supabase.auth.signUp({ email, password });
+
+            if (error) throw error;
+
+            // Success
+            this.session = data.session;
+            this.hideModal();
+
+            // If chat was requested, open it
+            if (window.menvyChat && window.menvyChat.pendingOpen) {
+                window.menvyChat.openChat();
+                window.menvyChat.pendingOpen = false;
+            }
+
+        } catch (error) {
+            this.errorDisplay.textContent = error.message;
+        } finally {
+            this.submitBtn.disabled = false;
+            this.submitBtn.textContent = this.mode === 'signin' ? 'Sign In' : 'Sign Up';
+        }
+    }
+
+    isAuthenticated() {
+        return !!this.session;
+    }
+
+    getToken() {
+        return this.session?.access_token;
+    }
+}
 
 /**
  * Menvy Chat - AI-powered wellness chat companion
@@ -481,10 +631,11 @@ class MenvyChat {
         this.chatSendBtn = document.getElementById('chat-send-btn');
         this.chatOpenBtn = document.getElementById('chat-with-menvy-btn');
         this.chatCloseBtn = document.getElementById('chat-close-btn');
-        
+
         this.messages = [];
         this.isLoading = false;
-        
+        this.feedbackGiven = false;
+
         this.init();
     }
 
@@ -509,6 +660,12 @@ class MenvyChat {
     }
 
     openChat() {
+        if (!window.authManager.isAuthenticated()) {
+            this.pendingOpen = true;
+            window.authManager.showModal();
+            return;
+        }
+
         if (this.chatWindow) {
             this.chatWindow.style.display = 'flex';
             this.chatInput.focus();
@@ -517,7 +674,128 @@ class MenvyChat {
 
     closeChat() {
         if (this.chatWindow) {
-            this.chatWindow.style.display = 'none';
+            if (this.feedbackGiven || this.messages.length === 0) {
+                this.chatWindow.style.display = 'none';
+                // Reset for next time if needed, or keep history
+            } else {
+                this.showFeedbackPrompt();
+            }
+        }
+    }
+
+    showFeedbackPrompt() {
+        const chatMessages = document.getElementById('chat-messages');
+        const inputContainer = document.querySelector('.chat-input-container');
+
+        if (inputContainer) inputContainer.style.display = 'none';
+
+        chatMessages.innerHTML = `
+            <div class="feedback-container">
+                <div class="feedback-title">Would you be open to sharing feedback?</div>
+                <div class="feedback-buttons">
+                    <button class="feedback-btn yes" onclick="menvyChat.showFeedbackForm()">Yes</button>
+                    <button class="feedback-btn no" onclick="menvyChat.skipFeedback()">No</button>
+                </div>
+            </div>
+        `;
+    }
+
+    showFeedbackForm() {
+        const chatMessages = document.getElementById('chat-messages');
+        chatMessages.innerHTML = `
+            <div class="feedback-container">
+                <div class="feedback-title">We value your input!</div>
+                <textarea class="feedback-textarea" id="feedback-text" placeholder="Tell us what you think..."></textarea>
+                <button class="feedback-btn yes" style="width: 100%; max-width: none;" onclick="menvyChat.submitFeedback()">Submit Feedback</button>
+                <button class="feedback-btn no" style="width: 100%; max-width: none; margin-top: 10px;" onclick="menvyChat.skipFeedback()">Cancel</button>
+            </div>
+        `;
+    }
+
+    skipFeedback() {
+        this.feedbackGiven = true;
+        this.closeChat();
+
+        // Restore chat UI for next open (optional, or reset)
+        setTimeout(() => {
+            const inputContainer = document.querySelector('.chat-input-container');
+            if (inputContainer) inputContainer.style.display = 'flex';
+            // We might want to clear messages or keep them. For now, let's keep them but reset view if opened again?
+            // Actually, simpler to just reset the flag and let the user open fresh or see history.
+            // But the UI is now replaced. Let's reload messages if we wanted to preserve them.
+            // For this MVP, closing resets the view state when reopened? 
+            // The openChat method just shows the window. The content is now the feedback form.
+            // Let's reset the content to initial state if they open it again.
+            this.resetChatUI();
+        }, 500);
+    }
+
+    async submitFeedback() {
+        const feedbackText = document.getElementById('feedback-text').value;
+        if (!feedbackText.trim()) return;
+
+        const chatMessages = document.getElementById('chat-messages');
+        chatMessages.innerHTML = `
+            <div class="feedback-container">
+                <div class="feedback-title">Sending...</div>
+            </div>
+        `;
+
+        const userId = window.healthAssessment?.state?.userId;
+        const userEmail = window.healthAssessment?.state?.userEmail;
+
+        try {
+            await fetch('/api/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    feedback: feedbackText,
+                    userId: userId,
+                    email: userEmail
+                })
+            });
+
+            chatMessages.innerHTML = `
+                <div class="feedback-container">
+                    <div class="feedback-title">Thank you!</div>
+                    <p>Your feedback helps us improve.</p>
+                </div>
+            `;
+        } catch (error) {
+            console.error('Feedback error:', error);
+            chatMessages.innerHTML = `
+                <div class="feedback-container">
+                    <div class="feedback-title">Thanks!</div>
+                </div>
+            `;
+        }
+
+        setTimeout(() => {
+            this.skipFeedback();
+        }, 2000);
+    }
+
+    resetChatUI() {
+        const chatMessages = document.getElementById('chat-messages');
+        const inputContainer = document.querySelector('.chat-input-container');
+
+        if (inputContainer) inputContainer.style.display = 'flex';
+        chatMessages.innerHTML = '';
+
+        // Restore history
+        this.messages.forEach(msg => {
+            this.addMessage(msg.content, msg.role);
+        });
+
+        // If empty, show welcome
+        if (this.messages.length === 0) {
+            chatMessages.innerHTML = `
+                <div class="chat-message assistant">
+                    <div class="message-content">
+                        Hi! I'm Menvy, your AI wellness companion. Based on your assessment results, I'm here to help you understand your health better and provide personalized guidance. What would you like to know?
+                    </div>
+                </div>
+            `;
         }
     }
 
@@ -527,7 +805,7 @@ class MenvyChat {
         messageDiv.innerHTML = `<div class="message-content">${this.escapeHtml(content)}</div>`;
         this.chatMessages.appendChild(messageDiv);
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
-        
+
         this.messages.push({ role, content });
     }
 
@@ -562,7 +840,7 @@ class MenvyChat {
     getAssessmentContext() {
         const scoreElement = document.getElementById('score-number');
         const categoryElement = document.getElementById('score-category');
-        
+
         if (scoreElement && categoryElement) {
             const score = scoreElement.textContent;
             const category = categoryElement.textContent;
@@ -585,7 +863,8 @@ class MenvyChat {
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${window.authManager.getToken()}`
                 },
                 body: JSON.stringify({
                     messages: this.messages.map(m => ({
