@@ -11,10 +11,10 @@ export class FeedbackController {
     }
     submitFeedback = async (req, res, next) => {
         try {
-            const { feedback } = feedbackSchema.parse(req.body);
+            const { feedback, userId } = feedbackSchema.parse(req.body);
             const user = req.user; // Authenticated user
-            // Use authenticated user ID and email
-            await this.feedbackService.submitFeedback(feedback, user?.id, user?.email);
+            // Use assessment userId (number) and authenticated email
+            await this.feedbackService.submitFeedback(feedback, userId || null, user?.email);
             res.status(200).json({
                 success: true,
                 message: "Feedback submitted successfully"
