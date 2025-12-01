@@ -3,10 +3,10 @@ export class FeedbackService {
     constructor(feedbackRepository) {
         this.feedbackRepo = feedbackRepository;
     }
-    async submitFeedback(feedbackText, userId = null, email = null) {
+    async submitFeedback(feedbackText, userId = null) {
         if (!feedbackText || feedbackText.trim().length === 0) {
             throw new Error('Feedback text cannot be empty');
         }
-        await this.feedbackRepo.saveFeedback(feedbackText, userId, email);
+        await this.feedbackRepo.saveFeedback(feedbackText, userId);
     }
 }

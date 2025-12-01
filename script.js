@@ -468,174 +468,8 @@ class HealthAssessment {
 // Initialize App
 document.addEventListener("DOMContentLoaded", () => {
     window.healthAssessment = new HealthAssessment();
-    window.authManager = new AuthManager();
     window.menvyChat = new MenvyChat();
 });
-
-/**
- * Auth Manager - Handles Supabase Authentication
- */
-class AuthManager {
-    constructor() {
-        // Initialize Supabase client
-        this.initPromise = this.initSupabase();
-
-        // Note: You need to add the Supabase JS CDN to index.html first
-        // For now, assuming window.supabase is available or we use fetch directly?
-        // Actually, the user has supabase-js in node_modules, but for frontend vanilla JS,
-        // we usually need a CDN script or a bundler. 
-        // Since we are using vanilla JS without a bundler for frontend, we need the CDN.
-        // I will add the CDN link to index.html in the next step.
-
-        // Hardcoding keys for now as they are public in frontend
-        this.supabaseUrl = 'https://<YOUR_SUPABASE_URL>.supabase.co';
-        this.supabaseKey = '<YOUR_SUPABASE_KEY>';
-        // WAIT: I don't have the keys here. I should read them from .env but I can't in browser.
-        // I will assume the user will provide them or I need to inject them.
-        // For this step, I will use placeholders and ask user to fill them or inject via server.
-
-        // BETTER APPROACH: The server serves the HTML. We can inject config there.
-        // But for now, let's build the UI logic.
-
-        this.modal = document.getElementById('auth-modal');
-        this.form = document.getElementById('auth-form');
-        this.emailInput = document.getElementById('auth-email');
-        this.passwordInput = document.getElementById('auth-password');
-        this.submitBtn = document.getElementById('auth-submit-btn');
-        this.errorDisplay = document.getElementById('auth-error');
-        this.tabs = document.querySelectorAll('.auth-tab');
-        this.closeBtn = document.getElementById('auth-close-btn');
-
-        this.mode = 'signin'; // or 'signup'
-        this.session = null;
-
-        this.init();
-    }
-
-    async initSupabase() {
-        try {
-            console.log('AuthManager: Fetching config...');
-            const response = await fetch('/api/config');
-            if (!response.ok) throw new Error(`Config fetch failed: ${response.status}`);
-
-            const config = await response.json();
-            console.log('AuthManager: Config received', { url: config.supabaseUrl, keyPresent: !!config.supabaseKey });
-
-            if (window.supabase) {
-                if (!config.supabaseUrl || !config.supabaseKey) {
-                    console.error('AuthManager: Missing URL or Key in config');
-                    return;
-                }
-
-                this.supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
-                console.log('AuthManager: Supabase client initialized');
-
-                // Check for existing session
-                const { data: { session } } = await this.supabase.auth.getSession();
-                this.session = session;
-
-                // Listen for auth changes
-                this.supabase.auth.onAuthStateChange((_event, session) => {
-                    this.session = session;
-                });
-            } else {
-                console.error('AuthManager: window.supabase is undefined. CDN script might not be loaded.');
-            }
-        } catch (error) {
-            console.error('AuthManager: Failed to load config:', error);
-        }
-    }
-
-    init() {
-        // Event Listeners
-        this.tabs.forEach(tab => {
-            tab.addEventListener('click', () => this.switchTab(tab.dataset.tab));
-        });
-
-        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-
-        if (this.closeBtn) {
-            this.closeBtn.addEventListener('click', () => this.hideModal());
-        }
-
-        // Close on outside click
-        window.addEventListener('click', (e) => {
-            if (e.target === this.modal) {
-                this.hideModal();
-            }
-        });
-
-        // Check for existing session (if we had the client)
-        // this.checkSession();
-    }
-
-    switchTab(mode) {
-        this.mode = mode;
-        this.tabs.forEach(t => t.classList.remove('active'));
-        document.querySelector(`.auth-tab[data-tab="${mode}"]`).classList.add('active');
-        this.submitBtn.textContent = mode === 'signin' ? 'Sign In' : 'Sign Up';
-        this.errorDisplay.textContent = '';
-    }
-
-    showModal() {
-        this.modal.style.display = 'flex';
-    }
-
-    hideModal() {
-        this.modal.style.display = 'none';
-        this.errorDisplay.textContent = '';
-        this.form.reset();
-    }
-
-    async handleSubmit(e) {
-        e.preventDefault();
-        const email = this.emailInput.value;
-        const password = this.passwordInput.value;
-
-        this.submitBtn.disabled = true;
-        this.submitBtn.textContent = 'Processing...';
-        this.errorDisplay.textContent = '';
-
-        try {
-            // Wait for initialization to complete
-            await this.initPromise;
-
-            if (!this.supabase) {
-                throw new Error('Auth service failed to initialize. Please refresh the page.');
-            }
-
-            const { data, error } = this.mode === 'signin'
-                ? await this.supabase.auth.signInWithPassword({ email, password })
-                : await this.supabase.auth.signUp({ email, password });
-
-            if (error) throw error;
-
-            // Success
-            this.session = data.session;
-            this.hideModal();
-
-            // If chat was requested, open it
-            if (window.menvyChat && window.menvyChat.pendingOpen) {
-                window.menvyChat.openChat();
-                window.menvyChat.pendingOpen = false;
-            }
-
-        } catch (error) {
-            this.errorDisplay.textContent = error.message;
-        } finally {
-            this.submitBtn.disabled = false;
-            this.submitBtn.textContent = this.mode === 'signin' ? 'Sign In' : 'Sign Up';
-        }
-    }
-
-    isAuthenticated() {
-        return !!this.session;
-    }
-
-    getToken() {
-        return this.session?.access_token;
-    }
-}
 
 /**
  * Menvy Chat - AI-powered wellness chat companion
@@ -677,12 +511,6 @@ class MenvyChat {
     }
 
     openChat() {
-        if (!window.authManager.isAuthenticated()) {
-            this.pendingOpen = true;
-            window.authManager.showModal();
-            return;
-        }
-
         if (this.chatWindow) {
             this.chatWindow.style.display = 'flex';
             this.chatInput.focus();
@@ -880,8 +708,7 @@ class MenvyChat {
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${window.authManager.getToken()}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     messages: this.messages.map(m => ({
