@@ -8,14 +8,24 @@ import { createApiRoutes } from './routes/apiRoutes.js';
 import { AppError } from './utils/AppError.js';
 import { UserController } from './controllers/UserController.js';
 import { ChatController } from './controllers/ChatController.js';
+import { FeedbackController } from './controllers/FeedbackController.js';
+import { AuthController } from './controllers/AuthController.js';
+import { ConfigController } from './controllers/ConfigController.js';
+import { createAuthMiddleware } from './middleware/authMiddleware.js';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 interface AppDependencies {
     userController: UserController;
     chatController: ChatController;
+    feedbackController: FeedbackController;
+    authController: AuthController;
+    configController: ConfigController;
+    supabase: SupabaseClient;
 }
 
-export const createApp = ({ userController, chatController }: AppDependencies): Express => {
+export const createApp = ({ userController, chatController, feedbackController, authController, configController, supabase }: AppDependencies): Express => {
     const app = express();
+    const requireAuth = createAuthMiddleware(supabase);
 
     // Security Middleware
     app.use(helmet());
@@ -44,7 +54,7 @@ export const createApp = ({ userController, chatController }: AppDependencies): 
     });
 
     // Routes
-    app.use('/api', createApiRoutes(userController, chatController));
+    app.use('/api', createApiRoutes(userController, chatController, feedbackController, authController, configController, requireAuth));
 
     // Global Error Handler
     app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

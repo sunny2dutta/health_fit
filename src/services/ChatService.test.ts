@@ -52,6 +52,20 @@ describe('ChatService', () => {
         expect(response).toBe('Clean response');
     });
 
+    it('should handle unclosed <think> tags', async () => {
+        const mockResponse = {
+            ok: true,
+            json: async () => ({
+                choices: [{ message: { content: '<think>Thinking forever... No answer yet' } }]
+            })
+        };
+        vi.mocked(global.fetch).mockResolvedValue(mockResponse as unknown as Response);
+
+        const response = await chatService.chat([{ role: 'user', content: 'Hi' }]);
+
+        expect(response).toBe('');
+    });
+
     it('should throw error if API returns non-ok status', async () => {
         const mockResponse = {
             ok: false,
