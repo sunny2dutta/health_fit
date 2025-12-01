@@ -478,7 +478,7 @@ document.addEventListener("DOMContentLoaded", () => {
 class AuthManager {
     constructor() {
         // Initialize Supabase client
-        this.initSupabase();
+        this.initPromise = this.initSupabase();
 
         // Note: You need to add the Supabase JS CDN to index.html first
         // For now, assuming window.supabase is available or we use fetch directly?
@@ -514,11 +514,21 @@ class AuthManager {
 
     async initSupabase() {
         try {
+            console.log('AuthManager: Fetching config...');
             const response = await fetch('/api/config');
+            if (!response.ok) throw new Error(`Config fetch failed: ${response.status}`);
+
             const config = await response.json();
+            console.log('AuthManager: Config received', { url: config.supabaseUrl, keyPresent: !!config.supabaseKey });
 
             if (window.supabase) {
+                if (!config.supabaseUrl || !config.supabaseKey) {
+                    console.error('AuthManager: Missing URL or Key in config');
+                    return;
+                }
+
                 this.supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+                console.log('AuthManager: Supabase client initialized');
 
                 // Check for existing session
                 const { data: { session } } = await this.supabase.auth.getSession();
@@ -528,9 +538,11 @@ class AuthManager {
                 this.supabase.auth.onAuthStateChange((_event, session) => {
                     this.session = session;
                 });
+            } else {
+                console.error('AuthManager: window.supabase is undefined. CDN script might not be loaded.');
             }
         } catch (error) {
-            console.error('Failed to load config:', error);
+            console.error('AuthManager: Failed to load config:', error);
         }
     }
 
@@ -585,7 +597,12 @@ class AuthManager {
         this.errorDisplay.textContent = '';
 
         try {
-            if (!this.supabase) throw new Error('Auth service not initialized');
+            // Wait for initialization to complete
+            await this.initPromise;
+
+            if (!this.supabase) {
+                throw new Error('Auth service failed to initialize. Please refresh the page.');
+            }
 
             const { data, error } = this.mode === 'signin'
                 ? await this.supabase.auth.signInWithPassword({ email, password })
