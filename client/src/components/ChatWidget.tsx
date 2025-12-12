@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send } from 'lucide-react';
 import { useAssessment } from '../context/AssessmentContext';
-// import { ActionPopup } from './ActionPopup';
+import { ActionPopup } from './ActionPopup';
 import type { Message, Action } from '../types/chat';
 
 export const ChatWidget: React.FC = () => {
@@ -99,7 +99,7 @@ export const ChatWidget: React.FC = () => {
         }
     };
 
-    /* const handleActionResponse = async (accepted: boolean) => {
+    const handleActionResponse = async (accepted: boolean) => {
         if (!pendingAction) return;
 
         if (accepted) {
@@ -138,7 +138,7 @@ export const ChatWidget: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }; */
+    };
 
     return (
         <div className="menvy-chat-section">
@@ -189,9 +189,9 @@ export const ChatWidget: React.FC = () => {
                                 <div ref={messagesEndRef} />
                             </div>
 
-                            {/* {pendingAction && (
+                            {pendingAction && (
                                 <ActionPopup action={pendingAction} onResponse={handleActionResponse} />
-                            )} */}
+                            )}
 
                             <div className="chat-input-container">
                                 <input
