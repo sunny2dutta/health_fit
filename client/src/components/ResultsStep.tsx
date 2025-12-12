@@ -71,7 +71,7 @@ export const ResultsStep: React.FC = () => {
                 <h2 id="results-heading" style={{ textAlign: 'center' }}>Now a bit more details</h2>
             </div>
 
-            {/* <ChatWidget /> */}
+            <ChatWidget />
 
             <h2 style={{ textAlign: 'center', marginTop: '2rem' }}>Your Health Assessment Results</h2>
             <div id="score-display">
