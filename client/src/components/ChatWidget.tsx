@@ -1,11 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send } from 'lucide-react';
 import { useAssessment } from '../context/AssessmentContext';
-
-interface Message {
-    role: 'user' | 'assistant';
-    content: string;
-}
+import { ActionPopup } from './ActionPopup';
+import type { Message, Action } from '../types/chat';
 
 export const ChatWidget: React.FC = () => {
     const { totalScore, userId, userEmail } = useAssessment();
@@ -15,6 +12,7 @@ export const ChatWidget: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
     const [feedbackGiven, setFeedbackGiven] = useState(false);
+    const [pendingAction, setPendingAction] = useState<Action | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -23,7 +21,7 @@ export const ChatWidget: React.FC = () => {
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages, isLoading]);
+    }, [messages, isLoading, pendingAction]);
 
     // Initial greeting
     useEffect(() => {
@@ -59,6 +57,9 @@ export const ChatWidget: React.FC = () => {
             const data = await response.json();
             if (data.success) {
                 setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
+                if (data.action) {
+                    setPendingAction(data.action);
+                }
             } else {
                 setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I encountered an error. Please try again." }]);
             }
@@ -95,6 +96,47 @@ export const ChatWidget: React.FC = () => {
             setFeedbackGiven(true);
             setShowFeedback(false);
             setIsOpen(false);
+        }
+    };
+
+    const handleActionResponse = async (accepted: boolean) => {
+        if (!pendingAction) return;
+
+        if (accepted) {
+            window.open(pendingAction.url, '_blank');
+        }
+
+        const userResponse = accepted ? "Yes" : "No";
+        setMessages(prev => [...prev, { role: 'user', content: userResponse }]);
+        setPendingAction(null);
+        setIsLoading(true);
+
+        try {
+            const updatedMessages = [
+                ...messages,
+                { role: 'user', content: userResponse }
+            ].map(m => ({ role: m.role as 'user' | 'assistant', content: m.content }));
+
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: updatedMessages,
+                    assessmentContext: `User completed health assessment with score: ${totalScore}/100`
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
+                if (data.action) {
+                    setPendingAction(data.action);
+                }
+            }
+        } catch (error) {
+            console.error('Action response error:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -147,6 +189,10 @@ export const ChatWidget: React.FC = () => {
                                 <div ref={messagesEndRef} />
                             </div>
 
+                            {pendingAction && (
+                                <ActionPopup action={pendingAction} onResponse={handleActionResponse} />
+                            )}
+
                             <div className="chat-input-container">
                                 <input
                                     type="text"
@@ -155,12 +201,12 @@ export const ChatWidget: React.FC = () => {
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                                    disabled={isLoading}
+                                    disabled={isLoading || !!pendingAction}
                                 />
                                 <button
                                     onClick={handleSendMessage}
                                     className="chat-send-btn"
-                                    disabled={isLoading || !inputValue.trim()}
+                                    disabled={isLoading || !inputValue.trim() || !!pendingAction}
                                 >
                                     <Send size={18} />
                                 </button>
