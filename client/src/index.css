@@ -109,6 +109,7 @@ h5 {
   letter-spacing: -0.03em;
   background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
   margin-bottom: 10px;
@@ -782,4 +783,61 @@ button:disabled {
   outline: none;
   border-color: var(--primary-color);
   background: #fff;
+}
+
+/* Action Popup Styles */
+.action-popup {
+  position: absolute;
+  bottom: 80px;
+  left: 20px;
+  right: 20px;
+  background: var(--bg-card);
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-hover);
+  border: 1px solid var(--border-color);
+  animation: slideUp 0.3s ease-out;
+  z-index: 10;
+}
+
+.action-content p {
+  margin-bottom: 12px;
+  color: var(--text-main);
+  font-size: 0.95rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.action-btn.yes {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.action-btn.yes:hover {
+  background: var(--secondary-color);
+}
+
+.action-btn.no {
+  background: #fff;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+.action-btn.no:hover {
+  background: var(--input-bg);
+  border-color: var(--text-muted);
 }
