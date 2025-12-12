@@ -27,14 +27,15 @@ describe('ChatService', () => {
         const mockResponse = {
             ok: true,
             json: async () => ({
-                choices: [{ message: { content: 'Hello there!' } }]
+                success: true,
+                message: 'Hello there!'
             })
         };
         vi.mocked(global.fetch).mockResolvedValue(mockResponse as unknown as Response);
 
         const response = await chatService.chat([{ role: 'user', content: 'Hi' }]);
 
-        expect(response).toBe('Hello there!');
+        expect(response.message).toBe('Hello there!');
         expect(global.fetch).toHaveBeenCalledTimes(1);
     });
 
@@ -42,28 +43,30 @@ describe('ChatService', () => {
         const mockResponse = {
             ok: true,
             json: async () => ({
-                choices: [{ message: { content: '<think>Processing...</think> Clean response' } }]
+                success: true,
+                message: 'Clean response'
             })
         };
         vi.mocked(global.fetch).mockResolvedValue(mockResponse as unknown as Response);
 
         const response = await chatService.chat([{ role: 'user', content: 'Hi' }]);
 
-        expect(response).toBe('Clean response');
+        expect(response.message).toBe('Clean response');
     });
 
     it('should handle unclosed <think> tags', async () => {
         const mockResponse = {
             ok: true,
             json: async () => ({
-                choices: [{ message: { content: '<think>Thinking forever... No answer yet' } }]
+                success: true,
+                message: ''
             })
         };
         vi.mocked(global.fetch).mockResolvedValue(mockResponse as unknown as Response);
 
         const response = await chatService.chat([{ role: 'user', content: 'Hi' }]);
 
-        expect(response).toBe('');
+        expect(response.message).toBe('');
     });
 
     it('should throw error if API returns non-ok status', async () => {

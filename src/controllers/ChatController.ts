@@ -21,7 +21,8 @@ export class ChatController {
 
             return res.status(200).json({
                 success: true,
-                message: response
+                message: response.message,
+                action: response.action
             });
         } catch (error: unknown) {
             console.error('Chat endpoint error:', error);

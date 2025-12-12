@@ -9,7 +9,7 @@ export class ChatService {
     constructor() {
     }
 
-    async chat(messages: ChatMessage[], assessmentContext: string | null = null): Promise<string> {
+    async chat(messages: ChatMessage[], assessmentContext: string | null = null): Promise<{ message: string, action?: any }> {
         const chatServiceUrl = process.env.CHAT_SERVICE_URL || 'http://localhost:3001/chat';
 
         try {
@@ -30,10 +30,13 @@ export class ChatService {
                 throw new Error(`Chat service error: ${response.status}`);
             }
 
-            const data = await response.json() as { success: boolean, message: string };
+            const data = await response.json() as { success: boolean, message: string, action?: any };
 
             if (data.success) {
-                return data.message;
+                return {
+                    message: data.message,
+                    action: data.action
+                };
             }
 
             throw new Error(data.message || 'Unknown error from chat service');

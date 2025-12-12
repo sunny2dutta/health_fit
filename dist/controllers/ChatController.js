@@ -13,7 +13,8 @@ export class ChatController {
             const response = await this.chatService.chat(messages, assessmentContext);
             return res.status(200).json({
                 success: true,
-                message: response
+                message: response.message,
+                action: response.action
             });
         }
         catch (error) {
