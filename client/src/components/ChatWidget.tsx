@@ -99,7 +99,7 @@ export const ChatWidget: React.FC = () => {
         }
     };
 
-    const handleActionResponse = async (accepted: boolean) => {
+    /* const handleActionResponse = async (accepted: boolean) => {
         if (!pendingAction) return;
 
         if (accepted) {
@@ -138,7 +138,7 @@ export const ChatWidget: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }; */
 
     return (
         <div className="menvy-chat-section">
