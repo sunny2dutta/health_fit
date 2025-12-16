@@ -30,6 +30,7 @@ EXPOSE 3000
 
 # Define environment variable
 ENV NODE_ENV=production
+ENV PORT=3000
 
 # Command to run the application
 CMD ["npm", "start"]
