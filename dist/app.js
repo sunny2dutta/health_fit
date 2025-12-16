@@ -12,7 +12,17 @@ import { AppError } from './utils/AppError.js';
 export const createApp = ({ userController, chatController, feedbackController }) => {
     const app = express();
     // Security Middleware
-    app.use(helmet());
+    // Relaxing CSP for debugging purposes. 
+    // In production, we should configure this properly.
+    app.use(helmet({
+        contentSecurityPolicy: false, // Disable CSP temporarily to rule it out
+        crossOriginEmbedderPolicy: false
+    }));
+    // Request Logging Middleware
+    app.use((req, _res, next) => {
+        console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+        next();
+    });
     // Rate Limiting
     const limiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
