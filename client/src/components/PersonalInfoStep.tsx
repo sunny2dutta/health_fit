@@ -34,6 +34,8 @@ export const PersonalInfoStep: React.FC = () => {
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
+                    name="name"
+                    autoComplete="name"
                     placeholder="Full Name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -41,6 +43,8 @@ export const PersonalInfoStep: React.FC = () => {
                 />
                 <input
                     type="date"
+                    name="dob"
+                    autoComplete="bday"
                     placeholder="Date of Birth"
                     value={formData.dateOfBirth}
                     onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
@@ -48,6 +52,8 @@ export const PersonalInfoStep: React.FC = () => {
                 />
                 <input
                     type="tel"
+                    name="phone"
+                    autoComplete="tel"
                     placeholder="Phone Number"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
