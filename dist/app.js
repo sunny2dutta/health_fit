@@ -45,14 +45,15 @@ export const createApp = ({ userController, chatController, feedbackController }
     app.use((err, _req, res, _next) => {
         console.error("Error:", err);
         // Handle Zod Validation Errors
-        if (err instanceof ZodError) {
+        // Handle Zod Validation Errors
+        if (err instanceof ZodError || err.name === 'ZodError') {
             return res.status(400).json({
                 status: 'fail',
                 message: 'Validation Error',
-                errors: err.errors.map((e) => ({
+                errors: err.errors ? err.errors.map((e) => ({
                     field: e.path.join('.'),
                     message: e.message
-                }))
+                })) : []
             });
         }
         // Handle Operational Errors
