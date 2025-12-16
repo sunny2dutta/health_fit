@@ -38,6 +38,7 @@ export const EmailStep: React.FC = () => {
                 <input
                     type="email"
                     name="email"
+                    id="email"
                     autoComplete="email"
                     placeholder="Enter your email address"
                     value={email}
