@@ -35,6 +35,7 @@ export const PersonalInfoStep: React.FC = () => {
                 <input
                     type="text"
                     name="name"
+                    id="name"
                     autoComplete="name"
                     placeholder="Full Name"
                     value={formData.name}
@@ -44,6 +45,7 @@ export const PersonalInfoStep: React.FC = () => {
                 <input
                     type="date"
                     name="dob"
+                    id="dob"
                     autoComplete="bday"
                     placeholder="Date of Birth"
                     value={formData.dateOfBirth}
@@ -53,6 +55,7 @@ export const PersonalInfoStep: React.FC = () => {
                 <input
                     type="tel"
                     name="phone"
+                    id="phone"
                     autoComplete="tel"
                     placeholder="Phone Number"
                     value={formData.phone}
