@@ -6,6 +6,11 @@ export const EmailStep: React.FC = () => {
     const { submitEmail, isLoading, error } = useAssessment();
     const [email, setEmail] = useState('');
 
+    React.useEffect(() => {
+        console.log("EmailStep mounted");
+        return () => console.log("EmailStep unmounted");
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (email.trim()) {
