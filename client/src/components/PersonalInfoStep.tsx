@@ -9,22 +9,9 @@ export const PersonalInfoStep: React.FC = () => {
         dateOfBirth: '',
         phone: ''
     });
-    const [localError, setLocalError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (formData.phone.length < 10) {
-            // We can't easily set the error state from here since it comes from context, 
-            // but we can prevent submission. 
-            // Ideally we should have a local error state or use the context's error setter if available.
-            // For now, let's use alert or just return. 
-            // Better yet, let's just rely on the HTML5 validation pattern or add a local error state.
-            // Wait, the plan said "Show an error message".
-            // Let's add a local error state since the context error is for API errors.
-            setLocalError("Phone number must be at least 10 digits");
-            return;
-        }
-        setLocalError(null);
 
         if (formData.name && formData.dateOfBirth && formData.phone) {
             await submitPersonalInfo(formData);
@@ -65,11 +52,13 @@ export const PersonalInfoStep: React.FC = () => {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     required
+                    minLength={10}
+                    pattern="[0-9]{10,}"
+                    title="Phone number must be at least 10 digits"
                 />
                 <button type="submit" disabled={isLoading}>
                     {isLoading ? 'Saving...' : 'Continue'}
                 </button>
-                {localError && <div style={{ color: 'red', textAlign: 'center', marginBottom: '10px' }}>{localError}</div>}
                 {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
             </form>
         </motion.div>
