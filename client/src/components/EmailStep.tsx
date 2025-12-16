@@ -37,6 +37,8 @@ export const EmailStep: React.FC = () => {
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"
+                    name="email"
+                    autoComplete="email"
                     placeholder="Enter your email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

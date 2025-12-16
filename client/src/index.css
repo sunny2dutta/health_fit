@@ -147,6 +147,8 @@ form {
 input[type="email"],
 input[type="text"],
 input[type="number"],
+input[type="date"],
+input[type="tel"],
 select {
   width: 100%;
   padding: 18px 24px;
@@ -158,6 +160,17 @@ select {
   font-family: var(--font-family);
   color: var(--text-main);
   transition: all 0.3s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  padding: 4px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
 
 input:focus,
