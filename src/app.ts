@@ -48,6 +48,26 @@ export const createApp = ({ userController, chatController, feedbackController }
         res.sendFile('robots.txt', { root: '.' });
     });
 
+    // 🔍 Debug Endpoint: List files in client/dist
+    app.get('/api/debug-files', (_req: Request, res: Response) => {
+        const fs = require('fs');
+        const clientDist = path.join(__dirname, '../client/dist');
+        try {
+            const files = fs.readdirSync(clientDist);
+            res.json({
+                path: clientDist,
+                exists: true,
+                files: files
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                path: clientDist,
+                exists: false,
+                error: error.message
+            });
+        }
+    });
+
     // Routes
     app.use('/api', createApiRoutes(userController, chatController, feedbackController));
 
