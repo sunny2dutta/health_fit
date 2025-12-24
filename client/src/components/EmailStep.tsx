@@ -27,7 +27,7 @@ export const EmailStep: React.FC = () => {
         >
             <div className="menvy-brand">
                 <div className="menvy-logo">The Menvy Protocol</div>
-                <div className="menvy-tagline">by Ananta labs</div>
+                <div className="menvy-tagline">by Ananta Systems</div>
             </div>
 
             <p className="instruction-text">
