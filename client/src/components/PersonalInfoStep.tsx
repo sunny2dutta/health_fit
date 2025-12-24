@@ -32,6 +32,7 @@ export const PersonalInfoStep: React.FC = () => {
             <p className="instruction-text">This helps us personalize your health plan.</p>
 
             <form onSubmit={handleSubmit}>
+                <label htmlFor="name" className="sr-only">Full Name</label>
                 <input
                     type="text"
                     name="name"
@@ -42,6 +43,7 @@ export const PersonalInfoStep: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                 />
+                <label htmlFor="dob" className="sr-only">Date of Birth</label>
                 <input
                     type="date"
                     name="dob"
@@ -52,6 +54,7 @@ export const PersonalInfoStep: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                     required
                 />
+                <label htmlFor="phone" className="sr-only">Phone Number</label>
                 <input
                     type="tel"
                     name="phone"

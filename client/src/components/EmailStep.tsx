@@ -26,8 +26,8 @@ export const EmailStep: React.FC = () => {
             className="section active"
         >
             <div className="menvy-brand">
-                <div className="menvy-logo">Menvy</div>
-                <div className="menvy-tagline">Men's Health & Vitality</div>
+                <div className="menvy-logo">The Menvy Protocol</div>
+                <div className="menvy-tagline">by Ananta labs</div>
             </div>
 
             <p className="instruction-text">
@@ -35,6 +35,7 @@ export const EmailStep: React.FC = () => {
             </p>
 
             <form onSubmit={handleSubmit}>
+                <label htmlFor="email" className="sr-only">Email Address</label>
                 <input
                     type="email"
                     name="email"
