@@ -31,7 +31,7 @@ export const PersonalInfoStep: React.FC = () => {
             <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>Tell us a bit about yourself</h2>
             <p className="instruction-text">This helps us personalize your health plan.</p>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} autoComplete="on">
                 <label htmlFor="name" className="sr-only">Full Name</label>
                 <input
                     type="text"
@@ -43,23 +43,23 @@ export const PersonalInfoStep: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                 />
-                <label htmlFor="bday" className="sr-only">Date of Birth</label>
+                <label htmlFor="birthday" className="sr-only">Date of Birth</label>
                 <input
                     type="date"
-                    name="bday"
-                    id="bday"
-                    autoComplete="bday"
+                    name="birthday"
+                    id="birthday"
+                    autoComplete="birthday"
                     placeholder="Date of Birth"
                     value={formData.dateOfBirth}
                     onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                     required
                 />
-                <label htmlFor="tel" className="sr-only">Phone Number</label>
+                <label htmlFor="phone" className="sr-only">Phone Number</label>
                 <input
                     type="tel"
-                    name="tel"
-                    id="tel"
-                    autoComplete="tel"
+                    name="phone"
+                    id="phone"
+                    autoComplete="phone"
                     placeholder="Phone Number"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
