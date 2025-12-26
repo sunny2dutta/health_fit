@@ -53,7 +53,7 @@ export const EmailStep: React.FC = () => {
                     id="email"
                     autoComplete="email"
                     placeholder="Enter your email address"
-                    value={email}
+                    defaultValue=""
                     onChange={(e) => setEmail(e.target.value)}
                     onInput={(e) => setEmail(e.currentTarget.value)}
                     required
