@@ -43,9 +43,7 @@ export const EmailStep: React.FC = () => {
                     type="text"
                     name="name"
                     autoComplete="name"
-                    style={{ display: 'none' }}
-                    tabIndex={-1}
-                    aria-hidden="true"
+                    style={{ position: 'absolute', opacity: 0, width: 0, height: 0, pointerEvents: 'none' }}
                 />
 
                 <label htmlFor="email" className="sr-only">Email Address</label>
