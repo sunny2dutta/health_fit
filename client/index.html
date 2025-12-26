@@ -6,36 +6,12 @@
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💪</text></svg>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Menvy</title>
-  <script>
-    window.onerror = function (msg, url, lineNo, columnNo, error) {
-      var div = document.createElement('div');
-      div.style.position = 'fixed';
-      div.style.top = '0';
-      div.style.left = '0';
-      div.style.width = '100%';
-      div.style.backgroundColor = 'red';
-      div.style.color = 'white';
-      div.style.padding = '20px';
-      div.style.zIndex = '9999';
-      div.innerHTML = '<h3>Global Error:</h3><p>' + msg + '</p><p>URL: ' + url + '</p><p>Line: ' + lineNo + '</p>';
-      document.body.appendChild(div);
-      return false;
-    };
-    window.addEventListener('unhandledrejection', function (event) {
-      var div = document.createElement('div');
-      div.style.position = 'fixed';
-      div.style.bottom = '0';
-      div.style.left = '0';
-      div.style.width = '100%';
-      div.style.backgroundColor = 'orange';
-      div.style.color = 'black';
-      div.style.padding = '20px';
-      div.style.zIndex = '9999';
-      div.innerHTML = '<h3>Unhandled Promise Rejection:</h3><p>' + event.reason + '</p>';
-      document.body.appendChild(div);
-    });
-  </script>
+  <title>Menvy | Elite Wellness Protocol</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+    rel="stylesheet">
 </head>
 
 <body>

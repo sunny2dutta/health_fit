@@ -20,9 +20,10 @@ export const EmailStep: React.FC = () => {
 
     return (
         <motion.div
-            initial={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
             className="section active"
         >
             <div className="menvy-brand">
