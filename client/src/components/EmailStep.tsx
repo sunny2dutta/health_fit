@@ -5,8 +5,10 @@ import { useAssessment } from '../context/AssessmentContext';
 export const EmailStep: React.FC = () => {
     const { submitEmail, isLoading, error } = useAssessment();
     const [email, setEmail] = useState('');
+    const [mounted, setMounted] = useState(false);
 
     React.useEffect(() => {
+        setMounted(true);
         console.log("EmailStep mounted");
         return () => console.log("EmailStep unmounted");
     }, []);
@@ -20,8 +22,8 @@ export const EmailStep: React.FC = () => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={false}
+            animate={mounted ? { opacity: 1, y: 0 } : {}}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="section active"
@@ -35,7 +37,17 @@ export const EmailStep: React.FC = () => {
                 Start your journey to better health. Enter your email to begin your personalized assessment.
             </p>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} autoComplete="on">
+                {/* Hidden input to boost autofill confidence (Identity Heuristic) */}
+                <input
+                    type="text"
+                    name="name"
+                    autoComplete="name"
+                    style={{ display: 'none' }}
+                    tabIndex={-1}
+                    aria-hidden="true"
+                />
+
                 <label htmlFor="email" className="sr-only">Email Address</label>
                 <input
                     type="email"
@@ -45,6 +57,7 @@ export const EmailStep: React.FC = () => {
                     placeholder="Enter your email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onInput={(e) => setEmail(e.currentTarget.value)}
                     required
                     disabled={isLoading}
                 />
