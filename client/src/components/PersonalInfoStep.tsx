@@ -43,22 +43,22 @@ export const PersonalInfoStep: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                 />
-                <label htmlFor="dob" className="sr-only">Date of Birth</label>
+                <label htmlFor="bday" className="sr-only">Date of Birth</label>
                 <input
                     type="date"
-                    name="dob"
-                    id="dob"
+                    name="bday"
+                    id="bday"
                     autoComplete="bday"
                     placeholder="Date of Birth"
                     value={formData.dateOfBirth}
                     onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                     required
                 />
-                <label htmlFor="phone" className="sr-only">Phone Number</label>
+                <label htmlFor="tel" className="sr-only">Phone Number</label>
                 <input
                     type="tel"
-                    name="phone"
-                    id="phone"
+                    name="tel"
+                    id="tel"
                     autoComplete="tel"
                     placeholder="Phone Number"
                     value={formData.phone}
