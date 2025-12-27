@@ -13,14 +13,16 @@ import { AppError } from './utils/AppError.js';
 import { UserController } from './controllers/UserController.js';
 import { ChatController } from './controllers/ChatController.js';
 import { FeedbackController } from './controllers/FeedbackController.js';
+import { AuthController } from './controllers/AuthController.js';
 
 interface AppDependencies {
     userController: UserController;
     chatController: ChatController;
     feedbackController: FeedbackController;
+    authController: AuthController;
 }
 
-export const createApp = ({ userController, chatController, feedbackController }: AppDependencies): Express => {
+export const createApp = ({ userController, chatController, feedbackController, authController }: AppDependencies): Express => {
     const app = express();
 
     // Security Middleware
@@ -80,7 +82,7 @@ export const createApp = ({ userController, chatController, feedbackController }
     });
 
     // Routes
-    app.use('/api', createApiRoutes(userController, chatController, feedbackController));
+    app.use('/api', createApiRoutes(userController, chatController, feedbackController, authController));
 
     // Serve static files from the React app
     const clientBuildPath = path.join(__dirname, '../client/dist');
