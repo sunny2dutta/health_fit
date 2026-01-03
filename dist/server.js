@@ -8,6 +8,7 @@ import { ChatController } from './controllers/ChatController.js';
 import { FeedbackRepository } from './repositories/FeedbackRepository.js';
 import { FeedbackService } from './services/FeedbackService.js';
 import { FeedbackController } from './controllers/FeedbackController.js';
+import { AuthController } from './controllers/AuthController.js';
 // 1. Dependency Injection Wiring
 const userRepository = new UserRepository(supabase);
 const userService = new UserService(userRepository);
@@ -17,11 +18,13 @@ const chatController = new ChatController(chatService);
 const feedbackRepository = new FeedbackRepository(supabase);
 const feedbackService = new FeedbackService(feedbackRepository);
 const feedbackController = new FeedbackController(feedbackService);
+const authController = new AuthController(userRepository);
 // 2. Initialize App
 const app = createApp({
     userController,
     chatController,
-    feedbackController
+    feedbackController,
+    authController
 });
 // 3. Start Server
 const PORT = process.env.PORT || 5000;

@@ -9,14 +9,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import { createApiRoutes } from './routes/apiRoutes.js';
 import { AppError } from './utils/AppError.js';
-export const createApp = ({ userController, chatController, feedbackController }) => {
+export const createApp = ({ userController, chatController, feedbackController, authController }) => {
     const app = express();
     // Security Middleware
     // Relaxing CSP for debugging purposes. 
     // In production, we should configure this properly.
     app.use(helmet({
         contentSecurityPolicy: false, // Disable CSP temporarily to rule it out
-        crossOriginEmbedderPolicy: false
+        crossOriginEmbedderPolicy: false,
+        crossOriginOpenerPolicy: false
     }));
     // Request Logging Middleware
     app.use((req, _res, next) => {
@@ -62,10 +63,21 @@ export const createApp = ({ userController, chatController, feedbackController }
         }
     });
     // Routes
-    app.use('/api', createApiRoutes(userController, chatController, feedbackController));
+    app.use('/api', createApiRoutes(userController, chatController, feedbackController, authController));
     // Serve static files from the React app
     const clientBuildPath = path.join(__dirname, '../client/dist');
-    app.use(express.static(clientBuildPath));
+    app.use(express.static(clientBuildPath, {
+        setHeaders: (res, path) => {
+            if (path.endsWith('index.html')) {
+                res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+                res.setHeader('Pragma', 'no-cache');
+                res.setHeader('Expires', '0');
+            }
+            else {
+                res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+            }
+        }
+    }));
     // The "catchall" handler: for any request that doesn't
     // match one above, send back React's index.html file.
     app.get('*', (_req, res) => {
