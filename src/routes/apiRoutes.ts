@@ -2,17 +2,16 @@ import express, { Router } from 'express';
 import { UserController } from '../controllers/UserController.js';
 import { ChatController } from '../controllers/ChatController.js';
 import { FeedbackController } from '../controllers/FeedbackController.js';
-import { AuthController } from '../controllers/AuthController.js';
+
 
 export const createApiRoutes = (
     userController: UserController,
     chatController: ChatController,
-    feedbackController: FeedbackController,
-    authController: AuthController
+    feedbackController: FeedbackController
 ): Router => {
     const router = express.Router();
 
-    router.post('/auth/google', authController.googleSignIn);
+
 
     router.post('/save-email', userController.saveEmail);
     router.post('/join-waitlist', userController.joinWaitlist);

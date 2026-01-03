@@ -7,7 +7,7 @@ interface AssessmentContextType extends AssessmentState {
     submitPersonalInfo: (data: Partial<UserData>) => Promise<void>;
     submitHealthConcerns: (concerns: string[]) => Promise<void>;
     submitServicePreferences: (prefs: string[]) => Promise<void>;
-    submitGoogleAuth: (credential: string) => Promise<void>;
+
     restartAssessment: () => void;
     currentQuestionIndex: number;
 }
@@ -74,32 +74,7 @@ export const AssessmentProvider: React.FC<{ children: ReactNode }> = ({ children
         }
     };
 
-    const submitGoogleAuth = async (credential: string) => {
-        setState(prev => ({ ...prev, isLoading: true, error: null }));
-        try {
-            const result = await postData("/api/auth/google", { credential });
 
-            if (result && result.success && result.user) {
-                // Store token if needed, for now just proceeding
-                if (result.token) {
-                    localStorage.setItem('auth_token', result.token);
-                }
-
-                setState(prev => ({
-                    ...prev,
-                    userId: result.user.id,
-                    userEmail: result.user.email,
-                    currentStep: 1,
-                    isLoading: false
-                }));
-            } else {
-                throw new Error("Google Auth failed: Invalid response");
-            }
-        } catch (error: any) {
-            console.error("Google Auth Error:", error);
-            setState(prev => ({ ...prev, isLoading: false, error: error.message }));
-        }
-    };
 
     const submitAnswer = (answer: Answer) => {
         setState(prev => ({
@@ -195,7 +170,7 @@ export const AssessmentProvider: React.FC<{ children: ReactNode }> = ({ children
             submitPersonalInfo,
             submitHealthConcerns,
             submitServicePreferences,
-            submitGoogleAuth,
+
             restartAssessment,
             currentQuestionIndex
         }}>

@@ -1,7 +1,6 @@
 import express from 'express';
-export const createApiRoutes = (userController, chatController, feedbackController, authController) => {
+export const createApiRoutes = (userController, chatController, feedbackController) => {
     const router = express.Router();
-    router.post('/auth/google', authController.googleSignIn);
     router.post('/save-email', userController.saveEmail);
     router.post('/join-waitlist', userController.joinWaitlist);
     router.get('/waitlist-count', userController.getWaitlistCount);
