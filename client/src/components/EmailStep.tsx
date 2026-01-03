@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAssessment } from '../context/AssessmentContext';
-
+import { SocialAuth } from './SocialAuth';
 export const EmailStep: React.FC = () => {
     const { submitEmail, isLoading, error } = useAssessment();
     const [email, setEmail] = useState('');
@@ -59,6 +59,14 @@ export const EmailStep: React.FC = () => {
                     required
                     disabled={isLoading}
                 />
+
+                <SocialAuth />
+
+                <div className="flex items-center my-4">
+                    <div className="flex-grow border-t border-gray-300"></div>
+                    <span className="flex-shrink-0 mx-4 text-gray-500 text-sm">Or continue with email</span>
+                    <div className="flex-grow border-t border-gray-300"></div>
+                </div>
 
                 <button type="submit" disabled={isLoading}>
                     {isLoading ? 'Processing...' : 'Start Assessment'}
