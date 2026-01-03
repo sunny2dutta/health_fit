@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAssessment } from '../context/AssessmentContext';
+import { GoogleSignInButton } from './GoogleSignInButton';
 
 export const EmailStep: React.FC = () => {
-    const { submitEmail, isLoading, error } = useAssessment();
+    const { submitEmail, submitGoogleAuth, isLoading, error } = useAssessment();
     const [email, setEmail] = useState('');
     const [mounted, setMounted] = useState(false);
 
@@ -59,6 +60,18 @@ export const EmailStep: React.FC = () => {
                     required
                     disabled={isLoading}
                 />
+
+                <GoogleSignInButton
+                    onSuccess={(credential) => submitGoogleAuth(credential)}
+                    onError={() => console.error("Google Sign In Failed")}
+                />
+
+                <div className="flex items-center my-4">
+                    <div className="flex-grow border-t border-gray-300"></div>
+                    <span className="flex-shrink-0 mx-4 text-gray-500 text-sm">Or with email</span>
+                    <div className="flex-grow border-t border-gray-300"></div>
+                </div>
+
                 <button type="submit" disabled={isLoading}>
                     {isLoading ? 'Processing...' : 'Start Assessment'}
                 </button>
