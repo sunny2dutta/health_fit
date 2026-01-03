@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import { createApiRoutes } from './routes/apiRoutes.js';
 import { AppError } from './utils/AppError.js';
-export const createApp = ({ userController, chatController, feedbackController, authController }) => {
+export const createApp = ({ userController, chatController, feedbackController }) => {
     const app = express();
     // Security Middleware
     // Relaxing CSP for debugging purposes. 
@@ -63,7 +63,7 @@ export const createApp = ({ userController, chatController, feedbackController, 
         }
     });
     // Routes
-    app.use('/api', createApiRoutes(userController, chatController, feedbackController, authController));
+    app.use('/api', createApiRoutes(userController, chatController, feedbackController));
     // Serve static files from the React app
     const clientBuildPath = path.join(__dirname, '../client/dist');
     app.use(express.static(clientBuildPath, {
