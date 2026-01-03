@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, type ReactNode } from 'react';
 import { type AssessmentState, type Answer, type UserData, QUESTIONS } from '../types';
+import { supabase } from '../supabaseClient';
 
 interface AssessmentContextType extends AssessmentState {
     submitEmail: (email: string) => Promise<void>;
@@ -35,6 +36,36 @@ export const AssessmentProvider: React.FC<{ children: ReactNode }> = ({ children
     });
 
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
+    React.useEffect(() => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session?.user?.email) {
+                console.log("User signed in via Supabase:", session.user.email);
+                setState(prev => ({ ...prev, isLoading: true }));
+
+                // We need to sync with our backend/public.users
+                // Since our trigger handles creation, we just need to fetch the ID.
+                // We can reuse the save-email endpoint which finds or creates.
+                try {
+                    const result = await postData("/api/save-email", { email: session.user.email });
+                    if (result && result.user_id) {
+                        setState(prev => ({
+                            ...prev,
+                            userId: result.user_id,
+                            userEmail: session.user.email!,
+                            currentStep: 1, // Move to next step
+                            isLoading: false
+                        }));
+                    }
+                } catch (error) {
+                    console.error("Error syncing Supabase user:", error);
+                    setState(prev => ({ ...prev, isLoading: false, error: "Failed to sync user" }));
+                }
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
 
     const postData = async (url: string, data: any) => {
         try {
