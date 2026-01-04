@@ -7,6 +7,7 @@ import './index.css'
 import App from './App.tsx'
 import { AuthCallback } from './components/AuthCallback.tsx'
 import { Dashboard } from './components/Dashboard.tsx'
+import { ChatWidget } from './components/ChatWidget.tsx'
 
 import { ErrorBoundary } from './components/ErrorBoundary.tsx'
 
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/*" element={<App />} />
           </Routes>
+          <ChatWidget />
         </AssessmentProvider>
       </BrowserRouter>
     </ErrorBoundary>

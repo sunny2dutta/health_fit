@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { ChatWidget } from './ChatWidget';
+
 
 export const Dashboard: React.FC = () => {
     const navigate = useNavigate();
@@ -30,7 +30,7 @@ export const Dashboard: React.FC = () => {
             <p>Welcome, {userEmail}!</p>
             <p>You have successfully joined the waitlist.</p>
 
-            <ChatWidget />
+            {/* ChatWidget is now global */}
 
             <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
                 <button

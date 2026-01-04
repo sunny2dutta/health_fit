@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { useLocation } from 'react-router-dom';
 import { X, Send } from 'lucide-react';
 import { useAssessment } from '../context/AssessmentContext';
 import { ActionPopup } from './ActionPopup';
@@ -140,7 +142,19 @@ export const ChatWidget: React.FC = () => {
         }
     };
 
-    return (
+    const location = useLocation();
+    const { currentStep } = useAssessment();
+
+    // Visibility Logic
+    const isDashboard = location.pathname === '/dashboard';
+    const isResults = location.pathname === '/' && currentStep === 5;
+
+    // Only show on Dashboard or Results step
+    if (!isDashboard && !isResults) {
+        return null;
+    }
+
+    return createPortal(
         <div className="menvy-chat-section">
             {/* <h3>💬 Chat with Menvy</h3> */}
             {/* <p className="trusted-text">Trusted by <strong>1,249</strong> men</p> */}
@@ -215,7 +229,8 @@ export const ChatWidget: React.FC = () => {
                     )}
                 </div>
             )}
-        </div>
+        </div>,
+        document.body
     );
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useAssessment } from '../context/AssessmentContext';
-import { ChatWidget } from './ChatWidget';
+
 
 const getHealthProfile = (score: number) => {
     if (score >= 85) {
@@ -71,7 +71,7 @@ export const ResultsStep: React.FC = () => {
                 <h2 id="results-heading" style={{ textAlign: 'center' }}>Now a bit more details</h2>
             </div>
 
-            <ChatWidget />
+            {/* ChatWidget is now global */}
 
             <h2 style={{ textAlign: 'center', marginTop: '2rem' }}>Your Health Assessment Results</h2>
             <div id="score-display">
