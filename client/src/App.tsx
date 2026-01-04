@@ -1,5 +1,5 @@
 import React from 'react';
-import { AssessmentProvider, useAssessment } from './context/AssessmentContext';
+import { useAssessment } from './context/AssessmentContext';
 import { EmailStep } from './components/EmailStep';
 import { QuestionStep } from './components/QuestionStep';
 import { PersonalInfoStep } from './components/PersonalInfoStep';
@@ -27,9 +27,7 @@ const AssessmentFlow: React.FC = () => {
 
 function App() {
   return (
-    <AssessmentProvider>
-      <AssessmentFlow />
-    </AssessmentProvider>
+    <AssessmentFlow />
   );
 }
 

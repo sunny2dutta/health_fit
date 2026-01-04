@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AssessmentProvider } from './context/AssessmentContext'
 
 import './index.css'
 import App from './App.tsx'
@@ -13,11 +14,13 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
       <BrowserRouter>
-        <Routes>
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/*" element={<App />} />
-        </Routes>
+        <AssessmentProvider>
+          <Routes>
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/*" element={<App />} />
+          </Routes>
+        </AssessmentProvider>
       </BrowserRouter>
     </ErrorBoundary>
   </StrictMode>,
