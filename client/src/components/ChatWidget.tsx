@@ -142,8 +142,8 @@ export const ChatWidget: React.FC = () => {
 
     return (
         <div className="menvy-chat-section">
-            <h3>💬 Chat with Menvy</h3>
-            <p className="trusted-text">Trusted by <strong>1,249</strong> men</p>
+            {/* <h3>💬 Chat with Menvy</h3> */}
+            {/* <p className="trusted-text">Trusted by <strong>1,249</strong> men</p> */}
 
             {!isOpen && (
                 <div className="chat-form">

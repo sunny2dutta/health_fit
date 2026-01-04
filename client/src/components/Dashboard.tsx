@@ -57,10 +57,11 @@ export const Dashboard: React.FC = () => {
                 style={{
                     marginTop: '2rem',
                     padding: '0.5rem 1rem',
-                    backgroundColor: '#e5e7eb',
-                    border: 'none',
+                    backgroundColor: 'var(--bg-card-hover)',
+                    border: '1px solid var(--border-color)',
                     borderRadius: '0.25rem',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    color: 'var(--text-main)'
                 }}
             >
                 Sign Out
