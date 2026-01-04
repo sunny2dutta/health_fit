@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import { useAssessment } from '../context/AssessmentContext';
 
 export const AuthCallback: React.FC = () => {
     const navigate = useNavigate();
+    const { setSessionData } = useAssessment();
 
     useEffect(() => {
         const handleAuthCallback = async () => {
@@ -20,6 +22,10 @@ export const AuthCallback: React.FC = () => {
 
                     if (response.ok) {
                         const result = await response.json();
+
+                        // Sync context with backend data
+                        setSessionData(result.user_id, data.session.user.email);
+
                         if (result.has_completed_assessment) {
                             navigate('/dashboard');
                         } else {
