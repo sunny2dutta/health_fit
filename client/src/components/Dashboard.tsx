@@ -1,0 +1,46 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
+
+export const Dashboard: React.FC = () => {
+    const navigate = useNavigate();
+    const [userEmail, setUserEmail] = useState<string | null>(null);
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setUserEmail(user.email || 'User');
+            } else {
+                navigate('/');
+            }
+        };
+        getUser();
+    }, [navigate]);
+
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        navigate('/');
+    };
+
+    return (
+        <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+            <h1>Waitlist Dashboard</h1>
+            <p>Welcome, {userEmail}!</p>
+            <p>You have successfully joined the waitlist.</p>
+            <button
+                onClick={handleSignOut}
+                style={{
+                    marginTop: '1rem',
+                    padding: '0.5rem 1rem',
+                    backgroundColor: '#e5e7eb',
+                    border: 'none',
+                    borderRadius: '0.25rem',
+                    cursor: 'pointer'
+                }}
+            >
+                Sign Out
+            </button>
+        </div>
+    );
+};
