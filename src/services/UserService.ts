@@ -8,17 +8,23 @@ export class UserService {
         this.userRepo = userRepository;
     }
 
-    async registerEmail(email: string): Promise<User & { isExisting?: boolean }> {
+    async registerEmail(email: string): Promise<User & { isExisting?: boolean, has_completed_assessment?: boolean }> {
         const existingUser = await this.userRepo.findByEmail(email);
 
         if (existingUser) {
+            const hasAssessment = await this.userRepo.hasCompletedAssessment(existingUser.id);
             return {
                 ...existingUser,
-                isExisting: true
+                isExisting: true,
+                has_completed_assessment: hasAssessment
             };
         }
 
-        return await this.userRepo.createUser(email);
+        const newUser = await this.userRepo.createUser(email);
+        return {
+            ...newUser,
+            has_completed_assessment: false
+        };
     }
 
     async joinWaitlist(email: string): Promise<{ success: boolean; alreadyJoined?: boolean; updated?: boolean; created?: boolean }> {

@@ -128,4 +128,13 @@ export class UserRepository {
         if (error) throw new AppError(`DB Error: ${error.message}`, 500);
         return count || 0;
     }
+    async hasCompletedAssessment(userId: number): Promise<boolean> {
+        const { count, error } = await this.supabase
+            .from("assessments")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", userId);
+
+        if (error) throw new AppError(`DB Error: ${error.message}`, 500);
+        return (count || 0) > 0;
+    }
 }
