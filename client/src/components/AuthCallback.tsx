@@ -26,15 +26,14 @@ export const AuthCallback: React.FC = () => {
                         // Sync context with backend data
                         setSessionData(result.user_id, data.session.user.email);
 
-                        if (result.has_completed_assessment) {
-                            navigate('/dashboard');
-                        } else {
-                            // New or incomplete user -> Go to questions
-                            // We redirect to home but the Context there will pick it up
-                            // To be safe, we can pass a state or query param if needed, 
-                            // but our Context logic already checks the user on mount.
-                            navigate('/');
-                        }
+                        // Small delay to ensure Context propagates before unmounting
+                        setTimeout(() => {
+                            if (result.has_completed_assessment) {
+                                navigate('/dashboard');
+                            } else {
+                                navigate('/');
+                            }
+                        }, 100);
                     } else {
                         // Fallback on error
                         navigate('/');
@@ -59,9 +58,24 @@ export const AuthCallback: React.FC = () => {
             alignItems: 'center',
             height: '100vh',
             fontSize: '1.2rem',
-            color: '#666'
+            backgroundColor: 'var(--bg-color)',
+            color: 'var(--text-main)',
+            fontFamily: 'var(--font-body)',
         }}>
-            Signing you in...
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <div className="loading-spinner" style={{
+                    width: '40px',
+                    height: '40px',
+                    border: '3px solid var(--border-color)',
+                    borderTop: '3px solid var(--primary-color)',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                }} />
+                <p>Signing you in...</p>
+                <style>{`
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                `}</style>
+            </div>
         </div>
     );
 };

@@ -31,10 +31,21 @@ export class ErrorBoundary extends Component<Props, State> {
     public render() {
         if (this.state.hasError) {
             return (
-                <div style={{ padding: '20px', textAlign: 'center', marginTop: '50px' }}>
-                    <h1>Something went wrong.</h1>
-                    <p>We're sorry, but the application encountered an error.</p>
-                    <details style={{ whiteSpace: 'pre-wrap', marginTop: '20px', color: 'red' }}>
+                <div style={{
+                    padding: '20px',
+                    textAlign: 'center',
+                    marginTop: '50px',
+                    backgroundColor: 'var(--bg-color)',
+                    color: 'var(--text-main)',
+                    minHeight: '100vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <h1 style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary-color)' }}>Something went wrong.</h1>
+                    <p style={{ marginTop: '16px' }}>We're sorry, but the application encountered an error.</p>
+                    <details open style={{ whiteSpace: 'pre-wrap', marginTop: '20px', color: 'red', maxWidth: '600px', textAlign: 'left', padding: '20px', background: '#FEE2E2', borderRadius: '8px' }}>
                         {this.state.error && this.state.error.toString()}
                         <br />
                         {this.state.errorInfo && this.state.errorInfo.componentStack}
@@ -42,14 +53,15 @@ export class ErrorBoundary extends Component<Props, State> {
                     <button
                         onClick={() => window.location.reload()}
                         style={{
-                            marginTop: '20px',
-                            padding: '10px 20px',
+                            marginTop: '24px',
+                            padding: '12px 24px',
                             fontSize: '16px',
                             cursor: 'pointer',
-                            backgroundColor: '#4F46E5',
-                            color: 'white',
+                            backgroundColor: 'var(--primary-color)',
+                            color: '#FFFFFF',
                             border: 'none',
-                            borderRadius: '5px'
+                            borderRadius: '9999px',
+                            boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)'
                         }}
                     >
                         Reload Page
