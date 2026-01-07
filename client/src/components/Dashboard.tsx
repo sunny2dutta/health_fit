@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import { useAssessment } from '../context/AssessmentContext';
 
 
 export const Dashboard: React.FC = () => {
     const navigate = useNavigate();
+    const { retakeAssessment } = useAssessment();
     const [userEmail, setUserEmail] = useState<string | null>(null);
 
     useEffect(() => {
@@ -35,7 +37,7 @@ export const Dashboard: React.FC = () => {
             <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
                 <button
                     onClick={async () => {
-                        // Optional: Clear assessment state if needed, but context handles restart
+                        retakeAssessment();
                         navigate('/');
                     }}
                     style={{
