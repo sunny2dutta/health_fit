@@ -7,67 +7,82 @@ export const AuthCallback: React.FC = () => {
     const navigate = useNavigate();
     const { setSessionData } = useAssessment();
 
+    const [error, setError] = React.useState<string | null>(null);
+
     useEffect(() => {
         let mounted = true;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => {
+            if (mounted) {
+                controller.abort();
+                setError("Authentication timed out. This often happens if your System Clock is wrong. Please check your date & time settings.");
+            }
+        }, 10000); // 10s timeout to show error
 
         const handleAuth = async () => {
-            // Check current session
-            const { data: { session }, error } = await supabase.auth.getSession();
+            try {
+                // Check current session
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-            if (error) {
-                console.error("Auth Error:", error);
-                if (mounted) navigate('/');
-                return;
-            }
+                if (sessionError) throw sessionError;
 
-            if (session?.user?.email) {
-                processUser(session.user.email);
-            } else {
-                // If no session yet, listen for the event (handles the hash processing)
-                const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-                    if (event === 'SIGNED_IN' && session?.user?.email) {
-                        processUser(session.user.email);
-                    } else if (event === 'SIGNED_OUT') {
-                        if (mounted) navigate('/');
-                    }
-                });
+                if (session?.user?.email) {
+                    await processUser(session.user.email, controller.signal);
+                } else {
+                    // Listen for auth event
+                    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+                        if (event === 'SIGNED_IN' && session?.user?.email) {
+                            await processUser(session.user.email, controller.signal);
+                        } else if (event === 'SIGNED_OUT') {
+                            if (mounted) navigate('/');
+                        }
+                    });
 
-                return () => {
-                    subscription.unsubscribe();
-                };
+                    return () => {
+                        subscription.unsubscribe();
+                    };
+                }
+            } catch (err: any) {
+                console.error("Auth Init Error:", err);
+                if (mounted) setError(err.message || 'Authentication failed');
             }
         };
 
-        const processUser = async (email: string) => {
+        const processUser = async (email: string, signal: AbortSignal) => {
             if (!mounted) return;
             try {
                 // Sync with backend
+                console.log("Syncing user:", email);
                 const response = await fetch('/api/save-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
+                    body: JSON.stringify({ email }),
+                    signal
                 });
 
-                if (response.ok) {
-                    const result = await response.json();
-                    if (!mounted) return;
-
-                    // Use backend ID (number) not Supabase UUID (string)
-                    setSessionData(result.user_id, email);
-
-                    // Navigate based on assessment status
-                    if (result.has_completed_assessment) {
-                        navigate('/dashboard');
-                    } else {
-                        navigate('/');
-                    }
-                } else {
-                    console.error("Backend sync failed");
-                    if (mounted) navigate('/');
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
                 }
-            } catch (e) {
+
+                const result = await response.json();
+                if (!mounted) return;
+
+                // Use backend ID (number) not Supabase UUID (string)
+                setSessionData(result.user_id, email);
+
+                // Navigate based on assessment status
+                if (result.has_completed_assessment) {
+                    navigate('/dashboard');
+                } else {
+                    navigate('/');
+                }
+            } catch (e: any) {
                 console.error("Error processing user:", e);
-                if (mounted) navigate('/');
+                if (e.name === 'AbortError') {
+                    if (mounted) setError("Connection timed out. Please check your internet or try again.");
+                } else {
+                    if (mounted) setError(e.message || "Failed to sync user data");
+                }
             }
         };
 
@@ -75,8 +90,42 @@ export const AuthCallback: React.FC = () => {
 
         return () => {
             mounted = false;
+            clearTimeout(timeoutId);
+            controller.abort();
         };
     }, [navigate, setSessionData]);
+
+    if (error) {
+        return (
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                padding: '20px',
+                textAlign: 'center',
+                backgroundColor: 'var(--bg-color)',
+                color: 'var(--text-main)',
+                fontFamily: 'var(--font-body)',
+            }}>
+                <div style={{ color: '#ef4444', marginBottom: '16px' }}>⚠️ {error}</div>
+                <button
+                    onClick={() => navigate('/')}
+                    style={{
+                        padding: '12px 24px',
+                        backgroundColor: 'var(--primary-color)',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        cursor: 'pointer'
+                    }}
+                >
+                    Return Home
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div style={{
