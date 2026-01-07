@@ -49,16 +49,16 @@ export const EmailStep: React.FC = () => {
                 <label htmlFor="email" className="sr-only">Email Address</label>
                 <input
                     type="email"
-                    name="email"
                     id="email"
+                    name="email"
                     autoComplete="email"
                     placeholder="Enter your email address"
-                    defaultValue=""
                     onChange={(e) => setEmail(e.target.value)}
-                    onInput={(e) => setEmail(e.currentTarget.value)}
                     required
                     disabled={isLoading}
                 />
+
+
 
                 <SocialAuth />
 
