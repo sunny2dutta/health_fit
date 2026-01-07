@@ -8,48 +8,74 @@ export const AuthCallback: React.FC = () => {
     const { setSessionData } = useAssessment();
 
     useEffect(() => {
-        const handleAuthCallback = async () => {
-            const { data } = await supabase.auth.getSession();
+        let mounted = true;
 
-            if (data.session?.user?.email) {
-                try {
-                    // Check user status via our backend
-                    const response = await fetch('/api/save-email', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: data.session.user.email })
-                    });
+        const handleAuth = async () => {
+            // Check current session
+            const { data: { session }, error } = await supabase.auth.getSession();
 
-                    if (response.ok) {
-                        const result = await response.json();
+            if (error) {
+                console.error("Auth Error:", error);
+                if (mounted) navigate('/');
+                return;
+            }
 
-                        // Sync context with backend data
-                        setSessionData(result.user_id, data.session.user.email);
-
-                        // Small delay to ensure Context propagates before unmounting
-                        setTimeout(() => {
-                            if (result.has_completed_assessment) {
-                                navigate('/dashboard');
-                            } else {
-                                navigate('/');
-                            }
-                        }, 100);
-                    } else {
-                        // Fallback on error
-                        navigate('/');
-                    }
-                } catch (e) {
-                    console.error("Error checking user status:", e);
-                    navigate('/');
-                }
+            if (session?.user?.email) {
+                processUser(session.user.email, session.user.id);
             } else {
-                // Failed login or no session
-                navigate('/');
+                // If no session yet, listen for the event (handles the hash processing)
+                const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_IN' && session?.user?.email) {
+                        processUser(session.user.email, session.user.id);
+                    } else if (event === 'SIGNED_OUT') {
+                        if (mounted) navigate('/');
+                    }
+                });
+
+                return () => {
+                    subscription.unsubscribe();
+                };
             }
         };
 
-        handleAuthCallback();
-    }, [navigate]);
+        const processUser = async (email: string, userId: string) => {
+            if (!mounted) return;
+            try {
+                // Sync with backend
+                const response = await fetch('/api/save-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (!mounted) return;
+
+                    setSessionData(userId, email);
+
+                    // Navigate based on assessment status
+                    if (result.has_completed_assessment) {
+                        navigate('/dashboard');
+                    } else {
+                        navigate('/');
+                    }
+                } else {
+                    console.error("Backend sync failed");
+                    if (mounted) navigate('/');
+                }
+            } catch (e) {
+                console.error("Error processing user:", e);
+                if (mounted) navigate('/');
+            }
+        };
+
+        handleAuth();
+
+        return () => {
+            mounted = false;
+        };
+    }, [navigate, setSessionData]);
 
     return (
         <div style={{
