@@ -28,9 +28,22 @@ export const EmailStep: React.FC = () => {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="section active"
         >
-            <div className="menvy-brand">
-                <div className="menvy-logo">THE MENVY PROTOCOL</div>
-                <div className="menvy-tagline" style={{ fontSize: '1rem', marginTop: '8px', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>
+            <div className="menvy-brand" style={{ marginBottom: '80px' }}> {/* Increase spacing below logo */}
+                <div className="menvy-logo" style={{
+                    fontSize: '3.2rem', // Reduced by ~30% from 4.5rem
+                    background: 'linear-gradient(to bottom right, #507fb3, #2a56ad, #1e3a8a)', // Slightly less saturated/intense blue
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    filter: 'drop-shadow(0 0 15px rgba(37, 99, 235, 0.15))' // Slightly softer glow
+                }}>THE MENVY PROTOCOL</div>
+                <div className="menvy-tagline" style={{
+                    fontSize: '0.85rem', // Reduced ~15%
+                    marginTop: '12px',
+                    letterSpacing: '0.15em', // Increased spacing
+                    color: '#94a3b8', // Lighter Grey (Slate-400)
+                    fontWeight: '500',
+                    textTransform: 'uppercase'
+                }}>
                     Men’s Reproductive & Fertility Health — by Ananta Systems
                 </div>
             </div>
@@ -73,13 +86,26 @@ export const EmailStep: React.FC = () => {
                     id="email"
                     name="email"
                     autoComplete="email"
-                    placeholder="Enter your email address"
+                    placeholder="Email (for confidential correspondence)"
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={isLoading}
                 />
 
-                <button type="submit" disabled={isLoading}>
+                <button
+                    type="submit"
+                    disabled={isLoading}
+                    style={{
+                        background: '#1e293b', // Deep Charcoal/Navy
+                        padding: '14px 24px', // Reduced height
+                        borderRadius: '6px', // Reduced radius (not pill)
+                        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        fontSize: '1rem',
+                        fontWeight: '500',
+                        marginTop: '8px'
+                    }}
+                >
                     {isLoading ? 'Processing...' : 'Request a Private Assessment'}
                 </button>
                 {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
