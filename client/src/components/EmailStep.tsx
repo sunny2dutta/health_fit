@@ -33,8 +33,22 @@ export const EmailStep: React.FC = () => {
                 <div className="menvy-tagline">by Ananta Systems</div>
             </div>
 
+            <h1 style={{
+                textAlign: 'center',
+                fontSize: '2.5rem',
+                fontWeight: '700',
+                marginBottom: '16px',
+                lineHeight: '1.2',
+                maxWidth: '700px',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                color: 'var(--text-main)'
+            }}>
+                Take control of your fertility with a plan built for your body.
+            </h1>
+
             <p className="instruction-text">
-                Start your journey to better health. Enter your email to begin your personalized assessment.
+                Answer a confidential assessment and get personalized guidance to improve sperm quality, hormones, and reproductive health.
             </p>
 
             <form onSubmit={handleSubmit} autoComplete="on">
@@ -63,7 +77,7 @@ export const EmailStep: React.FC = () => {
                 />
 
                 <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Processing...' : 'Start Assessment'}
+                    {isLoading ? 'Processing...' : 'Start Confidential Assessment'}
                 </button>
                 {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
             </form>
