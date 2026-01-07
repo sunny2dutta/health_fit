@@ -29,7 +29,13 @@ export const AuthCallback: React.FC = () => {
                 if (session?.user?.email) {
                     await processUser(session.user.email, controller.signal);
                 } else {
-                    // Listen for auth event
+                    // Fail fast if we have an access token in URL but no session (Expired/Invalid)
+                    if (window.location.hash && window.location.hash.includes('access_token')) {
+                        console.error("Token present but session null (likely expired)");
+                        throw new Error("Login link expired. Please go back and try again.");
+                    }
+
+                    // Listen for auth event (Fallback)
                     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
                         if (event === 'SIGNED_IN' && session?.user?.email) {
                             await processUser(session.user.email, controller.signal);
