@@ -21,12 +21,12 @@ export const AuthCallback: React.FC = () => {
             }
 
             if (session?.user?.email) {
-                processUser(session.user.email, session.user.id);
+                processUser(session.user.email);
             } else {
                 // If no session yet, listen for the event (handles the hash processing)
                 const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
                     if (event === 'SIGNED_IN' && session?.user?.email) {
-                        processUser(session.user.email, session.user.id);
+                        processUser(session.user.email);
                     } else if (event === 'SIGNED_OUT') {
                         if (mounted) navigate('/');
                     }
@@ -38,7 +38,7 @@ export const AuthCallback: React.FC = () => {
             }
         };
 
-        const processUser = async (email: string, userId: string) => {
+        const processUser = async (email: string) => {
             if (!mounted) return;
             try {
                 // Sync with backend
@@ -52,7 +52,8 @@ export const AuthCallback: React.FC = () => {
                     const result = await response.json();
                     if (!mounted) return;
 
-                    setSessionData(userId, email);
+                    // Use backend ID (number) not Supabase UUID (string)
+                    setSessionData(result.user_id, email);
 
                     // Navigate based on assessment status
                     if (result.has_completed_assessment) {
