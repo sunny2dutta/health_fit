@@ -28,11 +28,11 @@ export const EmailStep: React.FC = () => {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="section active"
         >
-            {/* Restrained Header */}
-            <div style={{ textAlign: 'center', marginBottom: '48px', color: 'var(--text-muted)' }}>
-                <div style={{ fontSize: '1.25rem', fontWeight: '700', letterSpacing: '0.1em', color: 'var(--text-main)', marginBottom: '8px' }}>THE MENVY PROTOCOL</div>
-                <div style={{ fontSize: '0.9rem', marginBottom: '4px' }}>Men’s Reproductive & Fertility Health</div>
-                <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>Developed and operated by Ananta Systems</div>
+            <div className="menvy-brand">
+                <div className="menvy-logo">THE MENVY PROTOCOL</div>
+                <div className="menvy-tagline" style={{ fontSize: '1rem', marginTop: '8px', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>
+                    Men’s Reproductive & Fertility Health — by Ananta Systems
+                </div>
             </div>
 
             <h1 style={{
@@ -47,11 +47,11 @@ export const EmailStep: React.FC = () => {
                 color: 'var(--text-main)',
                 fontFamily: 'var(--font-heading)'
             }}>
-                A private, physician-informed fertility optimization program for men.
+                A private, physician-informed fertility program for men.
             </h1>
 
             <p className="instruction-text" style={{ maxWidth: '700px' }}>
-                Menvy delivers a personalized, end-to-end plan to improve sperm health, hormones, and reproductive outcomes—built from your data, lifestyle, and goals.
+                Menvy delivers a personalized, end-to-end plan to improve sperm health, hormones, and reproductive outcomes—built around your data and goals.
             </p>
 
             <form onSubmit={handleSubmit} autoComplete="on">
@@ -80,7 +80,7 @@ export const EmailStep: React.FC = () => {
                 />
 
                 <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Processing...' : 'Start Confidential Assessment'}
+                    {isLoading ? 'Processing...' : 'Request a Private Assessment'}
                 </button>
                 {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
             </form>
