@@ -46,6 +46,10 @@ export const EmailStep: React.FC = () => {
                     style={{ position: 'absolute', opacity: 0, width: 0, height: 0, pointerEvents: 'none' }}
                 />
 
+                <SocialAuth />
+
+                <div style={{ height: '12px' }}></div>
+
                 <label htmlFor="email" className="sr-only">Email Address</label>
                 <input
                     type="email"
@@ -57,16 +61,6 @@ export const EmailStep: React.FC = () => {
                     required
                     disabled={isLoading}
                 />
-
-
-
-                <SocialAuth />
-
-                <div className="flex items-center my-4">
-                    <div className="flex-grow border-t border-gray-300"></div>
-                    <span className="flex-shrink-0 mx-4 text-gray-500 text-sm">Or continue with email</span>
-                    <div className="flex-grow border-t border-gray-300"></div>
-                </div>
 
                 <button type="submit" disabled={isLoading}>
                     {isLoading ? 'Processing...' : 'Start Assessment'}
