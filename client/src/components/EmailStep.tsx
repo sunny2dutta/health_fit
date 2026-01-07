@@ -28,27 +28,30 @@ export const EmailStep: React.FC = () => {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="section active"
         >
-            <div className="menvy-brand">
-                <div className="menvy-logo">The Menvy Protocol</div>
-                <div className="menvy-tagline">by Ananta Systems</div>
+            {/* Restrained Header */}
+            <div style={{ textAlign: 'center', marginBottom: '48px', color: 'var(--text-muted)' }}>
+                <div style={{ fontSize: '1.25rem', fontWeight: '700', letterSpacing: '0.1em', color: 'var(--text-main)', marginBottom: '8px' }}>THE MENVY PROTOCOL</div>
+                <div style={{ fontSize: '0.9rem', marginBottom: '4px' }}>Men’s Reproductive & Fertility Health</div>
+                <div style={{ fontSize: '0.75rem', opacity: 0.8 }}>Developed and operated by Ananta Systems</div>
             </div>
 
             <h1 style={{
                 textAlign: 'center',
                 fontSize: '2.5rem',
-                fontWeight: '700',
-                marginBottom: '16px',
-                lineHeight: '1.2',
-                maxWidth: '700px',
+                fontWeight: '600',
+                marginBottom: '24px',
+                lineHeight: '1.3',
+                maxWidth: '800px',
                 marginLeft: 'auto',
                 marginRight: 'auto',
-                color: 'var(--text-main)'
+                color: 'var(--text-main)',
+                fontFamily: 'var(--font-heading)'
             }}>
-                Take control of your fertility with a plan built for your body.
+                A private, physician-informed fertility optimization program for men.
             </h1>
 
-            <p className="instruction-text">
-                Answer a confidential assessment and get personalized guidance to improve sperm quality, hormones, and reproductive health.
+            <p className="instruction-text" style={{ maxWidth: '700px' }}>
+                Menvy delivers a personalized, end-to-end plan to improve sperm health, hormones, and reproductive outcomes—built from your data, lifestyle, and goals.
             </p>
 
             <form onSubmit={handleSubmit} autoComplete="on">
