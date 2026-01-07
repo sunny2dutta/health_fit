@@ -11,6 +11,7 @@ interface AssessmentContextType extends AssessmentState {
     setSessionData: (userId: number, email: string) => void;
 
     restartAssessment: () => void;
+    retakeAssessment: () => void;
     currentQuestionIndex: number;
 }
 
@@ -51,8 +52,6 @@ export const AssessmentProvider: React.FC<{ children: ReactNode }> = ({ children
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session?.user?.email) {
                 console.log("User signed in via Supabase:", session.user.email);
-                // We rely on AuthCallback or EmailStep to handle the actual "Sync" and state transition.
-                // Just keep local state consistent if needed, but avoid side-effects here.
             }
         });
 
@@ -185,6 +184,19 @@ export const AssessmentProvider: React.FC<{ children: ReactNode }> = ({ children
         setCurrentQuestionIndex(0);
     };
 
+    const retakeAssessment = () => {
+        setState(prev => ({
+            ...prev,
+            currentStep: 1, // Skip email step
+            totalScore: 0,
+            answers: [],
+            // Preserve userId, userEmail, and userData
+            isLoading: false,
+            error: null
+        }));
+        setCurrentQuestionIndex(0);
+    };
+
     return (
         <AssessmentContext.Provider value={{
             ...state,
@@ -196,6 +208,7 @@ export const AssessmentProvider: React.FC<{ children: ReactNode }> = ({ children
             setSessionData,
 
             restartAssessment,
+            retakeAssessment,
             currentQuestionIndex
         }}>
             {children}
