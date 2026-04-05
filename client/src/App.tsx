@@ -320,7 +320,7 @@ function App() {
             </p>
           </div>
 
-          <form className="waitlist-form" onSubmit={handleSubmit}>
+          <form className="waitlist-form" onSubmit={handleSubmit} autoComplete="on">
             <label htmlFor="email" className="sr-only">
               Email address
             </label>
@@ -329,6 +329,7 @@ function App() {
               name="email"
               type="email"
               autoComplete="email"
+              inputMode="email"
               placeholder="Email address"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -339,9 +340,10 @@ function App() {
             </label>
             <input
               id="whatsapp"
-              name="whatsapp"
+              name="tel"
               type="tel"
-              autoComplete="tel"
+              autoComplete="tel-national"
+              inputMode="tel"
               placeholder="WhatsApp number (optional)"
               value={whatsAppNumber}
               onChange={(event) => setWhatsAppNumber(event.target.value)}
