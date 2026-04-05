@@ -12,7 +12,7 @@ export class UserService {
     }
     async getWaitlistCount() {
         const realCount = await this.userRepo.getWaitlistCount();
-        const BASE_COUNT = 1243; // Marketing baseline
+        const BASE_COUNT = 101; // Marketing baseline
         return BASE_COUNT + (realCount || 0);
     }
 }
