@@ -120,7 +120,6 @@ function App() {
 
       const data = (await response.json()) as {
         success?: boolean;
-        alreadyJoined?: boolean;
         message?: string;
         status?: string;
         errors?: Array<{ field?: string; message?: string }>;
@@ -136,14 +135,10 @@ function App() {
       }
 
       setSubmissionState('success');
-      setMessage(
-        data.alreadyJoined
-          ? 'You are already on the private list. We will contact you as new openings are released.'
-          : 'You are in. Watch your inbox for first-access updates and invitation windows.',
-      );
+      setMessage(data.message || 'You are in. Watch your inbox for first-access updates and invitation windows.');
       setEmail('');
       setWhatsAppNumber('');
-      setWaitlistCount((current) => (current === null ? current : current + (data.alreadyJoined ? 0 : 1)));
+      setWaitlistCount((current) => (current === null ? current : current + 1));
     } catch (error) {
       console.error('Failed to join waitlist:', error);
       setSubmissionState('error');

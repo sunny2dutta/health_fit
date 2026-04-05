@@ -11,25 +11,19 @@ const __dirname = path.dirname(__filename);
 import { createApiRoutes } from './routes/apiRoutes.js';
 import { AppError } from './utils/AppError.js';
 import { UserController } from './controllers/UserController.js';
-import { ChatController } from './controllers/ChatController.js';
-import { FeedbackController } from './controllers/FeedbackController.js';
 
 
 interface AppDependencies {
     userController: UserController;
-    chatController: ChatController;
-    feedbackController: FeedbackController;
-
 }
 
-export const createApp = ({ userController, chatController, feedbackController }: AppDependencies): Express => {
+export const createApp = ({ userController }: AppDependencies): Express => {
     const app = express();
+    app.set('trust proxy', 1);
 
     // Security Middleware
-    // Relaxing CSP for debugging purposes. 
-    // In production, we should configure this properly.
     app.use(helmet({
-        contentSecurityPolicy: false, // Disable CSP temporarily to rule it out
+        contentSecurityPolicy: false,
         crossOriginEmbedderPolicy: false,
         crossOriginOpenerPolicy: false
     }));
@@ -62,28 +56,8 @@ export const createApp = ({ userController, chatController, feedbackController }
         res.sendFile('robots.txt', { root: '.' });
     });
 
-    // 🔍 Debug Endpoint: List files in client/dist
-    app.get('/api/debug-files', (_req: Request, res: Response) => {
-        const fs = require('fs');
-        const clientDist = path.join(__dirname, '../client/dist');
-        try {
-            const files = fs.readdirSync(clientDist);
-            res.json({
-                path: clientDist,
-                exists: true,
-                files: files
-            });
-        } catch (error: any) {
-            res.status(500).json({
-                path: clientDist,
-                exists: false,
-                error: error.message
-            });
-        }
-    });
-
     // Routes
-    app.use('/api', createApiRoutes(userController, chatController, feedbackController));
+    app.use('/api', createApiRoutes(userController));
 
     // Serve static files from the React app
     const clientBuildPath = path.join(__dirname, '../client/dist');

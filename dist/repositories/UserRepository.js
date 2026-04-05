@@ -4,42 +4,7 @@ export class UserRepository {
     constructor(supabaseClient) {
         this.supabase = supabaseClient;
     }
-    async createUser(email) {
-        const { data, error } = await this.supabase
-            .from("users")
-            .insert([{ email_id: email }])
-            .select("id, email_id")
-            .single();
-        if (error)
-            throw new AppError(`DB Error: ${error.message}`, 500);
-        return data;
-    }
-    async findByEmail(email) {
-        const { data, error } = await this.supabase
-            .from("users")
-            .select("id, email_id, is_waitlisted, phone")
-            .eq("email_id", email)
-            .single();
-        if (error) {
-            if (error.code === 'PGRST116')
-                return null;
-            throw new AppError(`DB Error: ${error.message}`, 500);
-        }
-        return data;
-    }
-    async updateWaitlistStatus(userId, status, phone) {
-        const updateData = { is_waitlisted: status };
-        if (phone) {
-            updateData.phone = phone;
-        }
-        const { error } = await this.supabase
-            .from("users")
-            .update(updateData)
-            .eq("id", userId);
-        if (error)
-            throw new AppError(`DB Error: ${error.message}`, 500);
-    }
-    async createWaitlistUser(email, phone) {
+    async upsertWaitlistUser(email, phone) {
         const insertData = {
             email_id: email,
             is_waitlisted: true
@@ -47,60 +12,14 @@ export class UserRepository {
         if (phone) {
             insertData.phone = phone;
         }
-        const { error } = await this.supabase
+        const { data, error } = await this.supabase
             .from("users")
-            .insert([insertData]);
-        if (error)
-            throw new AppError(`DB Error: ${error.message}`, 500);
-    }
-    async savePersonalInfo(userId, info) {
-        const { error } = await this.supabase
-            .from("personal_info")
-            .insert([{
-                user_id: userId,
-                full_name: info.full_name,
-                date_of_birth: info.date_of_birth,
-                phone: info.phone
-            }]);
-        if (error)
-            throw new AppError(`DB Error: ${error.message}`, 500);
-    }
-    async saveHealthConcerns(userId, concerns) {
-        const { error } = await this.supabase
-            .from("health_concerns")
-            .insert([{
-                user_id: userId,
-                concerns: concerns
-            }]);
-        if (error)
-            throw new AppError(`DB Error: ${error.message}`, 500);
-    }
-    async saveServicePreferences(userId, preferences) {
-        const { error } = await this.supabase
-            .from("service_preferences")
-            .insert([{
-                user_id: userId,
-                preferences: preferences
-            }]);
-        if (error)
-            throw new AppError(`DB Error: ${error.message}`, 500);
-    }
-    async saveAssessment(userId, score, answers) {
-        const { data: user } = await this.supabase
-            .from("users")
-            .select("email_id")
-            .eq("id", userId)
+            .upsert([insertData], { onConflict: "email_id" })
+            .select("id, email_id, is_waitlisted, phone")
             .single();
-        const { error } = await this.supabase
-            .from("assessments")
-            .insert([{
-                user_id: userId,
-                email_id: user?.email_id,
-                score: score,
-                assessment_questions: answers
-            }]);
         if (error)
             throw new AppError(`DB Error: ${error.message}`, 500);
+        return data;
     }
     async getWaitlistCount() {
         const { count, error } = await this.supabase
@@ -110,14 +29,5 @@ export class UserRepository {
         if (error)
             throw new AppError(`DB Error: ${error.message}`, 500);
         return count || 0;
-    }
-    async hasCompletedAssessment(userId) {
-        const { count, error } = await this.supabase
-            .from("assessments")
-            .select("*", { count: "exact", head: true })
-            .eq("user_id", userId);
-        if (error)
-            throw new AppError(`DB Error: ${error.message}`, 500);
-        return (count || 0) > 0;
     }
 }

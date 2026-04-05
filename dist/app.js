@@ -9,13 +9,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import { createApiRoutes } from './routes/apiRoutes.js';
 import { AppError } from './utils/AppError.js';
-export const createApp = ({ userController, chatController, feedbackController }) => {
+export const createApp = ({ userController }) => {
     const app = express();
+    app.set('trust proxy', 1);
     // Security Middleware
-    // Relaxing CSP for debugging purposes. 
-    // In production, we should configure this properly.
     app.use(helmet({
-        contentSecurityPolicy: false, // Disable CSP temporarily to rule it out
+        contentSecurityPolicy: false,
         crossOriginEmbedderPolicy: false,
         crossOriginOpenerPolicy: false
     }));
@@ -42,28 +41,8 @@ export const createApp = ({ userController, chatController, feedbackController }
     app.get('/robots.txt', (_req, res) => {
         res.sendFile('robots.txt', { root: '.' });
     });
-    // 🔍 Debug Endpoint: List files in client/dist
-    app.get('/api/debug-files', (_req, res) => {
-        const fs = require('fs');
-        const clientDist = path.join(__dirname, '../client/dist');
-        try {
-            const files = fs.readdirSync(clientDist);
-            res.json({
-                path: clientDist,
-                exists: true,
-                files: files
-            });
-        }
-        catch (error) {
-            res.status(500).json({
-                path: clientDist,
-                exists: false,
-                error: error.message
-            });
-        }
-    });
     // Routes
-    app.use('/api', createApiRoutes(userController, chatController, feedbackController));
+    app.use('/api', createApiRoutes(userController));
     // Serve static files from the React app
     const clientBuildPath = path.join(__dirname, '../client/dist');
     app.use(express.static(clientBuildPath, {
