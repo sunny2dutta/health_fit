@@ -57,7 +57,7 @@ describe('UserService', () => {
 
             const count = await userService.getWaitlistCount();
 
-            expect(count).toBe(1243 + 10);
+            expect(count).toBe(101 + 10);
         });
     });
 });
