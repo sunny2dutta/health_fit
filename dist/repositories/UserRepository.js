@@ -17,7 +17,7 @@ export class UserRepository {
     async findByEmail(email) {
         const { data, error } = await this.supabase
             .from("users")
-            .select("id, email_id, is_waitlisted")
+            .select("id, email_id, is_waitlisted, phone")
             .eq("email_id", email)
             .single();
         if (error) {
@@ -27,18 +27,29 @@ export class UserRepository {
         }
         return data;
     }
-    async updateWaitlistStatus(userId, status) {
+    async updateWaitlistStatus(userId, status, phone) {
+        const updateData = { is_waitlisted: status };
+        if (phone) {
+            updateData.phone = phone;
+        }
         const { error } = await this.supabase
             .from("users")
-            .update({ is_waitlisted: status })
+            .update(updateData)
             .eq("id", userId);
         if (error)
             throw new AppError(`DB Error: ${error.message}`, 500);
     }
-    async createWaitlistUser(email) {
+    async createWaitlistUser(email, phone) {
+        const insertData = {
+            email_id: email,
+            is_waitlisted: true
+        };
+        if (phone) {
+            insertData.phone = phone;
+        }
         const { error } = await this.supabase
             .from("users")
-            .insert([{ email_id: email, is_waitlisted: true }]);
+            .insert([insertData]);
         if (error)
             throw new AppError(`DB Error: ${error.message}`, 500);
     }

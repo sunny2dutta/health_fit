@@ -376,6 +376,28 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+.whatsapp-promo {
+  margin: 0 0 22px;
+  padding: 18px 18px 16px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(198, 30, 157, 0.12), rgba(131, 60, 173, 0.16));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.whatsapp-title {
+  margin: 0 0 6px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.whatsapp-copy {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
 .waitlist-form {
   display: grid;
   gap: 14px;

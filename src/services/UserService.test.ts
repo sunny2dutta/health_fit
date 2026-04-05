@@ -69,7 +69,7 @@ describe('UserService', () => {
 
             const result = await userService.joinWaitlist('test@example.com');
 
-            expect(mockUserRepo.updateWaitlistStatus).toHaveBeenCalledWith(1, true);
+            expect(mockUserRepo.updateWaitlistStatus).toHaveBeenCalledWith(1, true, undefined);
             expect(result).toEqual({ success: true, updated: true });
         });
 
@@ -78,7 +78,7 @@ describe('UserService', () => {
 
             const result = await userService.joinWaitlist('new@example.com');
 
-            expect(mockUserRepo.createWaitlistUser).toHaveBeenCalledWith('new@example.com');
+            expect(mockUserRepo.createWaitlistUser).toHaveBeenCalledWith('new@example.com', undefined);
             expect(result).toEqual({ success: true, created: true });
         });
     });

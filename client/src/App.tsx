@@ -61,6 +61,7 @@ const steps = [
 
 function App() {
   const [email, setEmail] = useState('');
+  const [whatsAppNumber, setWhatsAppNumber] = useState('');
   const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
   const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
   const [message, setMessage] = useState('');
@@ -111,16 +112,27 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({
+          email: email.trim(),
+          phone: whatsAppNumber.trim() || undefined,
+        }),
       });
 
       const data = (await response.json()) as {
         success?: boolean;
         alreadyJoined?: boolean;
+        message?: string;
+        status?: string;
+        errors?: Array<{ field?: string; message?: string }>;
       };
 
       if (!response.ok || !data.success) {
-        throw new Error('Unable to join waitlist');
+        const validationMessage = data.errors?.map((error) => error.message).filter(Boolean).join(', ');
+        throw new Error(
+          validationMessage ||
+            data.message ||
+            `Waitlist request failed with status ${response.status}`,
+        );
       }
 
       setSubmissionState('success');
@@ -130,11 +142,16 @@ function App() {
           : 'You are in. Watch your inbox for first-access updates and invitation windows.',
       );
       setEmail('');
+      setWhatsAppNumber('');
       setWaitlistCount((current) => (current === null ? current : current + (data.alreadyJoined ? 0 : 1)));
     } catch (error) {
       console.error('Failed to join waitlist:', error);
       setSubmissionState('error');
-      setMessage('Please enter a valid email address and try again.');
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : 'We could not join the waitlist right now. Please try again shortly.',
+      );
     }
   };
 
@@ -301,6 +318,13 @@ function App() {
             <p>Enter your best email for first-access alerts and concierge release updates.</p>
           </div>
 
+          <div className="whatsapp-promo">
+            <p className="whatsapp-title">Join our exclusive WhatsApp group</p>
+            <p className="whatsapp-copy">
+              Add your number for priority drops, insider release alerts, and fast-track access updates.
+            </p>
+          </div>
+
           <form className="waitlist-form" onSubmit={handleSubmit}>
             <label htmlFor="email" className="sr-only">
               Email address
@@ -313,6 +337,19 @@ function App() {
               placeholder="Email address"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
+              disabled={submissionState === 'submitting'}
+            />
+            <label htmlFor="whatsapp" className="sr-only">
+              WhatsApp number
+            </label>
+            <input
+              id="whatsapp"
+              name="whatsapp"
+              type="tel"
+              autoComplete="tel"
+              placeholder="WhatsApp number (optional)"
+              value={whatsAppNumber}
+              onChange={(event) => setWhatsAppNumber(event.target.value)}
               disabled={submissionState === 'submitting'}
             />
             <button className="primary-button" type="submit" disabled={submissionState === 'submitting'}>

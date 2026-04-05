@@ -6,6 +6,7 @@ export interface User {
     id: number;
     email_id: string;
     is_waitlisted?: boolean;
+    phone?: string | null;
 }
 
 export interface PersonalInfo {
@@ -37,7 +38,7 @@ export class UserRepository {
     async findByEmail(email: string): Promise<User | null> {
         const { data, error } = await this.supabase
             .from("users")
-            .select("id, email_id, is_waitlisted")
+            .select("id, email_id, is_waitlisted, phone")
             .eq("email_id", email)
             .single();
 
@@ -48,19 +49,34 @@ export class UserRepository {
         return data as User;
     }
 
-    async updateWaitlistStatus(userId: number, status: boolean): Promise<void> {
+    async updateWaitlistStatus(userId: number, status: boolean, phone?: string): Promise<void> {
+        const updateData: { is_waitlisted: boolean; phone?: string } = { is_waitlisted: status };
+
+        if (phone) {
+            updateData.phone = phone;
+        }
+
         const { error } = await this.supabase
             .from("users")
-            .update({ is_waitlisted: status })
+            .update(updateData)
             .eq("id", userId);
 
         if (error) throw new AppError(`DB Error: ${error.message}`, 500);
     }
 
-    async createWaitlistUser(email: string): Promise<void> {
+    async createWaitlistUser(email: string, phone?: string): Promise<void> {
+        const insertData: { email_id: string; is_waitlisted: boolean; phone?: string } = {
+            email_id: email,
+            is_waitlisted: true
+        };
+
+        if (phone) {
+            insertData.phone = phone;
+        }
+
         const { error } = await this.supabase
             .from("users")
-            .insert([{ email_id: email, is_waitlisted: true }]);
+            .insert([insertData]);
 
         if (error) throw new AppError(`DB Error: ${error.message}`, 500);
     }

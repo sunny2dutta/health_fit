@@ -19,16 +19,16 @@ export class UserService {
             has_completed_assessment: false
         };
     }
-    async joinWaitlist(email) {
+    async joinWaitlist(email, phone) {
         const existingUser = await this.userRepo.findByEmail(email);
         if (existingUser) {
             if (existingUser.is_waitlisted) {
                 return { success: true, alreadyJoined: true };
             }
-            await this.userRepo.updateWaitlistStatus(existingUser.id, true);
+            await this.userRepo.updateWaitlistStatus(existingUser.id, true, phone);
             return { success: true, updated: true };
         }
-        await this.userRepo.createWaitlistUser(email);
+        await this.userRepo.createWaitlistUser(email, phone);
         return { success: true, created: true };
     }
     async savePersonalInfo(userId, info) {
