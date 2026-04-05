@@ -60,8 +60,6 @@ const steps = [
 ];
 
 function App() {
-  const [email, setEmail] = useState('');
-  const [whatsAppNumber, setWhatsAppNumber] = useState('');
   const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
   const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
   const [message, setMessage] = useState('');
@@ -96,6 +94,9 @@ function App() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get('email') || '').trim();
+    const whatsAppNumber = String(formData.get('tel') || '').trim();
 
     if (!email.trim()) {
       setSubmissionState('error');
@@ -136,8 +137,7 @@ function App() {
 
       setSubmissionState('success');
       setMessage(data.message || 'You are in. Watch your inbox for first-access updates and invitation windows.');
-      setEmail('');
-      setWhatsAppNumber('');
+      event.currentTarget.reset();
       setWaitlistCount((current) => (current === null ? current : current + 1));
     } catch (error) {
       console.error('Failed to join waitlist:', error);
@@ -321,7 +321,7 @@ function App() {
           </div>
 
           <form className="waitlist-form" onSubmit={handleSubmit} autoComplete="on">
-            <label htmlFor="email" className="sr-only">
+            <label htmlFor="email" className="field-label">
               Email address
             </label>
             <input
@@ -331,22 +331,20 @@ function App() {
               autoComplete="email"
               inputMode="email"
               placeholder="Email address"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              defaultValue=""
               disabled={submissionState === 'submitting'}
             />
-            <label htmlFor="whatsapp" className="sr-only">
+            <label htmlFor="whatsapp" className="field-label">
               WhatsApp number
             </label>
             <input
               id="whatsapp"
               name="tel"
               type="tel"
-              autoComplete="tel-national"
+              autoComplete="tel"
               inputMode="tel"
               placeholder="WhatsApp number (optional)"
-              value={whatsAppNumber}
-              onChange={(event) => setWhatsAppNumber(event.target.value)}
+              defaultValue=""
               disabled={submissionState === 'submitting'}
             />
             <button className="primary-button" type="submit" disabled={submissionState === 'submitting'}>

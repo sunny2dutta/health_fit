@@ -403,6 +403,14 @@
   gap: 14px;
 }
 
+.field-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
 .waitlist-form input {
   width: 100%;
   min-height: 58px;
