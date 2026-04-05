@@ -153,8 +153,36 @@ To build the entire application for production:
 
 ## 🔄 CI/CD Pipeline
 
-A GitHub Actions workflow (`.github/workflows/ci.yml`) is configured to automatically run on every push to `main`:
+A GitHub Actions workflow (`.github/workflows/ci.yml`) automatically runs on pushes and pull requests targeting `main` or `master`:
 1.  Installs dependencies.
 2.  Lints the codebase.
 3.  Builds the project to check for type errors.
 4.  Runs the test suite.
+
+A deployment workflow (`.github/workflows/deploy.yml`) now runs automatically after CI succeeds on `main` or `master`, which covers both direct pushes and merges to `main`.
+
+### Deployment Setup
+
+The deploy workflow is configured for Google Cloud Run using GitHub Actions and Workload Identity Federation.
+
+Add these GitHub Actions secrets in the repository settings:
+
+- `GCP_PROJECT_ID`: Your Google Cloud project ID.
+- `GCP_WORKLOAD_IDENTITY_PROVIDER`: Full provider resource name, for example `projects/123456789/locations/global/workloadIdentityPools/github/providers/github`.
+- `GCP_SERVICE_ACCOUNT`: Service account email used by GitHub Actions, for example `github-deployer@your-project-id.iam.gserviceaccount.com`.
+
+The workflow deploys this repo to:
+
+- Cloud Run service: `healthfit`
+- Region: `europe-west1`
+
+The service account used above should have at least:
+
+- `roles/run.admin`
+- `roles/iam.serviceAccountUser`
+- permissions required for source deployments via Cloud Build in your project
+
+For Replit deployments, the `.replit` file is configured to use:
+
+- Build command: `npm run build`
+- Run command: `npm start`

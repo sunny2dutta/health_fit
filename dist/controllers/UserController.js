@@ -13,7 +13,8 @@ export class UserController {
                 success: true,
                 message: "Email saved",
                 user_id: user.id,
-                email: user.email_id
+                email: user.email_id,
+                has_completed_assessment: user.has_completed_assessment
             });
         }
         catch (error) {

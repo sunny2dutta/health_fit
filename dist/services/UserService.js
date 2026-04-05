@@ -6,12 +6,18 @@ export class UserService {
     async registerEmail(email) {
         const existingUser = await this.userRepo.findByEmail(email);
         if (existingUser) {
+            const hasAssessment = await this.userRepo.hasCompletedAssessment(existingUser.id);
             return {
                 ...existingUser,
-                isExisting: true
+                isExisting: true,
+                has_completed_assessment: hasAssessment
             };
         }
-        return await this.userRepo.createUser(email);
+        const newUser = await this.userRepo.createUser(email);
+        return {
+            ...newUser,
+            has_completed_assessment: false
+        };
     }
     async joinWaitlist(email) {
         const existingUser = await this.userRepo.findByEmail(email);
