@@ -5,6 +5,7 @@ import { UserRepository } from '../repositories/UserRepository';
 // Mock UserRepository
 const mockUserRepo = {
     findByEmail: vi.fn(),
+    hasCompletedAssessment: vi.fn(),
     createUser: vi.fn(),
     updateWaitlistStatus: vi.fn(),
     createWaitlistUser: vi.fn(),
@@ -27,11 +28,13 @@ describe('UserService', () => {
         it('should return existing user if email exists', async () => {
             const mockUser = { id: 1, email_id: 'test@example.com' };
             vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(mockUser);
+            vi.mocked(mockUserRepo.hasCompletedAssessment).mockResolvedValue(true);
 
             const result = await userService.registerEmail('test@example.com');
 
             expect(mockUserRepo.findByEmail).toHaveBeenCalledWith('test@example.com');
-            expect(result).toEqual({ ...mockUser, isExisting: true });
+            expect(mockUserRepo.hasCompletedAssessment).toHaveBeenCalledWith(1);
+            expect(result).toEqual({ ...mockUser, isExisting: true, has_completed_assessment: true });
             expect(mockUserRepo.createUser).not.toHaveBeenCalled();
         });
 
@@ -44,7 +47,8 @@ describe('UserService', () => {
 
             expect(mockUserRepo.findByEmail).toHaveBeenCalledWith('new@example.com');
             expect(mockUserRepo.createUser).toHaveBeenCalledWith('new@example.com');
-            expect(result).toEqual(newUser);
+            expect(result).toEqual({ ...newUser, has_completed_assessment: false });
+            expect(mockUserRepo.hasCompletedAssessment).not.toHaveBeenCalled();
         });
     });
 
