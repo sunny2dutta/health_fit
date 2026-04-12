@@ -2,6 +2,10 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useAssessment } from '../context/AssessmentContext';
+import { getApiUrl } from '../lib/api';
+
+const getErrorMessage = (error: unknown, fallback: string) =>
+    error instanceof Error ? error.message : fallback;
 
 export const AuthCallback: React.FC = () => {
     const navigate = useNavigate();
@@ -48,9 +52,9 @@ export const AuthCallback: React.FC = () => {
                         subscription.unsubscribe();
                     };
                 }
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error("Auth Init Error:", err);
-                if (mounted) setError(err.message || 'Authentication failed');
+                if (mounted) setError(getErrorMessage(err, 'Authentication failed'));
             }
         };
 
@@ -59,7 +63,7 @@ export const AuthCallback: React.FC = () => {
             try {
                 // Sync with backend
                 console.log("Syncing user:", email);
-                const response = await fetch('/api/save-email', {
+                const response = await fetch(getApiUrl('/api/save-email'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email }),
@@ -82,12 +86,12 @@ export const AuthCallback: React.FC = () => {
                 } else {
                     navigate('/');
                 }
-            } catch (e: any) {
+            } catch (e: unknown) {
                 console.error("Error processing user:", e);
-                if (e.name === 'AbortError') {
+                if (e instanceof DOMException && e.name === 'AbortError') {
                     if (mounted) setError("Connection timed out. Please check your internet or try again.");
                 } else {
-                    if (mounted) setError(e.message || "Failed to sync user data");
+                    if (mounted) setError(getErrorMessage(e, "Failed to sync user data"));
                 }
             }
         };

@@ -3,11 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { ZodError } from 'zod';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 import { createApiRoutes } from './routes/apiRoutes.js';
 import { AppError } from './utils/AppError.js';
 import { UserController } from './controllers/UserController.js';
@@ -22,6 +17,10 @@ interface AppDependencies {
 export const createApp = ({ userController, testimonialController }: AppDependencies): Express => {
     const app = express();
     app.set('trust proxy', 1);
+    const allowedOrigins = (process.env.FRONTEND_ORIGINS || '')
+        .split(',')
+        .map(origin => origin.trim())
+        .filter(Boolean);
 
     // Security Middleware
     app.use(helmet({
@@ -45,7 +44,16 @@ export const createApp = ({ userController, testimonialController }: AppDependen
     app.use('/api', limiter);
 
     // Middleware
-    app.use(cors());
+    app.use(cors({
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+                callback(null, true);
+                return;
+            }
+
+            callback(new Error('Not allowed by CORS'));
+        }
+    }));
     app.use(express.json());
 
     // 🔥 Serve sitemap.xml explicitly
@@ -60,26 +68,6 @@ export const createApp = ({ userController, testimonialController }: AppDependen
 
     // Routes
     app.use('/api', createApiRoutes(userController, testimonialController));
-
-    // Serve static files from the React app
-    const clientBuildPath = path.join(__dirname, '../client/dist');
-    app.use(express.static(clientBuildPath, {
-        setHeaders: (res, path) => {
-            if (path.endsWith('index.html')) {
-                res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-                res.setHeader('Pragma', 'no-cache');
-                res.setHeader('Expires', '0');
-            } else {
-                res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-            }
-        }
-    }));
-
-    // The "catchall" handler: for any request that doesn't
-    // match one above, send back React's index.html file.
-    app.get('*', (_req, res) => {
-        res.sendFile(path.join(clientBuildPath, 'index.html'));
-    });
 
     // Global Error Handler
     app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {

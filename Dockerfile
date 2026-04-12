@@ -13,8 +13,7 @@ RUN npm ci --ignore-scripts
 # Copy the rest of the application code
 COPY . .
 
-# Build the application (client and server)
-# This ensures artifacts are created inside the image
+# Build the backend application
 RUN npm run build
 
 # Create a non-root user to run the application

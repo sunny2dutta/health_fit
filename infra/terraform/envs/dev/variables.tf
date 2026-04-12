@@ -26,6 +26,20 @@ variable "service_account_email" {
   default = null
 }
 
+variable "frontend_bucket_name" {
+  type = string
+}
+
+variable "domain_name" {
+  type    = string
+  default = ""
+}
+
+variable "frontend_origin" {
+  type    = string
+  default = ""
+}
+
 variable "env_vars" {
   type    = map(string)
   default = {}

@@ -2,6 +2,10 @@ project_id   = "your-gcp-project-id"
 region       = "europe-west1"
 service_name = "healthfit"
 artifact_registry_repository_id = "healthfit"
+frontend_bucket_name = "healthfit-prod-frontend"
+domain_name          = "app.example.com"
+# Optional override. If omitted, Terraform derives https://<domain_name>.
+# frontend_origin     = "https://app.example.com"
 
 # The workflow will usually inject an image tag automatically.
 image = "europe-west1-docker.pkg.dev/your-gcp-project-id/healthfit/healthfit:prod"

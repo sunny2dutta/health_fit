@@ -3,8 +3,24 @@ name: deploy-api-dev
 on:
   pull_request:
     branches: [main, master]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'Dockerfile'
+      - '.github/workflows/deploy-api-dev.yml'
+      - 'infra/terraform/**'
   push:
     branches: [main, master]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'Dockerfile'
+      - '.github/workflows/deploy-api-dev.yml'
+      - 'infra/terraform/**'
   workflow_dispatch:
 
 concurrency:
@@ -78,21 +94,9 @@ jobs:
       - name: Run backend tests
         run: npm test
 
-  build:
+  build-backend:
     needs: prepare-trigger
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: backend
-            working_directory: .
-            install: npm ci --ignore-scripts
-            build: npx tsc --noEmit
-          - name: frontend
-            working_directory: client
-            install: npm ci --ignore-scripts
-            build: npm run build
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -104,20 +108,16 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            client/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        working-directory: ${{ matrix.working_directory }}
-        run: ${{ matrix.install }}
+        run: npm ci --ignore-scripts
 
-      - name: Build ${{ matrix.name }}
-        working-directory: ${{ matrix.working_directory }}
-        run: ${{ matrix.build }}
+      - name: Build backend
+        run: npm run build:server
 
   deploy-dev-terraform-plan:
-    needs: [prepare-trigger, matrix-setup, run-backend-tests, build]
+    needs: [prepare-trigger, matrix-setup, run-backend-tests, build-backend]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -157,6 +157,9 @@ jobs:
             -var="region=${{ env.CLOUD_RUN_REGION }}" \
             -var="service_name=${{ env.CLOUD_RUN_SERVICE }}" \
             -var="artifact_registry_repository_id=${{ env.ARTIFACT_REGISTRY_REPOSITORY }}" \
+            -var="frontend_bucket_name=${{ secrets.FRONTEND_BUCKET_DEV }}" \
+            -var="domain_name=${{ secrets.APP_DOMAIN_DEV }}" \
+            -var="frontend_origin=https://${{ secrets.APP_DOMAIN_DEV }}" \
             -var="image=${{ needs.prepare-trigger.outputs.image_uri }}"
 
       - name: Summarize terraform plan
@@ -220,6 +223,9 @@ jobs:
             -var="region=${{ env.CLOUD_RUN_REGION }}" \
             -var="service_name=${{ env.CLOUD_RUN_SERVICE }}" \
             -var="artifact_registry_repository_id=${{ env.ARTIFACT_REGISTRY_REPOSITORY }}" \
+            -var="frontend_bucket_name=${{ secrets.FRONTEND_BUCKET_DEV }}" \
+            -var="domain_name=${{ secrets.APP_DOMAIN_DEV }}" \
+            -var="frontend_origin=https://${{ secrets.APP_DOMAIN_DEV }}" \
             -var="image=${{ needs.prepare-trigger.outputs.image_uri }}"
 
       - name: Configure Docker auth for Artifact Registry
@@ -241,4 +247,15 @@ jobs:
             -var="region=${{ env.CLOUD_RUN_REGION }}" \
             -var="service_name=${{ env.CLOUD_RUN_SERVICE }}" \
             -var="artifact_registry_repository_id=${{ env.ARTIFACT_REGISTRY_REPOSITORY }}" \
+            -var="frontend_bucket_name=${{ secrets.FRONTEND_BUCKET_DEV }}" \
+            -var="domain_name=${{ secrets.APP_DOMAIN_DEV }}" \
+            -var="frontend_origin=https://${{ secrets.APP_DOMAIN_DEV }}" \
             -var="image=${{ needs.prepare-trigger.outputs.image_uri }}"
+
+      - name: Smoke test live API route
+        run: |
+          curl --fail --silent --show-error \
+            --retry 10 \
+            --retry-all-errors \
+            --retry-delay 6 \
+            "https://${{ secrets.APP_DOMAIN_DEV }}/api/waitlist-count"

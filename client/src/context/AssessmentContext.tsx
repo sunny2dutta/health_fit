@@ -1,6 +1,8 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, type ReactNode } from 'react';
 import { type AssessmentState, type Answer, type UserData, QUESTIONS } from '../types';
 import { supabase } from '../supabaseClient';
+import { getApiUrl } from '../lib/api';
 
 interface AssessmentContextType extends AssessmentState {
     submitEmail: (email: string) => Promise<void>;
@@ -16,6 +18,9 @@ interface AssessmentContextType extends AssessmentState {
 }
 
 const AssessmentContext = createContext<AssessmentContextType | undefined>(undefined);
+
+const getErrorMessage = (error: unknown, fallback: string) =>
+    error instanceof Error ? error.message : fallback;
 
 export const useAssessment = () => {
     const context = useContext(AssessmentContext);
@@ -58,9 +63,9 @@ export const AssessmentProvider: React.FC<{ children: ReactNode }> = ({ children
         return () => subscription.unsubscribe();
     }, []);
 
-    const postData = async (url: string, data: any) => {
+    const postData = async (url: string, data: unknown) => {
         try {
-            const response = await fetch(url, {
+            const response = await fetch(getApiUrl(url), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
@@ -72,7 +77,7 @@ export const AssessmentProvider: React.FC<{ children: ReactNode }> = ({ children
             }
 
             return await response.json();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(`Error posting to ${url}:`, error);
             throw error;
         }
@@ -90,8 +95,8 @@ export const AssessmentProvider: React.FC<{ children: ReactNode }> = ({ children
             } else {
                 throw new Error("No user ID returned");
             }
-        } catch (error: any) {
-            setState(prev => ({ ...prev, isLoading: false, error: error.message }));
+        } catch (error: unknown) {
+            setState(prev => ({ ...prev, isLoading: false, error: getErrorMessage(error, 'Failed to submit email') }));
             // Revert step if critical? For now, we let them continue but show error.
         }
     };
@@ -125,8 +130,12 @@ export const AssessmentProvider: React.FC<{ children: ReactNode }> = ({ children
             });
 
             setState(prev => ({ ...prev, currentStep: 3, isLoading: false }));
-        } catch (error: any) {
-            setState(prev => ({ ...prev, isLoading: false, error: error.message }));
+        } catch (error: unknown) {
+            setState(prev => ({
+                ...prev,
+                isLoading: false,
+                error: getErrorMessage(error, 'Failed to submit personal information')
+            }));
         }
     };
 
@@ -141,8 +150,12 @@ export const AssessmentProvider: React.FC<{ children: ReactNode }> = ({ children
             });
 
             setState(prev => ({ ...prev, currentStep: 4, isLoading: false }));
-        } catch (error: any) {
-            setState(prev => ({ ...prev, isLoading: false, error: error.message }));
+        } catch (error: unknown) {
+            setState(prev => ({
+                ...prev,
+                isLoading: false,
+                error: getErrorMessage(error, 'Failed to submit health concerns')
+            }));
         }
     };
 
@@ -165,8 +178,12 @@ export const AssessmentProvider: React.FC<{ children: ReactNode }> = ({ children
             });
 
             setState(prev => ({ ...prev, currentStep: 5, isLoading: false }));
-        } catch (error: any) {
-            setState(prev => ({ ...prev, isLoading: false, error: error.message }));
+        } catch (error: unknown) {
+            setState(prev => ({
+                ...prev,
+                isLoading: false,
+                error: getErrorMessage(error, 'Failed to submit service preferences')
+            }));
         }
     };
 

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { getApiUrl } from './lib/api';
 import './App.css';
 
 type SubmissionState = 'idle' | 'submitting' | 'success' | 'error';
@@ -161,7 +162,7 @@ function App() {
   useEffect(() => {
     const loadWaitlistCount = async () => {
       try {
-        const response = await fetch('/api/waitlist-count');
+        const response = await fetch(getApiUrl('/api/waitlist-count'));
         if (!response.ok) {
           throw new Error('Unable to load waitlist count');
         }
@@ -181,7 +182,7 @@ function App() {
   useEffect(() => {
     const loadTestimonials = async () => {
       try {
-        const response = await fetch('/api/testimonials');
+        const response = await fetch(getApiUrl('/api/testimonials'));
         if (!response.ok) {
           throw new Error('Unable to load testimonials');
         }
@@ -239,7 +240,7 @@ function App() {
     setMessage('');
 
     try {
-      const response = await fetch('/api/join-waitlist', {
+      const response = await fetch(getApiUrl('/api/join-waitlist'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

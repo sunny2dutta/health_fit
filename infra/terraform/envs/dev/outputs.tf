@@ -9,3 +9,15 @@ output "artifact_registry_repository_url" {
 output "service_uri" {
   value = module.app.service_uri
 }
+
+output "frontend_bucket_name" {
+  value = google_storage_bucket.frontend.name
+}
+
+output "load_balancer_ip" {
+  value = google_compute_global_address.app.address
+}
+
+output "domain_name" {
+  value = var.domain_name
+}

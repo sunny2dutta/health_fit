@@ -1,0 +1,104 @@
+name: deploy-frontend-dev
+
+on:
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'client/**'
+      - '.github/workflows/deploy-frontend-dev.yml'
+  push:
+    branches: [main, master]
+    paths:
+      - 'client/**'
+      - '.github/workflows/deploy-frontend-dev.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-frontend-dev-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-frontend:
+    runs-on: ubuntu-latest
+    outputs:
+      should_apply: ${{ steps.meta.outputs.should_apply }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - id: meta
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "should_apply=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_apply=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: client
+        run: npm ci --ignore-scripts
+
+      - name: Build frontend
+        working-directory: client
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: npm run build
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: client/dist
+
+  deploy-frontend:
+    needs: build-frontend
+    if: needs.build-frontend.outputs.should_apply == 'true'
+    runs-on: ubuntu-latest
+    environment: development
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: client/dist
+
+      - name: Prepare SPA fallback files
+        run: cp client/dist/index.html client/dist/404.html
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Sync static frontend to bucket
+        run: |
+          gcloud storage rsync client/dist gs://${{ secrets.FRONTEND_BUCKET_DEV }} --recursive --delete-unmatched-destination-objects
+
+      - name: Disable cache for entry documents
+        run: |
+          gcloud storage objects update gs://${{ secrets.FRONTEND_BUCKET_DEV }}/index.html --cache-control="no-cache,no-store,max-age=0,must-revalidate"
+          gcloud storage objects update gs://${{ secrets.FRONTEND_BUCKET_DEV }}/404.html --cache-control="no-cache,no-store,max-age=0,must-revalidate"
+
+      - name: Smoke test live frontend
+        run: |
+          curl --fail --silent --show-error \
+            --retry 10 \
+            --retry-all-errors \
+            --retry-delay 6 \
+            "https://${{ secrets.APP_DOMAIN_DEV }}/"

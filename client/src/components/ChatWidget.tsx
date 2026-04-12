@@ -5,6 +5,7 @@ import { X, Send } from 'lucide-react';
 import { useAssessment } from '../context/AssessmentContext';
 import { ActionPopup } from './ActionPopup';
 import type { Message, Action } from '../types/chat';
+import { getApiUrl } from '../lib/api';
 
 export const ChatWidget: React.FC = () => {
     const { totalScore, userId, userEmail } = useAssessment();
@@ -33,7 +34,7 @@ export const ChatWidget: React.FC = () => {
                 content: "Hi! I'm Menvy, your AI wellness companion. Based on your assessment results, I'm here to help you understand your health better and provide personalized guidance. What would you like to know?"
             }]);
         }
-    }, []);
+    }, [messages.length]);
 
     const handleSendMessage = async () => {
         if (!inputValue.trim() || isLoading) return;
@@ -44,7 +45,7 @@ export const ChatWidget: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('/api/chat', {
+            const response = await fetch(getApiUrl('/api/chat'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -83,7 +84,7 @@ export const ChatWidget: React.FC = () => {
 
     const handleFeedbackSubmit = async (feedback: string) => {
         try {
-            await fetch('/api/feedback', {
+            await fetch(getApiUrl('/api/feedback'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -119,7 +120,7 @@ export const ChatWidget: React.FC = () => {
                 { role: 'user', content: userResponse }
             ].map(m => ({ role: m.role as 'user' | 'assistant', content: m.content }));
 
-            const response = await fetch('/api/chat', {
+            const response = await fetch(getApiUrl('/api/chat'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

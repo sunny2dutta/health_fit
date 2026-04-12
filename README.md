@@ -113,7 +113,7 @@ Additionally, it provides an **AI Chat Interface** where users can ask health-re
 
 ### Development
 
-You can run the frontend and backend independently or concurrently.
+The frontend and backend are now intended to be deployed independently.
 
 **1. Start Backend (API):**
 ```bash
@@ -129,29 +129,25 @@ npm run dev
 ```
 *(Runs on http://localhost:5173)*
 
-The frontend is configured to proxy API requests (`/api/...`) to the backend.
+The frontend proxies `/api/...` to the backend in local development. In deployed environments behind the shared load balancer, the frontend uses the same origin and keeps calling `/api/...`.
 
 ### Production Build
 
-To build the entire application for production:
+Backend:
 
-1.  **Build Frontend:**
-    ```bash
-    cd client
-    npm run build
-    cd ..
-    ```
+```bash
+npm run build
+npm start
+```
 
-2.  **Build Backend:**
-    ```bash
-    npm run build
-    ```
+Frontend:
 
-3.  **Start Server:**
-    ```bash
-    npm start
-    ```
-    *(The backend will serve the built React files from `client/dist`)*
+```bash
+cd client
+npm run build
+```
+
+The backend is API-only and no longer serves `client/dist`.
 
 ## 🧪 Testing
 
@@ -161,13 +157,12 @@ To build the entire application for production:
 
 ## 🔄 CI/CD Pipeline
 
-A GitHub Actions workflow (`.github/workflows/ci.yml`) automatically runs on pushes and pull requests targeting `main` or `master`:
-1.  Installs dependencies.
-2.  Lints the codebase.
-3.  Builds the project to check for type errors.
-4.  Runs the test suite.
+The repo now uses separate workflows for frontend and backend:
 
-A deployment workflow (`.github/workflows/deploy.yml`) now runs automatically after CI succeeds on `main` or `master`, which covers both direct pushes and merges to `main`.
+- `ci-backend.yml`: lint, test, and build the Express API
+- `ci-frontend.yml`: lint and build the Vite app
+- `deploy-api-dev.yml`: deploy the backend plus shared entrypoint infrastructure via Terraform
+- `deploy-frontend-dev.yml`: deploy the built frontend into the load-balancer frontend bucket
 
 ## 🏗️ Terraform Scaffold
 
@@ -178,12 +173,11 @@ Included:
 - `dev` environment entrypoint
 - `prod` environment entrypoint
 - support for plain env vars and Secret Manager-backed env vars
+- global load balancer path routing for frontend bucket plus `/api/*` to Cloud Run
 
 Not yet included:
-- Artifact Registry repository provisioning
-- image build/push pipeline integration
 - Terraform backend/state configuration
-- IAM and networking modules beyond the minimal Cloud Run scaffold
+- DNS record management and broader IAM/networking modules
 
 To start:
 
@@ -196,7 +190,7 @@ terraform plan
 
 ### Deployment Setup
 
-The deploy workflow is configured for Google Cloud Run using GitHub Actions and Workload Identity Federation.
+Deployment uses Google Cloud Run, a frontend GCS bucket, and a global HTTP(S) load balancer with GitHub Actions and Workload Identity Federation.
 
 Add these GitHub Actions secrets in the repository settings:
 
@@ -204,16 +198,33 @@ Add these GitHub Actions secrets in the repository settings:
 - `GCP_WORKLOAD_IDENTITY_PROVIDER`: Full provider resource name, for example `projects/123456789/locations/global/workloadIdentityPools/github/providers/github`.
 - `GCP_SERVICE_ACCOUNT`: Service account email used by GitHub Actions, for example `github-deployer@your-project-id.iam.gserviceaccount.com`.
 - `TF_STATE_BUCKET_DEV`: GCS bucket name used for Terraform state in the dev workflow.
+- `FRONTEND_BUCKET_DEV`: GCS bucket name Terraform should create/manage for the frontend assets.
+- `APP_DOMAIN_DEV`: the shared public hostname that should serve both the frontend and `/api/*`.
+- `VITE_SUPABASE_URL`: frontend Supabase URL.
+- `VITE_SUPABASE_ANON_KEY`: frontend Supabase anon key.
 
-The workflow deploys this repo to:
+Backend deploy target:
 
-- Cloud Run service: `healthfit`
+- Cloud Run service: `healthfit-dev`
 - Region: `europe-west1`
+
+Frontend deploy target:
+
+- static assets synced to `gs://$FRONTEND_BUCKET_DEV`
+
+Shared public entrypoint:
+
+- global HTTP(S) load balancer
+- default traffic to the frontend bucket
+- `/api` and `/api/*` routed to Cloud Run
+- single IP and single hostname via `APP_DOMAIN_DEV`
 
 The service account used above should have at least:
 
 - `roles/run.admin`
 - `roles/iam.serviceAccountUser`
+- `roles/storage.admin`
+- `roles/compute.admin`
 - permissions required for source deployments via Cloud Build in your project
 
 For Replit deployments, the `.replit` file is configured to use:
@@ -228,8 +239,9 @@ The Terraform workflow expects:
 - a pre-created GCS bucket for Terraform state
 - Secret Manager secrets for runtime values such as `SUPABASE_SECRET_KEY` and `FIREWORKS_API_KEY`
 - Workload Identity auth from GitHub Actions into GCP
+- DNS for `APP_DOMAIN_DEV` pointed at the load balancer IP that Terraform outputs
 
-The dev deployment workflow now:
+The backend dev deployment workflow now:
 
 1. runs tests and builds
 2. initializes Terraform against the configured GCS backend
@@ -237,3 +249,10 @@ The dev deployment workflow now:
 4. bootstraps Artifact Registry on apply runs
 5. builds and pushes a tagged image
 6. applies Terraform to update Cloud Run to that exact image
+
+The frontend deployment workflow now:
+
+1. builds the Vite app for same-origin `/api` usage
+2. uploads the build artifact
+3. publishes `index.html` and `404.html` for the frontend bucket
+4. syncs the compiled static site to the configured GCS bucket
