@@ -4,18 +4,25 @@ export class UserRepository {
     constructor(supabaseClient) {
         this.supabase = supabaseClient;
     }
-    async upsertWaitlistUser(email, phone) {
+    async upsertWaitlistUser(submission) {
         const insertData = {
-            email_id: email,
+            email_id: submission.email,
             is_waitlisted: true
         };
-        if (phone) {
-            insertData.phone = phone;
-        }
+        if (submission.phone)
+            insertData.phone = submission.phone;
+        if (submission.fullName)
+            insertData.full_name = submission.fullName;
+        if (submission.city)
+            insertData.city = submission.city;
+        if (submission.track)
+            insertData.track = submission.track;
+        if (submission.gender)
+            insertData.gender = submission.gender;
         const { data, error } = await this.supabase
             .from("users")
             .upsert([insertData], { onConflict: "email_id" })
-            .select("id, email_id, is_waitlisted, phone")
+            .select("id, email_id, is_waitlisted, phone, full_name, city, track, gender")
             .single();
         if (error)
             throw new AppError(`DB Error: ${error.message}`, 500);

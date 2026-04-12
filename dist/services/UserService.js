@@ -3,8 +3,8 @@ export class UserService {
     constructor(userRepository) {
         this.userRepo = userRepository;
     }
-    async joinWaitlist(email, phone) {
-        await this.userRepo.upsertWaitlistUser(email, phone);
+    async joinWaitlist(submission) {
+        await this.userRepo.upsertWaitlistUser(submission);
         return {
             success: true,
             message: 'Successfully added to the private waitlist.'

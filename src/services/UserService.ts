@@ -1,5 +1,14 @@
 import { UserRepository } from '../repositories/UserRepository.js';
 
+export interface WaitlistSubmission {
+    email: string;
+    phone?: string;
+    fullName?: string;
+    city?: string;
+    track?: string;
+    gender?: string;
+}
+
 export class UserService {
     private userRepo: UserRepository;
 
@@ -7,8 +16,8 @@ export class UserService {
         this.userRepo = userRepository;
     }
 
-    async joinWaitlist(email: string, phone?: string): Promise<{ success: boolean; message: string }> {
-        await this.userRepo.upsertWaitlistUser(email, phone);
+    async joinWaitlist(submission: WaitlistSubmission): Promise<{ success: boolean; message: string }> {
+        await this.userRepo.upsertWaitlistUser(submission);
         return {
             success: true,
             message: 'Successfully added to the private waitlist.'

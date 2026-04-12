@@ -24,9 +24,9 @@ describe('UserService', () => {
                 is_waitlisted: true
             });
 
-            const result = await userService.joinWaitlist('test@example.com');
+            const result = await userService.joinWaitlist({ email: 'test@example.com' });
 
-            expect(mockUserRepo.upsertWaitlistUser).toHaveBeenCalledWith('test@example.com', undefined);
+            expect(mockUserRepo.upsertWaitlistUser).toHaveBeenCalledWith({ email: 'test@example.com' });
             expect(result).toEqual({
                 success: true,
                 message: 'Successfully added to the private waitlist.'
@@ -38,12 +38,25 @@ describe('UserService', () => {
                 id: 2,
                 email_id: 'new@example.com',
                 phone: '+15555550123',
+                full_name: 'Aarav Singh',
+                city: 'Mumbai',
+                track: 'Heart & Cardiometabolic',
+                gender: 'Male',
                 is_waitlisted: true
             });
 
-            const result = await userService.joinWaitlist('new@example.com', '+15555550123');
+            const submission = {
+                email: 'new@example.com',
+                phone: '+15555550123',
+                fullName: 'Aarav Singh',
+                city: 'Mumbai',
+                track: 'Heart & Cardiometabolic',
+                gender: 'Male'
+            };
 
-            expect(mockUserRepo.upsertWaitlistUser).toHaveBeenCalledWith('new@example.com', '+15555550123');
+            const result = await userService.joinWaitlist(submission);
+
+            expect(mockUserRepo.upsertWaitlistUser).toHaveBeenCalledWith(submission);
             expect(result).toEqual({
                 success: true,
                 message: 'Successfully added to the private waitlist.'

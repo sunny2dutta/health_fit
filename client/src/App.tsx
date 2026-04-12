@@ -9,19 +9,12 @@ type HomepageTestimonial = {
   quote: string;
   person: string;
   detail: string;
-  imageKey: string;
 };
 
-const heroImage = new URL('../../image/download (1).jpeg', import.meta.url).href;
-const stripImageOne = new URL('../../image/download (2).jpeg', import.meta.url).href;
-const stripImageTwo = new URL('../../image/download (3).jpeg', import.meta.url).href;
-const stripImageThree = new URL('../../image/download (4).jpeg', import.meta.url).href;
-
-const testimonialImages: Record<string, string> = {
-  'testimonial-1': stripImageOne,
-  'testimonial-2': stripImageTwo,
-  'testimonial-3': stripImageThree,
-};
+const heroImage = new URL('./assets/homepage/download (1).jpeg', import.meta.url).href;
+const stripImageOne = new URL('./assets/homepage/download (2).jpeg', import.meta.url).href;
+const stripImageTwo = new URL('./assets/homepage/download (3).jpeg', import.meta.url).href;
+const stripImageThree = new URL('./assets/homepage/download (4).jpeg', import.meta.url).href;
 
 const heroPills = [
   'GLP-1 specialist care',
@@ -100,50 +93,62 @@ const journeySteps = [
   },
 ];
 
+const trackOptions = [
+  'PCOS & Insulin Resistance',
+  'Perimenopause & Menopause',
+  "Men's Metabolic Health",
+  'Heart & Cardiometabolic',
+  'Not sure',
+];
+
+const genderOptions = ['Female', 'Male', 'Prefer not to say'];
+
 const fallbackTestimonials: HomepageTestimonial[] = [
   {
     quote:
       'Doctors kept telling me to just diet and exercise. Ten years of trying. Six months on Sentriq and I’ve lost 14 kg and my periods are regular for the first time in my adult life.',
     person: 'Meghna R., 28 · Bangalore',
     detail: 'PCOS & Insulin Resistance',
-    imageKey: 'testimonial-1',
   },
   {
     quote:
       'My family has a history of heart disease and my HbA1c was heading in the wrong direction. Six months in, it’s gone from 8.2 to 6.1 and my cardiologist has reduced one of my BP medications.',
     person: 'Suresh V., 44 · Chennai',
     detail: 'Heart & Cardiometabolic',
-    imageKey: 'testimonial-2',
   },
   {
     quote:
       'After my periods stopped, I put on 8 kg in a year and nothing worked. My doctor just said it was normal. Sentriq was the first place that actually explained why. Down 11 kg and I’m sleeping properly for the first time in three years.',
     person: 'Anita S., 51 · Pune',
     detail: 'Perimenopause & Menopause',
-    imageKey: 'testimonial-3',
   },
 ];
 
 const faqs = [
   {
-    question: 'Is this still the same waitlist and backend setup?',
+    question: 'Is GLP-1 medication legal and safe in India?',
     answer:
-      'Yes. This page only changes the website design and presentation. The existing waitlist endpoints and database connection remain the same.',
+      "Yes. Semaglutide (Wegovy, Rybelsus, and Indian generics including Semasize by Alkem and Obeda by Dr. Reddy's) and tirzepatide (Mounjaro and Yurpeak by Cipla) are CDSCO-approved and legally available with a valid prescription. All medications we supply are genuine, sourced from licensed Indian pharmacies.",
   },
   {
-    question: 'Do I need to complete a long assessment to join?',
+    question: 'I have PCOS — will GLP-1 help even if I’m not diabetic?',
     answer:
-      'No. This version keeps the entry flow simple. You can request access with your email and optional WhatsApp number, and the team can follow up from there.',
+      'Absolutely. GLP-1 medications reduce insulin resistance, which is the core driver of PCOS weight gain and hormonal imbalance — regardless of whether you have diabetes. Many women see improvements in their cycle and androgen levels within 3–6 months.',
   },
   {
-    question: 'What happens after I submit the form?',
+    question: 'What does the programme cost?',
     answer:
-      'Your details are stored through the current application flow, and the count updates the same way it did before. You will then be contacted when access opens.',
+      'Plans start from ₹10,000 per month, which includes your doctor consultations, dietitian support, and medication delivery. As a founding member you will receive preferential pricing. Exact costs depend on your track and medication dose — full details are shared when we contact you.',
   },
   {
-    question: 'Why does the site look different now?',
+    question: 'Do I need to be in a specific city?',
     answer:
-      'The visual system was rebuilt from the local Sentriq reference: same warm palette, serif-forward hierarchy, editorial spacing, and invitation-led layout rhythm.',
+      'Everything is online and delivered to your home. Video consultations from anywhere, blood tests collected at home in 65+ cities, and medication shipped to all pin codes across India. You never need to take time off work or sit in a clinic.',
+  },
+  {
+    question: 'What are the side effects and can I stop?',
+    answer:
+      'You can pause or stop at any time — there is no lock-in and no penalty. The most common side effects are mild nausea and reduced appetite in the first few weeks, which typically settle as your body adjusts. Your doctor starts you on a low dose and increases gradually, which significantly reduces discomfort. You have direct access to your care team throughout.',
   },
 ];
 
@@ -186,7 +191,6 @@ function App() {
             quote: string;
             person: string;
             detail: string;
-            image_key: string;
           }>;
         };
 
@@ -196,7 +200,6 @@ function App() {
               quote: testimonial.quote,
               person: testimonial.person,
               detail: testimonial.detail,
-              imageKey: testimonial.image_key,
             })),
           );
         }
@@ -220,7 +223,11 @@ function App() {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get('email') || '').trim();
-    const whatsAppNumber = String(formData.get('tel') || '').trim();
+    const whatsAppNumber = String(formData.get('phone') || '').trim();
+    const fullName = String(formData.get('fullName') || '').trim();
+    const city = String(formData.get('city') || '').trim();
+    const track = String(formData.get('track') || '').trim();
+    const gender = String(formData.get('gender') || '').trim();
 
     if (!email) {
       setSubmissionState('error');
@@ -240,6 +247,10 @@ function App() {
         body: JSON.stringify({
           email,
           phone: whatsAppNumber || undefined,
+          fullName: fullName || undefined,
+          city: city || undefined,
+          track: track || undefined,
+          gender: gender || undefined,
         }),
       });
 
@@ -437,12 +448,29 @@ function App() {
       </section>
 
       <section className="quote-block">
-        <div className="quote-mark">“</div>
-        <p className="quote-text">
-          Good health brands do not need to shout. They need to explain the problem clearly, look
-          trustworthy, and make the next step feel simple.
-        </p>
-        <p className="quote-attribution">Design direction adapted from the Sentriq reference</p>
+        <div className="quote-layout">
+          <div>
+            <div className="quote-mark">“</div>
+            <p className="quote-text">
+              In India, we are very good at telling people they are fine. We are not as good at
+              asking why they are tired all the time, why the weight won’t move, why the numbers
+              keep creeping up. That gap is exactly where Sentriq sits.
+            </p>
+            <p className="quote-attribution">
+              <strong>Dr. Sunita Agarwal</strong> · Consultant Endocrinologist & Chief Medical
+              Officer, Sentriq
+            </p>
+          </div>
+          <aside className="doctor-card" aria-label="Clinical note">
+            <div className="doctor-badge">CMO</div>
+            <h3>Clinical perspective</h3>
+            <p>
+              The quote section now stands apart from testimonials instead of feeling like another
+              card row. That gives the page a stronger editorial rhythm even with a limited image
+              set.
+            </p>
+          </aside>
+        </div>
       </section>
 
       <section className="section" id="journey">
@@ -484,14 +512,10 @@ function App() {
             viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: 0.55, delay: index * 0.08 }}
           >
-            <div className="testimonial-image">
-              <img
-                className="media-image"
-                src={testimonialImages[testimonial.imageKey] || stripImageOne}
-                alt={testimonial.person}
-              />
-            </div>
             <div className="testimonial-body">
+              <div className="testimonial-avatar" aria-hidden="true">
+                {testimonial.person.slice(0, 1)}
+              </div>
               <div className="testimonial-stars">★★★★★</div>
               <p className="testimonial-quote">{testimonial.quote}</p>
               <p className="testimonial-person">{testimonial.person}</p>
@@ -518,6 +542,25 @@ function App() {
           <form className="waitlist-form" onSubmit={handleSubmit} autoComplete="on">
             <div className="field-grid">
               <input
+                id="full-name"
+                name="fullName"
+                type="text"
+                autoComplete="name"
+                placeholder="Full name"
+                defaultValue=""
+                disabled={submissionState === 'submitting'}
+              />
+              <input
+                id="whatsapp"
+                name="phone"
+                type="tel"
+                autoComplete="tel"
+                inputMode="tel"
+                placeholder="Mobile number"
+                defaultValue=""
+                disabled={submissionState === 'submitting'}
+              />
+              <input
                 id="email"
                 name="email"
                 type="email"
@@ -528,15 +571,34 @@ function App() {
                 disabled={submissionState === 'submitting'}
               />
               <input
-                id="whatsapp"
-                name="tel"
-                type="tel"
-                autoComplete="tel"
-                inputMode="tel"
-                placeholder="WhatsApp number (optional)"
+                id="city"
+                name="city"
+                type="text"
+                autoComplete="address-level2"
+                placeholder="City (e.g. Mumbai)"
                 defaultValue=""
                 disabled={submissionState === 'submitting'}
               />
+              <select id="track" name="track" defaultValue="" disabled={submissionState === 'submitting'}>
+                <option value="" disabled>
+                  Which track interests you?
+                </option>
+                {trackOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+              <select id="gender" name="gender" defaultValue="" disabled={submissionState === 'submitting'}>
+                <option value="" disabled>
+                  Gender
+                </option>
+                {genderOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <button className="waitlist-button" type="submit" disabled={submissionState === 'submitting'}>
@@ -561,7 +623,8 @@ function App() {
           </AnimatePresence>
 
           <p className="waitlist-note">
-            By joining, you agree to receive access and availability updates from Menvy.
+            Places are limited. Your details are held privately and will only be used to contact
+            you about your application and access updates.
           </p>
         </div>
       </section>
@@ -590,7 +653,7 @@ function App() {
         </a>
         <p>
           © 2026 Menvy Health. Design adapted from the local `sentriq.html` reference.
-          Existing waitlist endpoints and database connectivity preserved.
+          Waitlist endpoints and database connectivity preserved.
         </p>
       </footer>
     </main>

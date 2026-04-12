@@ -12,9 +12,16 @@ export class UserController {
     joinWaitlist = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const validatedData = waitlistSchema.parse(req.body);
-            const { email, phone } = validatedData;
+            const { email, phone, fullName, city, track, gender } = validatedData;
 
-            const result = await this.userService.joinWaitlist(email, phone);
+            const result = await this.userService.joinWaitlist({
+                email,
+                phone,
+                fullName,
+                city,
+                track,
+                gender
+            });
             res.status(200).json(result);
         } catch (error) {
             next(error);
