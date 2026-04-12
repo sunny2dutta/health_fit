@@ -26,23 +26,14 @@ module "app" {
   secret_env_vars = var.secret_env_vars
 }
 
-resource "google_storage_bucket" "frontend" {
-  name                        = var.frontend_bucket_name
-  project                     = var.project_id
-  location                    = var.region
-  uniform_bucket_level_access = true
-  force_destroy               = false
-
-  website {
-    main_page_suffix = "index.html"
-    not_found_page   = "404.html"
-  }
+data "google_storage_bucket" "frontend" {
+  name = var.frontend_bucket_name
 }
 
 resource "google_compute_backend_bucket" "frontend" {
   name        = "${var.service_name}-frontend"
   project     = var.project_id
-  bucket_name = google_storage_bucket.frontend.name
+  bucket_name = data.google_storage_bucket.frontend.name
   enable_cdn  = true
 }
 

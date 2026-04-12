@@ -29,7 +29,7 @@ concurrency:
 
 env:
   TF_WORKING_DIRECTORY: infra/terraform/envs/dev
-  TF_STATE_PREFIX: healthfit/dev
+  TF_STATE_PREFIX: tfstate/healthfit/dev
   CLOUD_RUN_REGION: europe-west1
   CLOUD_RUN_SERVICE: healthfit-dev
   ARTIFACT_REGISTRY_REPOSITORY: healthfit-dev
@@ -157,7 +157,7 @@ jobs:
             -var="region=${{ env.CLOUD_RUN_REGION }}" \
             -var="service_name=${{ env.CLOUD_RUN_SERVICE }}" \
             -var="artifact_registry_repository_id=${{ env.ARTIFACT_REGISTRY_REPOSITORY }}" \
-            -var="frontend_bucket_name=${{ secrets.FRONTEND_BUCKET_DEV }}" \
+            -var="frontend_bucket_name=${{ secrets.TF_STATE_BUCKET_DEV }}" \
             -var="domain_name=${{ secrets.APP_DOMAIN_DEV }}" \
             -var="frontend_origin=https://${{ secrets.APP_DOMAIN_DEV }}" \
             -var="image=${{ needs.prepare-trigger.outputs.image_uri }}"
@@ -223,7 +223,7 @@ jobs:
             -var="region=${{ env.CLOUD_RUN_REGION }}" \
             -var="service_name=${{ env.CLOUD_RUN_SERVICE }}" \
             -var="artifact_registry_repository_id=${{ env.ARTIFACT_REGISTRY_REPOSITORY }}" \
-            -var="frontend_bucket_name=${{ secrets.FRONTEND_BUCKET_DEV }}" \
+            -var="frontend_bucket_name=${{ secrets.TF_STATE_BUCKET_DEV }}" \
             -var="domain_name=${{ secrets.APP_DOMAIN_DEV }}" \
             -var="frontend_origin=https://${{ secrets.APP_DOMAIN_DEV }}" \
             -var="image=${{ needs.prepare-trigger.outputs.image_uri }}"
@@ -247,7 +247,7 @@ jobs:
             -var="region=${{ env.CLOUD_RUN_REGION }}" \
             -var="service_name=${{ env.CLOUD_RUN_SERVICE }}" \
             -var="artifact_registry_repository_id=${{ env.ARTIFACT_REGISTRY_REPOSITORY }}" \
-            -var="frontend_bucket_name=${{ secrets.FRONTEND_BUCKET_DEV }}" \
+            -var="frontend_bucket_name=${{ secrets.TF_STATE_BUCKET_DEV }}" \
             -var="domain_name=${{ secrets.APP_DOMAIN_DEV }}" \
             -var="frontend_origin=https://${{ secrets.APP_DOMAIN_DEV }}" \
             -var="image=${{ needs.prepare-trigger.outputs.image_uri }}"

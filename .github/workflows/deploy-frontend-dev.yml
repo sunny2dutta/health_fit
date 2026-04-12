@@ -17,6 +17,9 @@ concurrency:
   group: deploy-frontend-dev-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  TF_STATE_PREFIX: tfstate/healthfit/dev
+
 jobs:
   build-frontend:
     runs-on: ubuntu-latest
@@ -86,14 +89,23 @@ jobs:
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Configure bucket website entrypoints
+        run: |
+          gcloud storage buckets update gs://${{ secrets.TF_STATE_BUCKET_DEV }} \
+            --web-main-page-suffix=index.html \
+            --web-error-page=404.html
+
       - name: Sync static frontend to bucket
         run: |
-          gcloud storage rsync client/dist gs://${{ secrets.FRONTEND_BUCKET_DEV }} --recursive --delete-unmatched-destination-objects
+          gcloud storage rsync client/dist gs://${{ secrets.TF_STATE_BUCKET_DEV }} \
+            --recursive \
+            --delete-unmatched-destination-objects \
+            --exclude="^${{ env.TF_STATE_PREFIX }}/.*"
 
       - name: Disable cache for entry documents
         run: |
-          gcloud storage objects update gs://${{ secrets.FRONTEND_BUCKET_DEV }}/index.html --cache-control="no-cache,no-store,max-age=0,must-revalidate"
-          gcloud storage objects update gs://${{ secrets.FRONTEND_BUCKET_DEV }}/404.html --cache-control="no-cache,no-store,max-age=0,must-revalidate"
+          gcloud storage objects update gs://${{ secrets.TF_STATE_BUCKET_DEV }}/index.html --cache-control="no-cache,no-store,max-age=0,must-revalidate"
+          gcloud storage objects update gs://${{ secrets.TF_STATE_BUCKET_DEV }}/404.html --cache-control="no-cache,no-store,max-age=0,must-revalidate"
 
       - name: Smoke test live frontend
         run: |

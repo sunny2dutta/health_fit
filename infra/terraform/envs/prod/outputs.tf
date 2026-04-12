@@ -11,7 +11,7 @@ output "service_uri" {
 }
 
 output "frontend_bucket_name" {
-  value = google_storage_bucket.frontend.name
+  value = data.google_storage_bucket.frontend.name
 }
 
 output "load_balancer_ip" {

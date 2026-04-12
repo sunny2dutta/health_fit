@@ -190,15 +190,14 @@ terraform plan
 
 ### Deployment Setup
 
-Deployment uses Google Cloud Run, a frontend GCS bucket, and a global HTTP(S) load balancer with GitHub Actions and Workload Identity Federation.
+Deployment uses Google Cloud Run, one shared GCS bucket, and a global HTTP(S) load balancer with GitHub Actions and Workload Identity Federation.
 
 Add these GitHub Actions secrets in the repository settings:
 
 - `GCP_PROJECT_ID`: Your Google Cloud project ID.
 - `GCP_WORKLOAD_IDENTITY_PROVIDER`: Full provider resource name, for example `projects/123456789/locations/global/workloadIdentityPools/github/providers/github`.
 - `GCP_SERVICE_ACCOUNT`: Service account email used by GitHub Actions, for example `github-deployer@your-project-id.iam.gserviceaccount.com`.
-- `TF_STATE_BUCKET_DEV`: GCS bucket name used for Terraform state in the dev workflow.
-- `FRONTEND_BUCKET_DEV`: GCS bucket name Terraform should create/manage for the frontend assets.
+- `TF_STATE_BUCKET_DEV`: existing GCS bucket name used for both Terraform state and frontend assets.
 - `APP_DOMAIN_DEV`: the shared public hostname that should serve both the frontend and `/api/*`.
 - `VITE_SUPABASE_URL`: frontend Supabase URL.
 - `VITE_SUPABASE_ANON_KEY`: frontend Supabase anon key.
@@ -210,7 +209,8 @@ Backend deploy target:
 
 Frontend deploy target:
 
-- static assets synced to `gs://$FRONTEND_BUCKET_DEV`
+- static assets synced to the root of `gs://$TF_STATE_BUCKET_DEV`
+- Terraform state stored under the `tfstate/healthfit/dev` prefix in that same bucket
 
 Shared public entrypoint:
 
@@ -236,7 +236,7 @@ For Replit deployments, the `.replit` file is configured to use:
 
 The Terraform workflow expects:
 
-- a pre-created GCS bucket for Terraform state
+- a pre-created GCS bucket that already exists before the workflow runs
 - Secret Manager secrets for runtime values such as `SUPABASE_SECRET_KEY` and `FIREWORKS_API_KEY`
 - Workload Identity auth from GitHub Actions into GCP
 - DNS for `APP_DOMAIN_DEV` pointed at the load balancer IP that Terraform outputs
@@ -254,5 +254,5 @@ The frontend deployment workflow now:
 
 1. builds the Vite app for same-origin `/api` usage
 2. uploads the build artifact
-3. publishes `index.html` and `404.html` for the frontend bucket
-4. syncs the compiled static site to the configured GCS bucket
+3. publishes `index.html` and `404.html` for the shared bucket
+4. syncs the compiled static site to the bucket root while excluding the Terraform state prefix
