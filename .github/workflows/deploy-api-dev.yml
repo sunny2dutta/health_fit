@@ -55,14 +55,7 @@ jobs:
       - id: matrix
         shell: bash
         run: |
-          echo 'deploy_matrix={
-            "include": [
-              {
-                "target": "cloudrun",
-                "environment": "dev"
-              }
-            ]
-          }' >> "$GITHUB_OUTPUT"
+          echo 'deploy_matrix={"include":[{"target":"cloudrun","environment":"dev"}]}' >> "$GITHUB_OUTPUT"
 
   run-backend-tests:
     needs: prepare-trigger

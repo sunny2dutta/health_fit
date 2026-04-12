@@ -36,24 +36,7 @@ jobs:
       - id: matrix
         shell: bash
         run: |
-          echo 'build_matrix={
-            "include": [
-              {
-                "name": "backend",
-                "working_directory": ".",
-                "install": "npm ci --ignore-scripts",
-                "lint": "npm run lint",
-                "build": "npx tsc --noEmit"
-              },
-              {
-                "name": "frontend",
-                "working_directory": "client",
-                "install": "npm ci --ignore-scripts",
-                "lint": "npm run lint",
-                "build": "npm run build"
-              }
-            ]
-          }' >> "$GITHUB_OUTPUT"
+          echo 'build_matrix={"include":[{"name":"backend","working_directory":".","install":"npm ci --ignore-scripts","lint":"npm run lint","build":"npx tsc --noEmit"},{"name":"frontend","working_directory":"client","install":"npm ci --ignore-scripts","lint":"npm run lint","build":"npm run build"}]}' >> "$GITHUB_OUTPUT"
 
   run-backend-tests:
     needs: prepare-trigger
