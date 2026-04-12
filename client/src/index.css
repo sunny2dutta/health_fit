@@ -1,16 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&display=swap');
+
 :root {
-  --cera-primary: #833cad;
-  --cera-primary-dark: #60319a;
-  --cera-secondary: #c61e9d;
-  --cera-bg: #090812;
-  --cera-bg-elevated: #13111d;
-  --cera-bg-soft: #1c1829;
-  --cera-border: rgba(255, 255, 255, 0.1);
-  --cera-text: #f7f4fb;
-  --cera-text-secondary: rgba(247, 244, 251, 0.72);
-  --cera-text-muted: rgba(247, 244, 251, 0.46);
-  --cera-on-colour: #ffffff;
-  --cera-font: "Roboto", "Helvetica", "Arial", sans-serif;
+  --page-bg: #faf9f6;
+  --page-bg-alt: #f0ede8;
+  --page-ink: #2c2c2a;
+  --page-ink-soft: #5a5650;
+  --page-ink-muted: #9a958d;
+  --page-border: rgba(44, 44, 42, 0.1);
+  --page-border-strong: rgba(44, 44, 42, 0.2);
+  --page-accent: #6b7e58;
+  --page-accent-dark: #4a5a3a;
+  --page-rose: #4a7c7c;
+  --page-rose-dark: #2d5f5f;
+  --waitlist-text: #faf9f6;
+  --waitlist-muted: #888780;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Instrument Sans', 'Segoe UI', sans-serif;
 }
 
 html {
@@ -25,39 +30,22 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  font-family: var(--cera-font);
-  color: var(--cera-text);
-  background:
-    radial-gradient(circle at top left, rgba(131, 60, 173, 0.3), transparent 34%),
-    radial-gradient(circle at 85% 18%, rgba(198, 30, 157, 0.18), transparent 28%),
-    linear-gradient(180deg, #100d1c 0%, #090812 42%, #07060d 100%);
+  background: var(--page-bg);
+  color: var(--page-ink);
+  font-family: var(--font-sans);
   line-height: 1.5;
   overflow-x: hidden;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: radial-gradient(circle at center, black 34%, transparent 86%);
-  opacity: 0.38;
 }
 
 a,
 button,
 input {
   transition:
-    transform 180ms ease,
+    color 180ms ease,
     background-color 180ms ease,
     border-color 180ms ease,
-    box-shadow 180ms ease,
-    color 180ms ease,
-    opacity 180ms ease;
+    opacity 180ms ease,
+    transform 180ms ease;
 }
 
 button,
@@ -66,8 +54,7 @@ input {
 }
 
 #root {
-  position: relative;
-  isolation: isolate;
+  width: 100%;
 }
 
 .sr-only {

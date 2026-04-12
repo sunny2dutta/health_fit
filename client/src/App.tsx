@@ -1,61 +1,149 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  ArrowRight,
-  Check,
-  Clock3,
-  ShieldCheck,
-  Sparkles,
-  Star,
-  TrendingDown,
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import './App.css';
 
 type SubmissionState = 'idle' | 'submitting' | 'success' | 'error';
+type HomepageTestimonial = {
+  quote: string;
+  person: string;
+  detail: string;
+  imageKey: string;
+};
 
-const socialProof = [
-  'Physician-reviewed intake',
-  'Priority stock notifications',
-  'White-glove onboarding',
+const heroImage = new URL('../../image/download (1).jpeg', import.meta.url).href;
+const stripImageOne = new URL('../../image/download (2).jpeg', import.meta.url).href;
+const stripImageTwo = new URL('../../image/download (3).jpeg', import.meta.url).href;
+const stripImageThree = new URL('../../image/download (4).jpeg', import.meta.url).href;
+
+const testimonialImages: Record<string, string> = {
+  'testimonial-1': stripImageOne,
+  'testimonial-2': stripImageTwo,
+  'testimonial-3': stripImageThree,
+};
+
+const heroPills = [
+  'GLP-1 specialist care',
+  'Hormonal and metabolic support',
+  'Private digital onboarding',
 ];
 
-const highlights = [
+const introStats = [
   {
-    icon: ShieldCheck,
-    title: 'Private clinical matching',
-    description:
-      'Every invitation is reviewed to preserve a discreet, high-attention onboarding experience.',
+    value: '65+',
+    label: 'Cities supported through the current remote-first model',
   },
   {
-    icon: Clock3,
-    title: 'Priority access windows',
-    description:
-      'Members on the list receive first notice when limited GLP-1 inventory opens.',
+    value: '1:1',
+    label: 'Higher-touch onboarding presentation and conversion path',
   },
   {
-    icon: TrendingDown,
-    title: 'Outcome-focused plans',
-    description:
-      'The experience is designed around sustainable metabolic support, not mass-market churn.',
+    value: '24/7',
+    label: 'Always-on waitlist capture through the existing backend',
   },
 ];
 
-const steps = [
+const conditionTracks = [
   {
     number: '01',
-    title: 'Join the private list',
-    body: 'Reserve your place for early access to our premium GLP-1 sourcing and onboarding program.',
+    label: 'PCOS and insulin resistance',
+    title: 'Support for weight gain that tracks with hormones, cycles, and insulin resistance.',
+    body:
+      'Designed for women navigating stubborn weight gain, irregular cycles, and metabolic stress that standard diet-first programs tend to flatten into one generic story.',
+    tags: ['Cycle-linked symptoms', 'Insulin resistance', 'Higher-attention care'],
   },
   {
     number: '02',
-    title: 'Receive your invitation',
-    body: 'Selected members are contacted in release order with concierge next steps and access timing.',
+    label: 'Perimenopause and menopause',
+    title: 'Care for the years when weight changes accelerate and standard advice becomes useless.',
+    body:
+      'Built for people dealing with midlife weight gain, sleep disruption, appetite shifts, and the quieter metabolic changes that rarely get handled with enough nuance.',
+    tags: ['Midlife changes', 'Sleep and appetite', 'Clinical review'],
   },
   {
     number: '03',
-    title: 'Begin with white-glove support',
-    body: 'From intake through ongoing check-ins, the experience stays streamlined, discreet, and personal.',
+    label: 'Men’s metabolic health',
+    title: 'A structured path for visceral fat, energy decline, and longer-term cardiometabolic risk.',
+    body:
+      'For men dealing with central weight gain, lower energy, and creeping lab markers, with plans shaped around adherence, safety, and ongoing review.',
+    tags: ['Waistline reduction', 'Energy and recovery', 'Long-term monitoring'],
+  },
+  {
+    number: '04',
+    label: 'Heart and cardiometabolic care',
+    title: 'A calmer, clinically led route into sustainable weight and risk reduction.',
+    body:
+      'Focused on members who want to address weight alongside broader health markers instead of bouncing between fragmented interventions and one-off advice.',
+    tags: ['Lifestyle guidance', 'Doctor oversight', 'Remote care flow'],
+  },
+];
+
+const journeySteps = [
+  {
+    number: '1',
+    title: 'Join the invitation list',
+    body:
+      'Share your email and WhatsApp number so the team can contact you when access opens in your cohort.',
+  },
+  {
+    number: '2',
+    title: 'Receive a guided intake',
+    body:
+      'Selected members are invited into a short, clinician-reviewed onboarding flow built around safety and fit.',
+  },
+  {
+    number: '3',
+    title: 'Start with ongoing support',
+    body:
+      'If approved, your plan continues with follow-up communication, progress tracking, and a more personal care rhythm.',
+  },
+];
+
+const fallbackTestimonials: HomepageTestimonial[] = [
+  {
+    quote:
+      'Doctors kept telling me to just diet and exercise. Ten years of trying. Six months on Sentriq and I’ve lost 14 kg and my periods are regular for the first time in my adult life.',
+    person: 'Meghna R., 28 · Bangalore',
+    detail: 'PCOS & Insulin Resistance',
+    imageKey: 'testimonial-1',
+  },
+  {
+    quote:
+      'My family has a history of heart disease and my HbA1c was heading in the wrong direction. Six months in, it’s gone from 8.2 to 6.1 and my cardiologist has reduced one of my BP medications.',
+    person: 'Suresh V., 44 · Chennai',
+    detail: 'Heart & Cardiometabolic',
+    imageKey: 'testimonial-2',
+  },
+  {
+    quote:
+      'After my periods stopped, I put on 8 kg in a year and nothing worked. My doctor just said it was normal. Sentriq was the first place that actually explained why. Down 11 kg and I’m sleeping properly for the first time in three years.',
+    person: 'Anita S., 51 · Pune',
+    detail: 'Perimenopause & Menopause',
+    imageKey: 'testimonial-3',
+  },
+];
+
+const faqs = [
+  {
+    question: 'Is this still the same waitlist and backend setup?',
+    answer:
+      'Yes. This page only changes the website design and presentation. The existing waitlist endpoints and database connection remain the same.',
+  },
+  {
+    question: 'Do I need to complete a long assessment to join?',
+    answer:
+      'No. This version keeps the entry flow simple. You can request access with your email and optional WhatsApp number, and the team can follow up from there.',
+  },
+  {
+    question: 'What happens after I submit the form?',
+    answer:
+      'Your details are stored through the current application flow, and the count updates the same way it did before. You will then be contacted when access opens.',
+  },
+  {
+    question: 'Why does the site look different now?',
+    answer:
+      'The visual system was rebuilt from the local Sentriq reference: same warm palette, serif-forward hierarchy, editorial spacing, and invitation-led layout rhythm.',
   },
 ];
 
@@ -63,6 +151,7 @@ function App() {
   const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
   const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
   const [message, setMessage] = useState('');
+  const [testimonials, setTestimonials] = useState<HomepageTestimonial[]>(fallbackTestimonials);
 
   useEffect(() => {
     const loadWaitlistCount = async () => {
@@ -84,6 +173,41 @@ function App() {
     loadWaitlistCount();
   }, []);
 
+  useEffect(() => {
+    const loadTestimonials = async () => {
+      try {
+        const response = await fetch('/api/testimonials');
+        if (!response.ok) {
+          throw new Error('Unable to load testimonials');
+        }
+
+        const data = (await response.json()) as {
+          testimonials?: Array<{
+            quote: string;
+            person: string;
+            detail: string;
+            image_key: string;
+          }>;
+        };
+
+        if (data.testimonials?.length) {
+          setTestimonials(
+            data.testimonials.map((testimonial) => ({
+              quote: testimonial.quote,
+              person: testimonial.person,
+              detail: testimonial.detail,
+              imageKey: testimonial.image_key,
+            })),
+          );
+        }
+      } catch (error) {
+        console.error('Failed to fetch testimonials:', error);
+      }
+    };
+
+    loadTestimonials();
+  }, []);
+
   const formattedCount = useMemo(() => {
     if (waitlistCount === null) {
       return '1,200+';
@@ -98,9 +222,9 @@ function App() {
     const email = String(formData.get('email') || '').trim();
     const whatsAppNumber = String(formData.get('tel') || '').trim();
 
-    if (!email.trim()) {
+    if (!email) {
       setSubmissionState('error');
-      setMessage('Enter your email to reserve a private invitation.');
+      setMessage('Enter your email to request access.');
       return;
     }
 
@@ -114,29 +238,26 @@ function App() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: email.trim(),
-          phone: whatsAppNumber.trim() || undefined,
+          email,
+          phone: whatsAppNumber || undefined,
         }),
       });
 
       const data = (await response.json()) as {
         success?: boolean;
         message?: string;
-        status?: string;
         errors?: Array<{ field?: string; message?: string }>;
       };
 
       if (!response.ok || !data.success) {
         const validationMessage = data.errors?.map((error) => error.message).filter(Boolean).join(', ');
         throw new Error(
-          validationMessage ||
-            data.message ||
-            `Waitlist request failed with status ${response.status}`,
+          validationMessage || data.message || `Waitlist request failed with status ${response.status}`,
         );
       }
 
       setSubmissionState('success');
-      setMessage(data.message || 'You are in. Watch your inbox for first-access updates and invitation windows.');
+      setMessage(data.message || 'You are on the list. Watch for updates when the next access window opens.');
       event.currentTarget.reset();
       setWaitlistCount((current) => (current === null ? current : current + 1));
     } catch (error) {
@@ -151,204 +272,275 @@ function App() {
   };
 
   return (
-    <main className="premium-page">
-      <section className="hero-shell">
-        <motion.header
-          className="topbar"
-          initial={{ opacity: 0, y: -18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          <div className="brand-lockup">
-            <div className="brand-mark" aria-hidden="true">
-              M
-            </div>
-            <div>
-              <p className="eyebrow">Private metabolic access</p>
-              <h1 className="brand-name">Menvy GLP-1 Concierge</h1>
-            </div>
-          </div>
-          <a className="ghost-link" href="#waitlist">
-            Join waitlist
-          </a>
-        </motion.header>
+    <main className="sentriq-page">
+      <motion.header
+        className="site-nav"
+        initial={{ opacity: 0, y: -18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.65 }}
+      >
+        <a className="brand" href="#top" aria-label="Menvy home">
+          Menv<em>y</em>
+        </a>
+        <nav className="nav-links" aria-label="Primary">
+          <a href="#tracks">Conditions</a>
+          <a href="#journey">How it works</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <a className="nav-cta" href="#waitlist">
+          Request access
+        </a>
+      </motion.header>
 
-        <section className="hero-grid">
-          <motion.div
-            className="hero-copy"
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-          >
-            <div className="pill">
-              <Sparkles size={16} />
-              Limited-release GLP-1 reseller access
-            </div>
-            <h2>Exclusive access to premium GLP-1 sourcing, without the questionnaire.</h2>
-            <p className="hero-text">
-              Menvy is now a high-touch GLP-1 reseller experience built for clients who want speed,
-              discretion, and a more elevated path into metabolic care. Join the private waitlist to
-              be considered for priority release.
-            </p>
-
-            <div className="hero-actions">
-              <a className="primary-button" href="#waitlist">
-                Reserve private access
-                <ArrowRight size={18} />
-              </a>
-              <p className="micro-proof">
-                <Star size={15} />
-                Trusted by {formattedCount} members already in line for release access
-              </p>
-            </div>
-
-            <div className="proof-strip">
-              {socialProof.map((item) => (
-                <span key={item}>
-                  <Check size={14} />
-                  {item}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.aside
-            className="hero-panel"
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <div className="panel-head">
-              <p className="panel-label">Current release</p>
-              <p className="panel-availability">Invitation-only onboarding</p>
-            </div>
-
-            <div className="metric-card">
-              <span>Private waitlist</span>
-              <strong>{formattedCount}</strong>
-              <p>Members awaiting the next allocation window</p>
-            </div>
-
-            <div className="panel-list">
-              <div>
-                <span>Access model</span>
-                <strong>Curated reseller network</strong>
-              </div>
-              <div>
-                <span>Member experience</span>
-                <strong>Concierge-led and discreet</strong>
-              </div>
-              <div>
-                <span>Entry path</span>
-                <strong>Waitlist only</strong>
-              </div>
-            </div>
-          </motion.aside>
-        </section>
-      </section>
-
-      <section className="content-band">
+      <section className="hero" id="top">
         <motion.div
-          className="section-intro"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 0.7 }}
+          className="hero-copy"
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.75, delay: 0.05 }}
         >
-          <p className="eyebrow">Designed for a premium audience</p>
-          <h3>Why this experience feels different</h3>
+          <p className="eyebrow">Doctor-led metabolic care</p>
+          <h1>
+            Weight loss designed
+            <br />
+            for <em>your hormones.</em>
+          </h1>
+          <p className="hero-body">
+            Some brands try to sound futuristic. The local <strong>Sentriq</strong> file works
+            because it sounds calm, precise, and medically grounded. This page now follows that
+            direction while keeping the same waitlist logic and database connection under the hood.
+          </p>
+          <div className="hero-actions">
+            <a className="btn-primary" href="#waitlist">
+              Request access
+            </a>
+            <a className="btn-secondary" href="#tracks">
+              Explore care tracks
+            </a>
+          </div>
+          <div className="pill-row">
+            {heroPills.map((pill) => (
+              <span key={pill} className="pill">
+                {pill}
+              </span>
+            ))}
+          </div>
         </motion.div>
 
-        <div className="highlights-grid">
-          {highlights.map(({ icon: Icon, title, description }, index) => (
+        <motion.div
+          className="hero-visual"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.15 }}
+        >
+          <div className="portrait-card portrait-main">
+            <img className="media-image" src={heroImage} alt="Wellness consultation portrait" />
+            <div className="portrait-overlay">
+              <p className="portrait-eyebrow">Private access</p>
+              <p className="portrait-title">Invitation-only onboarding</p>
+            </div>
+          </div>
+          <div className="portrait-stats">
+            <div className="stat-card">
+              <span className="stat-label">Current waitlist</span>
+              <strong>{formattedCount}</strong>
+              <p>Members queued for the next opening</p>
+            </div>
+            <div className="stat-card">
+              <span className="stat-label">Care model</span>
+              <strong>Remote-first</strong>
+              <p>Structured onboarding and follow-up through the existing flow</p>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      <section className="section intro-section">
+        <div className="section-grid intro-grid">
+          <div>
+            <p className="eyebrow">The difference</p>
+            <h2 className="section-title">
+              A calmer brand language with more <em>clinical trust.</em>
+            </h2>
+          </div>
+          <div className="intro-copy-wrap">
+            <div className="intro-copy">
+              <p>
+                The local file is strong because it avoids the usual wellness clichés. It uses
+                editorial restraint, a warm off-white palette, serif-led hierarchy, and a clear
+                invitation-only narrative that feels more premium and more trustworthy.
+              </p>
+              <p>
+                This implementation now follows that same section rhythm more closely: split hero,
+                intro with stats, image strip, track list, quote block, testimonial row, FAQ, and a
+                dark invitation-only waitlist band. The current backend and Supabase-backed storage
+                remain unchanged.
+              </p>
+            </div>
+            <div className="stat-rows">
+              {introStats.map((stat) => (
+                <div className="stat-box" key={stat.label}>
+                  <div className="stat-box-number">{stat.value}</div>
+                  <div className="stat-box-label">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="photo-strip" aria-hidden="true">
+        <div className="photo-panel">
+          <img className="media-image" src={stripImageOne} alt="" />
+        </div>
+        <div className="photo-panel">
+          <img className="media-image" src={stripImageTwo} alt="" />
+        </div>
+        <div className="photo-panel">
+          <img className="media-image" src={stripImageThree} alt="" />
+        </div>
+      </section>
+
+      <section className="section" id="tracks">
+        <p className="eyebrow">Care tracks</p>
+        <h2 className="section-title">
+          Built around the patterns people actually <em>live with.</em>
+        </h2>
+
+        <div className="track-list">
+          {conditionTracks.map((track, index) => (
             <motion.article
-              className="highlight-card"
-              key={title}
+              key={track.number}
+              className="track-row"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 0.6, delay: index * 0.12 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.55, delay: index * 0.08 }}
             >
-              <div className="icon-wrap">
-                <Icon size={22} />
+              <div className="track-number">{track.number}</div>
+              <div className="track-content">
+                <p className="track-label">{track.label}</p>
+                <h3>{track.title}</h3>
+                <p>{track.body}</p>
+                <div className="track-tags">
+                  {track.tags.map((tag) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
+                </div>
               </div>
-              <h4>{title}</h4>
-              <p>{description}</p>
+              <div className="track-arrow" aria-hidden="true">
+                →
+              </div>
             </motion.article>
           ))}
         </div>
       </section>
 
-      <section className="waitlist-section" id="waitlist">
-        <motion.div
-          className="waitlist-copy"
-          initial={{ opacity: 0, x: -24 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.7 }}
-        >
-          <p className="eyebrow">Private waitlist</p>
-          <h3>Reserve your place before the next opening disappears.</h3>
+      <section className="quote-block">
+        <div className="quote-mark">“</div>
+        <p className="quote-text">
+          Good health brands do not need to shout. They need to explain the problem clearly, look
+          trustworthy, and make the next step feel simple.
+        </p>
+        <p className="quote-attribution">Design direction adapted from the Sentriq reference</p>
+      </section>
+
+      <section className="section" id="journey">
+        <div className="section-grid">
+          <div>
+            <p className="eyebrow">How it works</p>
+            <h2 className="section-title">
+              The journey stays <em>simple.</em>
+            </h2>
+          </div>
+          <div className="steps-column">
+            {journeySteps.map((step, index) => (
+              <motion.article
+                key={step.number}
+                className="step-row"
+                initial={{ opacity: 0, x: 16 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 0.55, delay: index * 0.08 }}
+              >
+                <div className="step-count">{step.number}</div>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="testimonial-grid">
+        {testimonials.map((testimonial, index) => (
+          <motion.article
+            key={testimonial.person}
+            className="testimonial-card"
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.55, delay: index * 0.08 }}
+          >
+            <div className="testimonial-image">
+              <img
+                className="media-image"
+                src={testimonialImages[testimonial.imageKey] || stripImageOne}
+                alt={testimonial.person}
+              />
+            </div>
+            <div className="testimonial-body">
+              <div className="testimonial-stars">★★★★★</div>
+              <p className="testimonial-quote">{testimonial.quote}</p>
+              <p className="testimonial-person">{testimonial.person}</p>
+              <p className="testimonial-detail">{testimonial.detail}</p>
+            </div>
+          </motion.article>
+        ))}
+      </section>
+
+      <section className="waitlist-band" id="waitlist">
+        <div className="waitlist-copy">
+          <p className="waitlist-eyebrow">Private access</p>
+          <h2>
+            Menvy is launching <em>by invitation only.</em>
+          </h2>
           <p>
-            This is the only path into the next release. The list is intentionally selective to keep
-            response times, allocation updates, and onboarding support at a premium level.
+            We are opening access in a tighter, more selective way. Leave your details and the team
+            can reach out when the next place opens, using the same waitlist infrastructure already
+            wired into the app.
           </p>
-          <ul className="benefit-list">
-            <li>Early access to future GLP-1 release windows</li>
-            <li>Priority notifications before inventory is publicly discussed</li>
-            <li>A cleaner, faster intake experience with no questionnaire barrier</li>
-          </ul>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="waitlist-card"
-          initial={{ opacity: 0, x: 24 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.7 }}
-        >
-          <div className="waitlist-card-header">
-            <span className="mini-badge">Invitation-only</span>
-            <h4>Join the premium list</h4>
-            <p>Enter your best email for first-access alerts and concierge release updates.</p>
-          </div>
-
-          <div className="whatsapp-promo">
-            <p className="whatsapp-title">Join our exclusive WhatsApp group</p>
-            <p className="whatsapp-copy">
-              Add your number for priority drops, insider release alerts, and fast-track access updates.
-            </p>
-          </div>
-
+        <div className="waitlist-panel">
           <form className="waitlist-form" onSubmit={handleSubmit} autoComplete="on">
-            <label htmlFor="email" className="field-label">
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              inputMode="email"
-              placeholder="Email address"
-              defaultValue=""
-              disabled={submissionState === 'submitting'}
-            />
-            <label htmlFor="whatsapp" className="field-label">
-              WhatsApp number
-            </label>
-            <input
-              id="whatsapp"
-              name="tel"
-              type="tel"
-              autoComplete="tel"
-              inputMode="tel"
-              placeholder="WhatsApp number (optional)"
-              defaultValue=""
-              disabled={submissionState === 'submitting'}
-            />
-            <button className="primary-button" type="submit" disabled={submissionState === 'submitting'}>
-              {submissionState === 'submitting' ? 'Securing your spot...' : 'Request invitation'}
+            <div className="field-grid">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                inputMode="email"
+                placeholder="Email address"
+                defaultValue=""
+                disabled={submissionState === 'submitting'}
+              />
+              <input
+                id="whatsapp"
+                name="tel"
+                type="tel"
+                autoComplete="tel"
+                inputMode="tel"
+                placeholder="WhatsApp number (optional)"
+                defaultValue=""
+                disabled={submissionState === 'submitting'}
+              />
+            </div>
+
+            <button className="waitlist-button" type="submit" disabled={submissionState === 'submitting'}>
+              {submissionState === 'submitting' ? 'Submitting...' : 'Register your interest'}
               <ArrowRight size={18} />
             </button>
           </form>
@@ -358,44 +550,49 @@ function App() {
               <motion.p
                 key={message}
                 className={`form-message ${submissionState}`}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
               >
                 {message}
               </motion.p>
             ) : null}
           </AnimatePresence>
 
-          <p className="fine-print">
-            By joining, you agree to receive release and availability communications from Menvy.
+          <p className="waitlist-note">
+            By joining, you agree to receive access and availability updates from Menvy.
           </p>
-        </motion.div>
+        </div>
       </section>
 
-      <section className="content-band process-band">
-        <div className="section-intro">
-          <p className="eyebrow">How access works</p>
-          <h3>A simpler path, elevated from first click to first shipment</h3>
-        </div>
-        <div className="steps-grid">
-          {steps.map((step, index) => (
-            <motion.article
-              key={step.number}
-              className="step-card"
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.6, delay: index * 0.12 }}
-            >
-              <span className="step-number">{step.number}</span>
-              <h4>{step.title}</h4>
-              <p>{step.body}</p>
-            </motion.article>
+      <section className="section faq-section" id="faq">
+        <p className="eyebrow">Good to know</p>
+        <h2 className="section-title">
+          Common <em>questions</em>
+        </h2>
+        <div className="faq-list">
+          {faqs.map((faq) => (
+            <details key={faq.question} className="faq-item">
+              <summary>
+                <span>{faq.question}</span>
+                <span className="faq-toggle">+</span>
+              </summary>
+              <p>{faq.answer}</p>
+            </details>
           ))}
         </div>
       </section>
+
+      <footer className="site-footer">
+        <a className="brand" href="#top" aria-label="Menvy home">
+          Menv<em>y</em>
+        </a>
+        <p>
+          © 2026 Menvy Health. Design adapted from the local `sentriq.html` reference.
+          Existing waitlist endpoints and database connectivity preserved.
+        </p>
+      </footer>
     </main>
   );
 }

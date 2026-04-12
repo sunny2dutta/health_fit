@@ -39,6 +39,10 @@ Additionally, it provides an **AI Chat Interface** where users can ask health-re
 -   **Database:** Supabase (PostgreSQL) - Stores user data, assessments, and waitlist.
 -   **AI Inference:** Fireworks AI (Qwen 2.5 72B Model) - Powers the chat interface.
 
+### Content Tables
+-   `users`: waitlist and user records
+-   `testimonials`: homepage testimonial content exposed via `GET /api/testimonials`
+
 ## 📂 Repository Structure
 
 ```
@@ -102,6 +106,9 @@ Additionally, it provides an **AI Chat Interface** where users can ask health-re
     SUPABASE_SECRET_KEY=your_supabase_service_role_key
     FIREWORKS_API_KEY=your_fireworks_api_key
     ```
+
+5. **Create the testimonials table in Supabase:**
+   Run [src/db/testimonials_setup.sql](/Users/debaryadutta/health_fit/src/db/testimonials_setup.sql) in your Supabase SQL editor to create and seed the homepage testimonials table.
 
 ### Development
 

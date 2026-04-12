@@ -11,13 +11,15 @@ const __dirname = path.dirname(__filename);
 import { createApiRoutes } from './routes/apiRoutes.js';
 import { AppError } from './utils/AppError.js';
 import { UserController } from './controllers/UserController.js';
+import { TestimonialController } from './controllers/TestimonialController.js';
 
 
 interface AppDependencies {
     userController: UserController;
+    testimonialController: TestimonialController;
 }
 
-export const createApp = ({ userController }: AppDependencies): Express => {
+export const createApp = ({ userController, testimonialController }: AppDependencies): Express => {
     const app = express();
     app.set('trust proxy', 1);
 
@@ -57,7 +59,7 @@ export const createApp = ({ userController }: AppDependencies): Express => {
     });
 
     // Routes
-    app.use('/api', createApiRoutes(userController));
+    app.use('/api', createApiRoutes(userController, testimonialController));
 
     // Serve static files from the React app
     const clientBuildPath = path.join(__dirname, '../client/dist');

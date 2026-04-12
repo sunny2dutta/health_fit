@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import { createApiRoutes } from './routes/apiRoutes.js';
 import { AppError } from './utils/AppError.js';
-export const createApp = ({ userController }) => {
+export const createApp = ({ userController, testimonialController }) => {
     const app = express();
     app.set('trust proxy', 1);
     // Security Middleware
@@ -42,7 +42,7 @@ export const createApp = ({ userController }) => {
         res.sendFile('robots.txt', { root: '.' });
     });
     // Routes
-    app.use('/api', createApiRoutes(userController));
+    app.use('/api', createApiRoutes(userController, testimonialController));
     // Serve static files from the React app
     const clientBuildPath = path.join(__dirname, '../client/dist');
     app.use(express.static(clientBuildPath, {
