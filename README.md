@@ -67,6 +67,7 @@ Additionally, it provides an **AI Chat Interface** where users can ask health-re
 │   ├── app.ts              # Express application setup
 │   └── server.ts           # Application entry point
 ├── .github/workflows/      # CI/CD pipelines
+├── infra/terraform/        # Terraform scaffold for Cloud Run environments
 ├── package.json            # Backend Dependencies
 └── tsconfig.json           # Backend TypeScript Config
 ```
@@ -168,6 +169,31 @@ A GitHub Actions workflow (`.github/workflows/ci.yml`) automatically runs on pus
 
 A deployment workflow (`.github/workflows/deploy.yml`) now runs automatically after CI succeeds on `main` or `master`, which covers both direct pushes and merges to `main`.
 
+## 🏗️ Terraform Scaffold
+
+This repo now includes an initial Terraform scaffold under `infra/terraform/` for teams that want real infrastructure-as-code instead of workflow-only deployment.
+
+Included:
+- reusable Cloud Run module
+- `dev` environment entrypoint
+- `prod` environment entrypoint
+- support for plain env vars and Secret Manager-backed env vars
+
+Not yet included:
+- Artifact Registry repository provisioning
+- image build/push pipeline integration
+- Terraform backend/state configuration
+- IAM and networking modules beyond the minimal Cloud Run scaffold
+
+To start:
+
+```bash
+cd infra/terraform/envs/dev
+cp terraform.tfvars.example terraform.tfvars
+terraform init
+terraform plan
+```
+
 ### Deployment Setup
 
 The deploy workflow is configured for Google Cloud Run using GitHub Actions and Workload Identity Federation.
@@ -177,6 +203,7 @@ Add these GitHub Actions secrets in the repository settings:
 - `GCP_PROJECT_ID`: Your Google Cloud project ID.
 - `GCP_WORKLOAD_IDENTITY_PROVIDER`: Full provider resource name, for example `projects/123456789/locations/global/workloadIdentityPools/github/providers/github`.
 - `GCP_SERVICE_ACCOUNT`: Service account email used by GitHub Actions, for example `github-deployer@your-project-id.iam.gserviceaccount.com`.
+- `TF_STATE_BUCKET_DEV`: GCS bucket name used for Terraform state in the dev workflow.
 
 The workflow deploys this repo to:
 
@@ -193,3 +220,20 @@ For Replit deployments, the `.replit` file is configured to use:
 
 - Build command: `npm run build`
 - Run command: `npm start`
+
+### Terraform-backed deployment notes
+
+The Terraform workflow expects:
+
+- a pre-created GCS bucket for Terraform state
+- Secret Manager secrets for runtime values such as `SUPABASE_SECRET_KEY` and `FIREWORKS_API_KEY`
+- Workload Identity auth from GitHub Actions into GCP
+
+The dev deployment workflow now:
+
+1. runs tests and builds
+2. initializes Terraform against the configured GCS backend
+3. plans infra changes on pull requests
+4. bootstraps Artifact Registry on apply runs
+5. builds and pushes a tagged image
+6. applies Terraform to update Cloud Run to that exact image

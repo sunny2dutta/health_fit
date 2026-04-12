@@ -1,0 +1,28 @@
+project_id = "your-gcp-project-id"
+region     = "europe-west1"
+service_name = "healthfit-dev"
+artifact_registry_repository_id = "healthfit-dev"
+
+# The workflow will usually inject an image tag automatically.
+image = "europe-west1-docker.pkg.dev/your-gcp-project-id/healthfit-dev/healthfit:dev"
+
+# Optional runtime service account.
+# service_account_email = "healthfit-runtime@your-gcp-project-id.iam.gserviceaccount.com"
+
+env_vars = {
+  # VITE_SUPABASE_URL      = "https://your-project.supabase.co"
+  # VITE_SUPABASE_ANON_KEY = "your-anon-key"
+}
+
+secret_env_vars = [
+  {
+    name      = "SUPABASE_SECRET_KEY"
+    secret_id = "SUPABASE_SECRET_KEY"
+    version   = "latest"
+  },
+  {
+    name      = "FIREWORKS_API_KEY"
+    secret_id = "FIREWORKS_API_KEY"
+    version   = "latest"
+  }
+]
