@@ -49,6 +49,8 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_WHATSAPP_NUMBER: ${{ secrets.VITE_WHATSAPP_NUMBER }}
+          VITE_WHATSAPP_PREFILL: ${{ secrets.VITE_WHATSAPP_PREFILL }}
         run: npm run build
 
   deploy:
@@ -76,6 +78,8 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_WHATSAPP_NUMBER: ${{ secrets.VITE_WHATSAPP_NUMBER }}
+          VITE_WHATSAPP_PREFILL: ${{ secrets.VITE_WHATSAPP_PREFILL }}
         run: |
           gcloud run deploy "${{ env.CLOUD_RUN_SERVICE }}" \
             --project="${{ secrets.GCP_PROJECT_ID }}" \
