@@ -75,14 +75,11 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Deploy to Cloud Run from source
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_WHATSAPP_NUMBER: ${{ secrets.VITE_WHATSAPP_NUMBER }}
-          VITE_WHATSAPP_PREFILL: ${{ secrets.VITE_WHATSAPP_PREFILL }}
         run: |
           gcloud run deploy "${{ env.CLOUD_RUN_SERVICE }}" \
             --project="${{ secrets.GCP_PROJECT_ID }}" \
             --region="${{ env.CLOUD_RUN_REGION }}" \
             --source=. \
+            --set-build-env-vars="^##^VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}##VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}##VITE_WHATSAPP_NUMBER=${{ secrets.VITE_WHATSAPP_NUMBER }}##VITE_WHATSAPP_PREFILL=${{ secrets.VITE_WHATSAPP_PREFILL }}" \
+            --set-env-vars="SUPABASE_SECRET_KEY=${{ secrets.SUPABASE_SECRET_KEY }}" \
             --allow-unauthenticated

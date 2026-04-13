@@ -230,7 +230,8 @@ function App() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
     const email = String(formData.get('email') || '').trim();
     const whatsAppNumber = String(formData.get('phone') || '').trim();
     const fullName = String(formData.get('fullName') || '').trim();
@@ -278,7 +279,7 @@ function App() {
 
       setSubmissionState('success');
       setMessage(data.message || 'You are on the list. Watch for updates when the next access window opens.');
-      event.currentTarget.reset();
+      form.reset();
       setWaitlistCount((current) => (current === null ? current : current + 1));
     } catch (error) {
       console.error('Failed to join waitlist:', error);

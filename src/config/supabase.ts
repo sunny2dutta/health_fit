@@ -7,7 +7,7 @@ const supabaseUrl = 'https://akkzhpkpegrjdlrxoutx.supabase.co';
 const supabaseKey = process.env.SUPABASE_SECRET_KEY || '';
 
 if (!supabaseKey && process.env.NODE_ENV !== 'test') {
-    console.warn("WARNING: SUPABASE_SECRET_KEY is missing. Database operations will fail.");
+    throw new Error('SUPABASE_SECRET_KEY is required to start the application.');
 }
 
 export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
