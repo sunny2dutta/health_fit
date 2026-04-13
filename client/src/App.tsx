@@ -104,13 +104,10 @@ const trackOptions = [
 
 const genderOptions = ['Female', 'Male', 'Prefer not to say'];
 
-const whatsAppNumber = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '');
-const whatsAppPrefill =
+const defaultWhatsAppNumber = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '');
+const defaultWhatsAppPrefill =
   import.meta.env.VITE_WHATSAPP_PREFILL ||
   'Hi Sentriq, I would like to learn more about the programme and current availability.';
-const whatsAppChatUrl = whatsAppNumber
-  ? `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(whatsAppPrefill)}`
-  : '#waitlist';
 
 const fallbackTestimonials: HomepageTestimonial[] = [
   {
@@ -166,6 +163,8 @@ function App() {
   const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
   const [message, setMessage] = useState('');
   const [testimonials, setTestimonials] = useState<HomepageTestimonial[]>(fallbackTestimonials);
+  const [whatsAppNumber, setWhatsAppNumber] = useState(defaultWhatsAppNumber);
+  const [whatsAppPrefill, setWhatsAppPrefill] = useState(defaultWhatsAppPrefill);
 
   useEffect(() => {
     const loadWaitlistCount = async () => {
@@ -220,6 +219,35 @@ function App() {
     loadTestimonials();
   }, []);
 
+  useEffect(() => {
+    const loadPublicConfig = async () => {
+      try {
+        const response = await fetch(getApiUrl('/api/public-config'));
+        if (!response.ok) {
+          return;
+        }
+
+        const data = (await response.json()) as {
+          whatsAppNumber?: string;
+          whatsAppPrefill?: string;
+        };
+
+        const runtimeNumber = String(data.whatsAppNumber || '').replace(/\D/g, '');
+        if (runtimeNumber) {
+          setWhatsAppNumber(runtimeNumber);
+        }
+
+        if (typeof data.whatsAppPrefill === 'string' && data.whatsAppPrefill.trim()) {
+          setWhatsAppPrefill(data.whatsAppPrefill.trim());
+        }
+      } catch (error) {
+        console.error('Failed to load public config:', error);
+      }
+    };
+
+    loadPublicConfig();
+  }, []);
+
   const formattedCount = useMemo(() => {
     if (waitlistCount === null) {
       return '1,200+';
@@ -227,6 +255,14 @@ function App() {
 
     return waitlistCount.toLocaleString('en-US');
   }, [waitlistCount]);
+
+  const whatsAppChatUrl = useMemo(() => {
+    if (!whatsAppNumber) {
+      return '#waitlist';
+    }
+
+    return `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(whatsAppPrefill)}`;
+  }, [whatsAppNumber, whatsAppPrefill]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

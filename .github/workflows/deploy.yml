@@ -89,5 +89,5 @@ jobs:
             --project="${{ secrets.GCP_PROJECT_ID }}" \
             --region="${{ env.CLOUD_RUN_REGION }}" \
             --source=. \
-            --set-env-vars="SUPABASE_SECRET_KEY=${{ secrets.SUPABASE_SECRET_KEY }}" \
+            --set-env-vars="^##^SUPABASE_SECRET_KEY=${{ secrets.SUPABASE_SECRET_KEY }}##WHATSAPP_NUMBER=${{ secrets.VITE_WHATSAPP_NUMBER }}##WHATSAPP_PREFILL=${{ secrets.VITE_WHATSAPP_PREFILL }}" \
             --allow-unauthenticated

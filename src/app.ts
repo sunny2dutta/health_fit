@@ -73,6 +73,14 @@ export const createApp = ({ userController, testimonialController }: AppDependen
     // Routes
     app.use('/api', createApiRoutes(userController, testimonialController));
 
+    app.get('/api/public-config', (_req: Request, res: Response) => {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.json({
+            whatsAppNumber: process.env.WHATSAPP_NUMBER || '',
+            whatsAppPrefill: process.env.WHATSAPP_PREFILL || ''
+        });
+    });
+
     // Serve the compiled frontend from the same Cloud Run service.
     const clientBuildPath = path.join(__dirname, '../client/dist');
     app.use(express.static(clientBuildPath, {
