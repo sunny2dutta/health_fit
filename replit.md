@@ -1,12 +1,12 @@
-# Menvy - Men's Health Assessment Platform
+# Sentriq - Men's Health Assessment Platform
 
 ## Overview
-Menvy is a comprehensive web application for men's reproductive health assessment. It features an interactive multi-step questionnaire, email collection, AI-powered chat assistant (Menvy), and integrates with Supabase for data storage.
+Sentriq is a comprehensive web application for men's reproductive health assessment. It features an interactive multi-step questionnaire, email collection, AI-powered chat assistant (Sentriq), and integrates with Supabase for data storage.
 
 **Current State**: Fully functional and running on Replit with proper configuration for development and deployment.
 
 ## Recent Changes
-- **2025-11-27**: Added "Chat with Menvy" AI feature
+- **2025-11-27**: Added "Chat with Sentriq" AI feature
   - Replaced waitlist functionality with embedded AI chat window
   - Integrated Fireworks AI using Qwen3-30b-a3b model
   - Created ChatService (server-side) for secure API key handling

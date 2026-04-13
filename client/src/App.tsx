@@ -107,7 +107,7 @@ const genderOptions = ['Female', 'Male', 'Prefer not to say'];
 const whatsAppNumber = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '');
 const whatsAppPrefill =
   import.meta.env.VITE_WHATSAPP_PREFILL ||
-  'Hi Menvy, I would like to learn more about the programme and current availability.';
+  'Hi Sentriq, I would like to learn more about the programme and current availability.';
 const whatsAppChatUrl = whatsAppNumber
   ? `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(whatsAppPrefill)}`
   : '#waitlist';
@@ -115,7 +115,7 @@ const whatsAppChatUrl = whatsAppNumber
 const fallbackTestimonials: HomepageTestimonial[] = [
   {
     quote:
-      'Doctors kept telling me to just diet and exercise. Ten years of trying. Six months on Menvy and I’ve lost 14 kg and my periods are regular for the first time in my adult life.',
+      'Doctors kept telling me to just diet and exercise. Ten years of trying. Six months on Sentriq and I’ve lost 14 kg and my periods are regular for the first time in my adult life.',
     person: 'Meghna R., 28 · Bangalore',
     detail: 'PCOS & Insulin Resistance',
   },
@@ -127,7 +127,7 @@ const fallbackTestimonials: HomepageTestimonial[] = [
   },
   {
     quote:
-      'After my periods stopped, I put on 8 kg in a year and nothing worked. My doctor just said it was normal. Menvy was the first place that actually explained why. Down 11 kg and I’m sleeping properly for the first time in three years.',
+      'After my periods stopped, I put on 8 kg in a year and nothing worked. My doctor just said it was normal. Sentriq was the first place that actually explained why. Down 11 kg and I’m sleeping properly for the first time in three years.',
     person: 'Anita S., 51 · Pune',
     detail: 'Perimenopause & Menopause',
   },
@@ -300,8 +300,8 @@ function App() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.65 }}
       >
-        <a className="brand" href="#top" aria-label="Menvy home">
-          Menv<em>y</em>
+        <a className="brand" href="#top" aria-label="Sentriq home">
+          Sentri<em>q</em>
         </a>
         <nav className="nav-links" aria-label="Primary">
           <a href="#tracks">Conditions</a>
@@ -328,7 +328,7 @@ function App() {
           </h1>
           <p className="hero-body">
             India has some of the highest rates of PCOS, insulin resistance, and metabolic disease
-            in the world — yet most weight loss programs treat us like a Western patient. Menvy
+            in the world — yet most weight loss programs treat us like a Western patient. Sentriq
             is different. We treat the hormonal root cause, not just the number on the scale.
           </p>
           <div className="hero-actions">
@@ -392,7 +392,7 @@ function App() {
                 metabolic environment the body is operating inside.
               </p>
               <p>
-                <strong>Menvy is built from the ground up for the Indian body and its hormonal reality.</strong>{' '}
+                <strong>Sentriq is built from the ground up for the Indian body and its hormonal reality.</strong>{' '}
                 Our GLP-1 treatments are prescribed by specialist doctors who look at your whole
                 picture — your hormones, your history, your life — not just your weight.
               </p>
@@ -486,11 +486,11 @@ function App() {
             <p className="quote-text">
               In India, we are very good at telling people they are fine. We are not as good at
               asking why they are tired all the time, why the weight won’t move, why the numbers
-              keep creeping up. That gap is exactly where Menvy sits.
+              keep creeping up. That gap is exactly where Sentriq sits.
             </p>
             <p className="quote-attribution">
               <strong>Dr. Sunita Agarwal</strong> · Consultant Endocrinologist & Chief Medical
-              Officer, Menvy
+              Officer, Sentriq
             </p>
           </div>
           <aside className="doctor-card" aria-label="Clinical note">
@@ -538,7 +538,7 @@ function App() {
         <div className="waitlist-copy">
           <p className="waitlist-eyebrow">Private access</p>
           <h2>
-            Menvy is launching <em>by invitation only.</em>
+            Sentriq is launching <em>by invitation only.</em>
           </h2>
           <p>
             We are opening city by city and accepting a small number of founding members in each
@@ -657,24 +657,24 @@ function App() {
       </section>
 
       <footer className="site-footer">
-        <a className="brand" href="#top" aria-label="Menvy home">
-          Menv<em>y</em>
+        <a className="brand" href="#top" aria-label="Sentriq home">
+          Sentri<em>q</em>
         </a>
-        <p>© 2025 Menvy Health Pvt. Ltd. CDSCO compliant · [email protected]</p>
+        <p>© 2025 Sentriq Health Pvt. Ltd. CDSCO compliant · [email protected]</p>
       </footer>
       <a
         className="whatsapp-float"
         href={whatsAppChatUrl}
         target={whatsAppNumber ? '_blank' : undefined}
         rel={whatsAppNumber ? 'noreferrer' : undefined}
-        aria-label="Open WhatsApp chat with Menvy"
+        aria-label="Open WhatsApp chat with Sentriq"
       >
         <span className="whatsapp-badge" aria-hidden="true">
           <MessageCircle size={28} />
         </span>
         <span className="whatsapp-copy">
           <strong>WhatsApp</strong>
-          <small>{whatsAppNumber ? 'Chat with Menvy' : 'Join via waitlist'}</small>
+          <small>{whatsAppNumber ? 'Chat with Sentriq' : 'Join via waitlist'}</small>
         </span>
       </a>
     </main>

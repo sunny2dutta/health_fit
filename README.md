@@ -1,6 +1,6 @@
 # Men's Health Assessment & AI Companion Platform
 
-This repository contains the source code for a privacy-focused men's health platform. It features a comprehensive health assessment tool, an AI-powered wellness companion ("Menvy"), and a waitlist management system. 
+This repository contains the source code for a privacy-focused men's health platform. It features a comprehensive health assessment tool, an AI-powered wellness companion ("Sentriq"), and a waitlist management system. 
 
 **Recently upgraded to an Enterprise-Grade Architecture:**
 - **Frontend:** React + TypeScript (Vite)
@@ -14,7 +14,7 @@ The platform is designed to guide users through a multi-step health assessment, 
 3.  **Service Preferences:** What kind of help the user is looking for (TRT, weight loss, etc.).
 4.  **Assessment Score:** A calculated health score based on user responses.
 
-Additionally, it provides an **AI Chat Interface** where users can ask health-related questions to "Menvy", a specialized AI agent.
+Additionally, it provides an **AI Chat Interface** where users can ask health-related questions to "Sentriq", a specialized AI agent.
 
 ## 🏗️ Technical Stack
 

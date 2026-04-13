@@ -443,8 +443,8 @@ async function handleJoinWaitlist() {
 
         const waitlistStats = document.getElementById('waitlist-stats-results');
         waitlistStats.innerHTML = `
-            <p><strong>${stats.totalWaitlist}</strong> people have joined the Menvy waitlist</p>
-            <p>We’ll notify you when Menvy launches!</p>
+            <p><strong>${stats.totalWaitlist}</strong> people have joined the Sentriq waitlist</p>
+            <p>We’ll notify you when Sentriq launches!</p>
         `;
 
     } catch (error) {
