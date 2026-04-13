@@ -110,12 +110,12 @@ const whatsAppPrefill =
   'Hi Menvy, I would like to learn more about the programme and current availability.';
 const whatsAppChatUrl = whatsAppNumber
   ? `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(whatsAppPrefill)}`
-  : null;
+  : '#waitlist';
 
 const fallbackTestimonials: HomepageTestimonial[] = [
   {
     quote:
-      'Doctors kept telling me to just diet and exercise. Ten years of trying. Six months on Sentriq and I’ve lost 14 kg and my periods are regular for the first time in my adult life.',
+      'Doctors kept telling me to just diet and exercise. Ten years of trying. Six months on Menvy and I’ve lost 14 kg and my periods are regular for the first time in my adult life.',
     person: 'Meghna R., 28 · Bangalore',
     detail: 'PCOS & Insulin Resistance',
   },
@@ -127,7 +127,7 @@ const fallbackTestimonials: HomepageTestimonial[] = [
   },
   {
     quote:
-      'After my periods stopped, I put on 8 kg in a year and nothing worked. My doctor just said it was normal. Sentriq was the first place that actually explained why. Down 11 kg and I’m sleeping properly for the first time in three years.',
+      'After my periods stopped, I put on 8 kg in a year and nothing worked. My doctor just said it was normal. Menvy was the first place that actually explained why. Down 11 kg and I’m sleeping properly for the first time in three years.',
     person: 'Anita S., 51 · Pune',
     detail: 'Perimenopause & Menopause',
   },
@@ -327,7 +327,7 @@ function App() {
           </h1>
           <p className="hero-body">
             India has some of the highest rates of PCOS, insulin resistance, and metabolic disease
-            in the world — yet most weight loss programs treat us like a Western patient. Sentriq
+            in the world — yet most weight loss programs treat us like a Western patient. Menvy
             is different. We treat the hormonal root cause, not just the number on the scale.
           </p>
           <div className="hero-actions">
@@ -391,10 +391,7 @@ function App() {
                 metabolic environment the body is operating inside.
               </p>
               <p>
-                <strong>
-                  Sentriq is the first weight management program in India built from the ground up
-                  for the Indian body and its hormonal reality.
-                </strong>{' '}
+                <strong>Menvy is built from the ground up for the Indian body and its hormonal reality.</strong>{' '}
                 Our GLP-1 treatments are prescribed by specialist doctors who look at your whole
                 picture — your hormones, your history, your life — not just your weight.
               </p>
@@ -488,11 +485,11 @@ function App() {
             <p className="quote-text">
               In India, we are very good at telling people they are fine. We are not as good at
               asking why they are tired all the time, why the weight won’t move, why the numbers
-              keep creeping up. That gap is exactly where Sentriq sits.
+              keep creeping up. That gap is exactly where Menvy sits.
             </p>
             <p className="quote-attribution">
               <strong>Dr. Sunita Agarwal</strong> · Consultant Endocrinologist & Chief Medical
-              Officer, Sentriq
+              Officer, Menvy
             </p>
           </div>
           <aside className="doctor-card" aria-label="Clinical note">
@@ -540,7 +537,7 @@ function App() {
         <div className="waitlist-copy">
           <p className="waitlist-eyebrow">Private access</p>
           <h2>
-            Sentriq is launching <em>by invitation only.</em>
+            Menvy is launching <em>by invitation only.</em>
           </h2>
           <p>
             We are opening city by city and accepting a small number of founding members in each
@@ -660,24 +657,25 @@ function App() {
 
       <footer className="site-footer">
         <a className="brand" href="#top" aria-label="Menvy home">
-          Sentri<em>q</em>
+          Menv<em>y</em>
         </a>
-        <p>
-          © 2025 Sentriq Health Pvt. Ltd. CDSCO compliant · [email protected]
-        </p>
+        <p>© 2025 Menvy Health Pvt. Ltd. CDSCO compliant · [email protected]</p>
       </footer>
-      {whatsAppChatUrl ? (
-        <a
-          className="whatsapp-float"
-          href={whatsAppChatUrl}
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Open WhatsApp chat with Menvy"
-        >
-          <MessageCircle size={22} />
-          <span>Chat with Menvy</span>
-        </a>
-      ) : null}
+      <a
+        className="whatsapp-float"
+        href={whatsAppChatUrl}
+        target={whatsAppNumber ? '_blank' : undefined}
+        rel={whatsAppNumber ? 'noreferrer' : undefined}
+        aria-label="Open WhatsApp chat with Menvy"
+      >
+        <span className="whatsapp-badge" aria-hidden="true">
+          <MessageCircle size={28} />
+        </span>
+        <span className="whatsapp-copy">
+          <strong>WhatsApp</strong>
+          <small>{whatsAppNumber ? 'Chat with Menvy' : 'Join via waitlist'}</small>
+        </span>
+      </a>
     </main>
   );
 }
