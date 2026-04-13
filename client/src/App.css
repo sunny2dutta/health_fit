@@ -594,13 +594,13 @@
 .waitlist-band {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
-  gap: 32px;
-  padding: 70px 0;
+  gap: 46px;
+  padding: 72px 0 76px;
   background: var(--page-ink);
 }
 
 .waitlist-copy {
-  max-width: 520px;
+  max-width: 560px;
 }
 
 .waitlist-copy h2,
@@ -611,32 +611,23 @@
 }
 
 .waitlist-copy p {
-  margin: 16px 0 0;
-}
-
-.whatsapp-inline {
-  width: fit-content;
-  margin-top: 22px;
-  background: transparent;
-  border: 0.5px solid rgba(255, 255, 255, 0.16);
-  color: var(--waitlist-text);
-  text-decoration: none;
-}
-
-.whatsapp-inline:hover {
-  border-color: rgba(163, 177, 138, 0.8);
+  margin: 18px 0 0;
+  max-width: 34ch;
+  color: rgba(250, 249, 246, 0.72);
+  font-size: 1rem;
+  line-height: 1.65;
 }
 
 .waitlist-eyebrow {
-  margin-bottom: 16px;
-  color: var(--waitlist-muted);
+  margin-bottom: 18px;
+  color: rgba(250, 249, 246, 0.24);
 }
 
 .waitlist-panel {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-top: 8px;
+  padding-top: 2px;
 }
 
 .waitlist-form {
@@ -647,39 +638,41 @@
 .field-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 12px;
+  gap: 12px 14px;
 }
 
 .waitlist-form input,
 .waitlist-form select {
   width: 100%;
-  min-height: 52px;
+  min-height: 54px;
   padding: 0 16px;
-  border: 0.5px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.035);
   color: var(--waitlist-text);
   font-family: var(--font-sans);
   font-size: 0.9rem;
   appearance: none;
+  border-radius: 0;
 }
 
 .waitlist-form input::placeholder,
 .waitlist-form select {
-  color: rgba(255, 255, 255, 0.52);
+  color: rgba(255, 255, 255, 0.34);
 }
 
 .waitlist-form input:focus,
 .waitlist-form select:focus {
   outline: none;
-  border-color: rgba(163, 177, 138, 0.84);
-  box-shadow: 0 0 0 3px rgba(163, 177, 138, 0.12);
+  border-color: rgba(163, 177, 138, 0.52);
+  box-shadow: none;
 }
 
 .waitlist-button {
   width: 100%;
-  min-height: 56px;
+  min-height: 54px;
   background: var(--page-rose-dark);
   letter-spacing: 0.1em;
+  margin-top: 2px;
 }
 
 .waitlist-button:hover {
@@ -700,8 +693,11 @@
 }
 
 .waitlist-note {
-  margin: 12px 0 0;
+  margin: 16px 0 0;
+  max-width: 58ch;
+  color: rgba(250, 249, 246, 0.24);
   font-size: 0.74rem;
+  line-height: 1.65;
 }
 
 .faq-section {
@@ -875,7 +871,7 @@
 
   .waitlist-band {
     gap: 22px;
-    padding: 48px 0;
+    padding: 54px 0;
   }
 
   .waitlist-panel {
@@ -888,7 +884,7 @@
 
   .waitlist-form input,
   .waitlist-form select {
-    min-height: 50px;
+    min-height: 52px;
   }
 
   .quote-text {
@@ -992,6 +988,11 @@
 
   .section {
     padding: 48px 0;
+  }
+
+  .waitlist-copy p {
+    max-width: none;
+    font-size: 0.96rem;
   }
 
   .track-row,

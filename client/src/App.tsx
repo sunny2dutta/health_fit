@@ -540,25 +540,13 @@ function App() {
         <div className="waitlist-copy">
           <p className="waitlist-eyebrow">Private access</p>
           <h2>
-            Menvy is launching <em>by invitation only.</em>
+            Sentriq is launching <em>by invitation only.</em>
           </h2>
           <p>
-            We are opening access in a tighter, more selective way. Leave your details and the team
-            can reach out when the next place opens, using the same waitlist infrastructure already
-            wired into the app.
+            We are opening city by city and accepting a small number of founding members in each
+            location. Leave your details and our clinical team will reach out personally when a
+            place opens for you.
           </p>
-          {whatsAppChatUrl ? (
-            <a
-              className="whatsapp-inline"
-              href={whatsAppChatUrl}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Chat with Menvy on WhatsApp"
-            >
-              <MessageCircle size={18} />
-              Chat on WhatsApp
-            </a>
-          ) : null}
         </div>
 
         <div className="waitlist-panel">
@@ -646,8 +634,8 @@ function App() {
           </AnimatePresence>
 
           <p className="waitlist-note">
-            Places are limited. Your details are held privately and will only be used to contact
-            you about your application and access updates.
+            Places are limited. Your details are held privately under India’s DPDP Act 2023 and
+            will only be used to contact you about your application.
           </p>
         </div>
       </section>
@@ -672,11 +660,10 @@ function App() {
 
       <footer className="site-footer">
         <a className="brand" href="#top" aria-label="Menvy home">
-          Menv<em>y</em>
+          Sentri<em>q</em>
         </a>
         <p>
-          © 2026 Menvy Health. Design adapted from the local `sentriq.html` reference.
-          Waitlist endpoints and database connectivity preserved.
+          © 2025 Sentriq Health Pvt. Ltd. CDSCO compliant · [email protected]
         </p>
       </footer>
       {whatsAppChatUrl ? (
