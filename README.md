@@ -165,6 +165,8 @@ Add these GitHub Actions secrets in the repository settings:
 - `GCP_SERVICE_ACCOUNT`: Service account email used by GitHub Actions, for example `github-deployer@your-project-id.iam.gserviceaccount.com`.
 - `VITE_SUPABASE_URL`: frontend Supabase URL.
 - `VITE_SUPABASE_ANON_KEY`: frontend Supabase anon key.
+- `VITE_WHATSAPP_NUMBER`: WhatsApp Business number in international format, digits only.
+- `VITE_WHATSAPP_PREFILL`: optional prefilled WhatsApp chat message.
 
 Deploy target:
 

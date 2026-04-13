@@ -22,6 +22,9 @@
   gap: 24px;
   padding: 22px 0;
   background: var(--page-bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .brand {
@@ -55,7 +58,9 @@
 
 .nav-cta,
 .btn-primary,
-.waitlist-button {
+.waitlist-button,
+.whatsapp-inline,
+.whatsapp-float {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -75,14 +80,16 @@
 
 .nav-cta:hover,
 .btn-primary:hover,
-.waitlist-button:hover {
+.waitlist-button:hover,
+.whatsapp-inline:hover,
+.whatsapp-float:hover {
   background: var(--page-accent-dark);
 }
 
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(290px, 0.92fr);
-  min-height: 560px;
+  min-height: 520px;
 }
 
 .hero-copy,
@@ -92,6 +99,9 @@
 
 .hero-copy {
   padding-right: 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .eyebrow,
@@ -138,8 +148,9 @@
 }
 
 .hero-body {
-  margin: 24px 0 0;
-  max-width: 56ch;
+  margin: 22px 0 0;
+  max-width: 52ch;
+  font-size: 1rem;
 }
 
 .hero-actions {
@@ -159,6 +170,7 @@
   color: var(--page-ink);
   font-size: 0.8rem;
   text-decoration: none;
+  background: transparent;
 }
 
 .btn-secondary:hover {
@@ -169,8 +181,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 28px;
-  padding-top: 24px;
+  margin-top: 34px;
+  padding-top: 22px;
   border-top: 0.5px solid var(--page-border);
 }
 
@@ -271,7 +283,7 @@
 }
 
 .section {
-  padding: 64px 0;
+  padding: 76px 0;
   background: var(--page-bg);
 }
 
@@ -347,7 +359,7 @@
 .track-list {
   display: flex;
   flex-direction: column;
-  margin-top: 34px;
+  margin-top: 28px;
 }
 
 .track-row {
@@ -602,6 +614,19 @@
   margin: 16px 0 0;
 }
 
+.whatsapp-inline {
+  width: fit-content;
+  margin-top: 22px;
+  background: transparent;
+  border: 0.5px solid rgba(255, 255, 255, 0.16);
+  color: var(--waitlist-text);
+  text-decoration: none;
+}
+
+.whatsapp-inline:hover {
+  border-color: rgba(163, 177, 138, 0.8);
+}
+
 .waitlist-eyebrow {
   margin-bottom: 16px;
   color: var(--waitlist-muted);
@@ -738,6 +763,25 @@
   text-align: right;
 }
 
+.whatsapp-float {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 20;
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #1f7a4f;
+  box-shadow: 0 18px 32px rgba(31, 122, 79, 0.24);
+  color: #fff;
+  text-decoration: none;
+}
+
+.whatsapp-float:hover {
+  background: #176241;
+  transform: translateY(-1px);
+}
+
 @media (max-width: 920px) {
   .hero,
   .section-grid,
@@ -755,7 +799,7 @@
 
   .hero-copy,
   .hero-visual {
-    padding: 40px 0;
+    padding: 34px 0;
   }
 
   .hero-copy {
@@ -789,6 +833,8 @@
   .site-nav {
     flex-wrap: wrap;
     justify-content: flex-start;
+    gap: 14px;
+    padding: 16px 0;
   }
 
   .nav-links {
@@ -801,7 +847,21 @@
   .hero h1,
   .section-title,
   .waitlist-copy h2 {
-    font-size: clamp(2.15rem, 11vw, 3rem);
+    font-size: clamp(2.05rem, 11vw, 2.8rem);
+    line-height: 0.98;
+  }
+
+  .eyebrow,
+  .waitlist-eyebrow,
+  .track-label,
+  .stat-label {
+    margin-bottom: 14px;
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+  }
+
+  .hero {
+    min-height: auto;
   }
 
   .photo-strip,
@@ -815,7 +875,7 @@
 
   .waitlist-band {
     gap: 22px;
-    padding: 56px 0;
+    padding: 48px 0;
   }
 
   .waitlist-panel {
@@ -852,6 +912,7 @@
   .hero-actions {
     flex-direction: column;
     align-items: stretch;
+    margin-top: 24px;
   }
 
   .btn-primary,
@@ -860,7 +921,95 @@
     width: 100%;
   }
 
+  .pill-row {
+    margin-top: 24px;
+    padding-top: 18px;
+  }
+
+  .pill {
+    font-size: 0.62rem;
+  }
+
+  .section {
+    padding: 56px 0;
+  }
+
+  .hero-body,
+  .intro-copy p,
+  .track-content p,
+  .step-row p,
+  .waitlist-copy p,
+  .waitlist-note,
+  .faq-item p,
+  .stat-card p {
+    font-size: 0.92rem;
+    line-height: 1.72;
+  }
+
+  .quote-block {
+    padding: 42px 0;
+  }
+
   .site-footer p {
     text-align: left;
+  }
+
+  .whatsapp-float {
+    right: 14px;
+    bottom: 14px;
+    min-height: 48px;
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 560px) {
+  .sentriq-page {
+    width: min(100vw - 20px, 920px);
+  }
+
+  .hero-copy,
+  .hero-visual {
+    padding: 28px 0;
+  }
+
+  .hero-body {
+    margin-top: 18px;
+  }
+
+  .portrait-main {
+    min-height: 320px;
+  }
+
+  .portrait-overlay {
+    inset: auto 16px 16px;
+    padding: 15px;
+  }
+
+  .stat-card,
+  .stat-box {
+    padding: 18px;
+  }
+
+  .section {
+    padding: 48px 0;
+  }
+
+  .track-row,
+  .step-row {
+    padding: 20px 0;
+  }
+
+  .testimonial-body {
+    padding: 20px 16px;
+  }
+
+  .whatsapp-float span {
+    display: none;
+  }
+
+  .whatsapp-float {
+    width: 52px;
+    padding: 0;
+    border-radius: 50%;
   }
 }

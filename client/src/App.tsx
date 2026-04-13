@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, MessageCircle } from 'lucide-react';
 import { getApiUrl } from './lib/api';
 import './App.css';
 
@@ -25,16 +25,16 @@ const heroPills = [
 
 const introStats = [
   {
-    value: '65+',
-    label: 'Cities supported through the current remote-first model',
+    value: '15%+',
+    label: 'average body weight lost over 6 months',
   },
   {
-    value: '1:1',
-    label: 'Higher-touch onboarding presentation and conversion path',
+    value: '4',
+    label: 'specialised life-stage tracks',
   },
   {
-    value: '24/7',
-    label: 'Always-on waitlist capture through the existing backend',
+    value: '100%',
+    label: 'online — consultations, labs & delivery',
   },
 ];
 
@@ -103,6 +103,14 @@ const trackOptions = [
 ];
 
 const genderOptions = ['Female', 'Male', 'Prefer not to say'];
+
+const whatsAppNumber = String(import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '');
+const whatsAppPrefill =
+  import.meta.env.VITE_WHATSAPP_PREFILL ||
+  'Hi Menvy, I would like to learn more about the programme and current availability.';
+const whatsAppChatUrl = whatsAppNumber
+  ? `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(whatsAppPrefill)}`
+  : null;
 
 const fallbackTestimonials: HomepageTestimonial[] = [
   {
@@ -318,16 +326,16 @@ function App() {
             for <em>your hormones.</em>
           </h1>
           <p className="hero-body">
-            Some brands try to sound futuristic. The local <strong>Sentriq</strong> file works
-            because it sounds calm, precise, and medically grounded. This page now follows that
-            direction while keeping the same waitlist logic and database connection under the hood.
+            India has some of the highest rates of PCOS, insulin resistance, and metabolic disease
+            in the world — yet most weight loss programs treat us like a Western patient. Sentriq
+            is different. We treat the hormonal root cause, not just the number on the scale.
           </p>
           <div className="hero-actions">
             <a className="btn-primary" href="#waitlist">
               Request access
             </a>
             <a className="btn-secondary" href="#tracks">
-              Explore care tracks
+              Our tracks
             </a>
           </div>
           <div className="pill-row">
@@ -360,8 +368,8 @@ function App() {
             </div>
             <div className="stat-card">
               <span className="stat-label">Care model</span>
-              <strong>Remote-first</strong>
-              <p>Structured onboarding and follow-up through the existing flow</p>
+              <strong>Doctor-led</strong>
+              <p>Remote onboarding, follow-up, and medication review through one flow</p>
             </div>
           </div>
         </motion.div>
@@ -372,21 +380,23 @@ function App() {
           <div>
             <p className="eyebrow">The difference</p>
             <h2 className="section-title">
-              A calmer brand language with more <em>clinical trust.</em>
+              Built for <em>Indian bodies.</em>
             </h2>
           </div>
           <div className="intro-copy-wrap">
             <div className="intro-copy">
               <p>
-                The local file is strong because it avoids the usual wellness clichés. It uses
-                editorial restraint, a warm off-white palette, serif-led hierarchy, and a clear
-                invitation-only narrative that feels more premium and more trustworthy.
+                For millions of Indians, weight gain has little to do with willpower. It reflects
+                insulin resistance, hormonal change, sleep disruption, appetite signalling, and the
+                metabolic environment the body is operating inside.
               </p>
               <p>
-                This implementation now follows that same section rhythm more closely: split hero,
-                intro with stats, image strip, track list, quote block, testimonial row, FAQ, and a
-                dark invitation-only waitlist band. The current backend and Supabase-backed storage
-                remain unchanged.
+                <strong>
+                  Sentriq is the first weight management program in India built from the ground up
+                  for the Indian body and its hormonal reality.
+                </strong>{' '}
+                Our GLP-1 treatments are prescribed by specialist doctors who look at your whole
+                picture — your hormones, your history, your life — not just your weight.
               </p>
             </div>
             <div className="stat-rows">
@@ -411,6 +421,29 @@ function App() {
         <div className="photo-panel">
           <img className="media-image" src={stripImageThree} alt="" />
         </div>
+      </section>
+
+      <section className="testimonial-grid">
+        {testimonials.map((testimonial, index) => (
+          <motion.article
+            key={testimonial.person}
+            className="testimonial-card"
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.55, delay: index * 0.08 }}
+          >
+            <div className="testimonial-body">
+              <div className="testimonial-avatar" aria-hidden="true">
+                {testimonial.person.slice(0, 1)}
+              </div>
+              <div className="testimonial-stars">★★★★★</div>
+              <p className="testimonial-quote">{testimonial.quote}</p>
+              <p className="testimonial-person">{testimonial.person}</p>
+              <p className="testimonial-detail">{testimonial.detail}</p>
+            </div>
+          </motion.article>
+        ))}
       </section>
 
       <section className="section" id="tracks">
@@ -503,29 +536,6 @@ function App() {
         </div>
       </section>
 
-      <section className="testimonial-grid">
-        {testimonials.map((testimonial, index) => (
-          <motion.article
-            key={testimonial.person}
-            className="testimonial-card"
-            initial={{ opacity: 0, y: 22 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.25 }}
-            transition={{ duration: 0.55, delay: index * 0.08 }}
-          >
-            <div className="testimonial-body">
-              <div className="testimonial-avatar" aria-hidden="true">
-                {testimonial.person.slice(0, 1)}
-              </div>
-              <div className="testimonial-stars">★★★★★</div>
-              <p className="testimonial-quote">{testimonial.quote}</p>
-              <p className="testimonial-person">{testimonial.person}</p>
-              <p className="testimonial-detail">{testimonial.detail}</p>
-            </div>
-          </motion.article>
-        ))}
-      </section>
-
       <section className="waitlist-band" id="waitlist">
         <div className="waitlist-copy">
           <p className="waitlist-eyebrow">Private access</p>
@@ -537,6 +547,18 @@ function App() {
             can reach out when the next place opens, using the same waitlist infrastructure already
             wired into the app.
           </p>
+          {whatsAppChatUrl ? (
+            <a
+              className="whatsapp-inline"
+              href={whatsAppChatUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Chat with Menvy on WhatsApp"
+            >
+              <MessageCircle size={18} />
+              Chat on WhatsApp
+            </a>
+          ) : null}
         </div>
 
         <div className="waitlist-panel">
@@ -657,6 +679,18 @@ function App() {
           Waitlist endpoints and database connectivity preserved.
         </p>
       </footer>
+      {whatsAppChatUrl ? (
+        <a
+          className="whatsapp-float"
+          href={whatsAppChatUrl}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Open WhatsApp chat with Menvy"
+        >
+          <MessageCircle size={22} />
+          <span>Chat with Menvy</span>
+        </a>
+      ) : null}
     </main>
   );
 }
