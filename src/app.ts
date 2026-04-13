@@ -3,11 +3,15 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { ZodError } from 'zod';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { createApiRoutes } from './routes/apiRoutes.js';
 import { AppError } from './utils/AppError.js';
 import { UserController } from './controllers/UserController.js';
 import { TestimonialController } from './controllers/TestimonialController.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 interface AppDependencies {
     userController: UserController;
@@ -68,6 +72,24 @@ export const createApp = ({ userController, testimonialController }: AppDependen
 
     // Routes
     app.use('/api', createApiRoutes(userController, testimonialController));
+
+    // Serve the compiled frontend from the same Cloud Run service.
+    const clientBuildPath = path.join(__dirname, '../client/dist');
+    app.use(express.static(clientBuildPath, {
+        setHeaders: (res, filePath) => {
+            if (filePath.endsWith('index.html')) {
+                res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+                res.setHeader('Pragma', 'no-cache');
+                res.setHeader('Expires', '0');
+            } else {
+                res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+            }
+        }
+    }));
+
+    app.get('*', (_req: Request, res: Response) => {
+        res.sendFile(path.join(clientBuildPath, 'index.html'));
+    });
 
     // Global Error Handler
     app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
