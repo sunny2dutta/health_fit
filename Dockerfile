@@ -25,12 +25,11 @@ RUN adduser -S nextjs -u 1001
 RUN chown -R nextjs:nodejs /app
 USER nextjs
 
-# Expose the port the app runs on
-EXPOSE 3000
+# Expose the port expected by Cloud Run
+EXPOSE 8080
 
 # Define environment variable
 ENV NODE_ENV=production
-ENV PORT=3000
 
 # Command to run the application
 CMD ["npm", "start"]
