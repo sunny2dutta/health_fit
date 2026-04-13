@@ -13,8 +13,9 @@ RUN npm ci --ignore-scripts
 # Copy the rest of the application code
 COPY . .
 
-# Build the backend application
-RUN npm run build
+# Install frontend dependencies and build the integrated app.
+RUN cd client && npm ci --ignore-scripts && npm run build
+RUN npm run build:server
 
 # Create a non-root user to run the application
 RUN addgroup -g 1001 -S nodejs
