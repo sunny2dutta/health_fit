@@ -529,15 +529,6 @@ function App() {
               Officer, Sentriq
             </p>
           </div>
-          <aside className="doctor-card" aria-label="Clinical note">
-            <div className="doctor-badge">CMO</div>
-            <h3>Clinical perspective</h3>
-            <p>
-              The quote section now stands apart from testimonials instead of feeling like another
-              card row. That gives the page a stronger editorial rhythm even with a limited image
-              set.
-            </p>
-          </aside>
         </div>
       </section>
 

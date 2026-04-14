@@ -431,10 +431,7 @@
 }
 
 .quote-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.8fr);
-  gap: 28px;
-  align-items: start;
+  display: block;
 }
 
 .quote-mark {
@@ -465,41 +462,6 @@
 .quote-attribution strong {
   color: var(--page-ink);
   font-weight: 600;
-}
-
-.doctor-card {
-  padding: 26px 24px;
-  background: linear-gradient(180deg, rgba(107, 126, 88, 0.06), rgba(74, 124, 124, 0.08));
-  border: 0.5px solid var(--page-border-strong);
-}
-
-.doctor-badge {
-  display: inline-flex;
-  min-height: 28px;
-  align-items: center;
-  padding: 0 10px;
-  margin-bottom: 16px;
-  background: rgba(74, 124, 124, 0.12);
-  color: var(--page-rose-dark);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.doctor-card h3 {
-  margin: 0 0 10px;
-  color: var(--page-ink);
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 500;
-}
-
-.doctor-card p {
-  margin: 0;
-  color: var(--page-ink-soft);
-  font-size: 0.88rem;
-  line-height: 1.7;
 }
 
 .steps-column {
