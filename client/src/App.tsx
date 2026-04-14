@@ -515,23 +515,6 @@ function App() {
         </div>
       </section>
 
-      <section className="quote-block">
-        <div className="quote-layout">
-          <div>
-            <div className="quote-mark">“</div>
-            <p className="quote-text">
-              In India, we are very good at telling people they are fine. We are not as good at
-              asking why they are tired all the time, why the weight won’t move, why the numbers
-              keep creeping up. That gap is exactly where Sentriq sits.
-            </p>
-            <p className="quote-attribution">
-              <strong>Dr. Sunita Agarwal</strong> · Consultant Endocrinologist & Chief Medical
-              Officer, Sentriq
-            </p>
-          </div>
-        </div>
-      </section>
-
       <section className="section" id="journey">
         <div className="section-grid">
           <div>

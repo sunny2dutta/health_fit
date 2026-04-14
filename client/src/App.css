@@ -7,7 +7,6 @@
 .site-nav,
 .hero,
 .section,
-.quote-block,
 .waitlist-band,
 .site-footer,
 .photo-strip,
@@ -425,45 +424,6 @@
   align-self: center;
 }
 
-.quote-block {
-  padding: 54px 0;
-  background: var(--page-bg-alt);
-}
-
-.quote-layout {
-  display: block;
-}
-
-.quote-mark {
-  margin-bottom: -8px;
-  color: var(--page-accent);
-  font-family: var(--font-display);
-  font-size: 4.2rem;
-  line-height: 1;
-  opacity: 0.6;
-}
-
-.quote-text {
-  max-width: 680px;
-  margin: 0 0 18px;
-  color: var(--page-ink);
-  font-family: var(--font-display);
-  font-size: clamp(1.25rem, 2.8vw, 1.75rem);
-  font-style: italic;
-  line-height: 1.5;
-}
-
-.quote-attribution {
-  margin: 0;
-  color: var(--page-ink-soft);
-  font-size: 0.78rem;
-}
-
-.quote-attribution strong {
-  color: var(--page-ink);
-  font-weight: 600;
-}
-
 .steps-column {
   display: flex;
   flex-direction: column;
@@ -784,10 +744,6 @@
     grid-template-columns: 1fr;
   }
 
-  .quote-layout {
-    grid-template-columns: 1fr;
-  }
-
   .hero-copy,
   .hero-visual {
     padding: 34px 0;
@@ -882,10 +838,6 @@
     min-height: 52px;
   }
 
-  .quote-text {
-    font-size: 1.35rem;
-  }
-
   .testimonial-body {
     padding: 22px 20px;
   }
@@ -935,10 +887,6 @@
   .stat-card p {
     font-size: 0.92rem;
     line-height: 1.72;
-  }
-
-  .quote-block {
-    padding: 42px 0;
   }
 
   .site-footer p {
