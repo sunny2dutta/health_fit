@@ -137,6 +137,11 @@ const faqs = [
       "Yes. Semaglutide (Wegovy, Rybelsus, and Indian generics including Semasize by Alkem and Obeda by Dr. Reddy's) and tirzepatide (Mounjaro and Yurpeak by Cipla) are CDSCO-approved and legally available with a valid prescription. All medications we supply are genuine, sourced from licensed Indian pharmacies.",
   },
   {
+    question: 'What is the difference between Wegovy and Mounjaro?',
+    answer:
+      'Wegovy is a semaglutide-based GLP-1 medication, while Mounjaro contains tirzepatide, which works on both GLP-1 and GIP pathways. Which option is better depends on your medical history, weight-loss goals, side-effect tolerance, and what your doctor considers appropriate for you.',
+  },
+  {
     question: 'I have PCOS — will GLP-1 help even if I’m not diabetic?',
     answer:
       'Absolutely. GLP-1 medications reduce insulin resistance, which is the core driver of PCOS weight gain and hormonal imbalance — regardless of whether you have diabetes. Many women see improvements in their cycle and androgen levels within 3–6 months.',
@@ -356,16 +361,18 @@ function App() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.05 }}
         >
-          <p className="eyebrow">Doctor-led metabolic care</p>
+          <p className="eyebrow">Doctor-led GLP-1 care in India</p>
           <h1>
-            Weight loss designed
+            GLP-1 weight loss
             <br />
             for <em>your hormones.</em>
           </h1>
           <p className="hero-body">
             India has some of the highest rates of PCOS, insulin resistance, and metabolic disease
             in the world — yet most weight loss programs treat us like a Western patient. Sentriq
-            is different. We treat the hormonal root cause, not just the number on the scale.
+            is different. We offer doctor-led GLP-1 weight loss care in India, including
+            semaglutide and tirzepatide pathways such as Wegovy and Mounjaro when clinically
+            appropriate.
           </p>
           <div className="hero-actions">
             <a className="btn-primary" href="#waitlist">
@@ -429,7 +436,8 @@ function App() {
               </p>
               <p>
                 <strong>Sentriq is built from the ground up for the Indian body and its hormonal reality.</strong>{' '}
-                Our GLP-1 treatments are prescribed by specialist doctors who look at your whole
+                Our GLP-1 treatments, including semaglutide and tirzepatide options such as
+                Wegovy and Mounjaro, are prescribed by specialist doctors who look at your whole
                 picture — your hormones, your history, your life — not just your weight.
               </p>
             </div>
