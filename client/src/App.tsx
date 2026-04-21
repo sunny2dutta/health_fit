@@ -76,21 +76,21 @@ const conditionTracks = [
 const journeySteps = [
   {
     number: '1',
-    title: 'Join the invitation list',
+    title: 'Register your interest',
     body:
-      'Share your email and WhatsApp number so the team can contact you when access opens in your cohort.',
+      "Takes 2 minutes. Share your name, email, and WhatsApp number. That's all we need for now.",
   },
   {
     number: '2',
-    title: 'Receive a guided intake',
+    title: "We'll be in touch",
     body:
-      'Selected members are invited into a short, clinician-reviewed onboarding flow built around safety and fit.',
+      'When a place opens in your city, one of our team will contact you directly to understand your health goals.',
   },
   {
     number: '3',
-    title: 'Start with ongoing support',
+    title: 'Get started',
     body:
-      'If approved, your plan continues with follow-up communication, progress tracking, and a more personal care rhythm.',
+      'A doctor reviews your case, your medication is delivered to your door, and your care begins - with a team checking in throughout.',
   },
 ];
 
