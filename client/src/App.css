@@ -533,7 +533,7 @@
 }
 
 .waitlist-copy p {
-  margin: 0;
+  margin: 18px 0 0;
   max-width: 34ch;
   color: rgba(250, 249, 246, 0.72);
   font-size: 1rem;
@@ -543,40 +543,6 @@
 .waitlist-eyebrow {
   margin-bottom: 18px;
   color: rgba(250, 249, 246, 0.24);
-}
-
-.waitlist-steps {
-  display: grid;
-  gap: 18px;
-  padding: 0;
-  margin: 26px 0 0;
-  list-style: none;
-}
-
-.waitlist-steps li {
-  display: grid;
-  grid-template-columns: 28px 1fr;
-  gap: 14px;
-  align-items: start;
-}
-
-.waitlist-step-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 0.5px solid rgba(250, 249, 246, 0.2);
-  color: rgba(250, 249, 246, 0.62);
-  font-size: 0.72rem;
-  font-weight: 600;
-}
-
-.waitlist-steps h3 {
-  margin: 0 0 5px;
-  color: var(--waitlist-text);
-  font-size: 0.95rem;
-  font-weight: 600;
 }
 
 .waitlist-panel {

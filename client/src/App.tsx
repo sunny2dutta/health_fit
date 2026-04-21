@@ -558,38 +558,11 @@ function App() {
           <h2>
             Sentriq is launching <em>by invitation only.</em>
           </h2>
-          <ol className="waitlist-steps">
-            <li>
-              <span className="waitlist-step-number">1</span>
-              <div>
-                <h3>Register your interest</h3>
-                <p>
-                  Takes 2 minutes. Share your name, email, and WhatsApp number. That&apos;s all we
-                  need for now.
-                </p>
-              </div>
-            </li>
-            <li>
-              <span className="waitlist-step-number">2</span>
-              <div>
-                <h3>We&apos;ll be in touch</h3>
-                <p>
-                  When a place opens in your city, one of our team will contact you directly to
-                  understand your health goals.
-                </p>
-              </div>
-            </li>
-            <li>
-              <span className="waitlist-step-number">3</span>
-              <div>
-                <h3>Get started</h3>
-                <p>
-                  A doctor reviews your case, your medication is delivered to your door, and your
-                  care begins - with a team checking in throughout.
-                </p>
-              </div>
-            </li>
-          </ol>
+          <p>
+            We are opening city by city and accepting a small number of founding members in each
+            location. Leave your details and our clinical team will reach out personally when a
+            place opens for you.
+          </p>
         </div>
 
         <div className="waitlist-panel">
